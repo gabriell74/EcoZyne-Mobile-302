@@ -49,9 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final screenSize = MediaQuery.sizeOf(context);
     final AuthProvider authProvider = context.watch<AuthProvider>();
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white.withValues(alpha: 0.1),
-      ),
+      appBar: AppBar(backgroundColor: Colors.white.withValues(alpha: 0.1)),
       body: AppBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -59,30 +57,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: screenSize.height * 0.08),
-              SizedBox(
-                width: screenSize.width * 0.25,
-                child: FloatingLogo(),
-              ),
+              SizedBox(width: screenSize.width * 0.25, child: FloatingLogo()),
               const SizedBox(height: 5),
 
               AnimatedGradientText(
                 "Ecozyne",
-                colors: [
-                  Colors.green,
-                  Colors.blue
-                ],
+                colors: [Colors.green, Colors.blue],
                 style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
 
-              const SizedBox(height:25),
+              const SizedBox(height: 25),
 
-              // Name
+              // Username
               TextField(
-                controller: _nameController,
+                controller: _userNameController,
                 decoration: InputDecoration(
                   hintText: "Nama Pengguna",
                   border: OutlineInputBorder(
@@ -91,9 +83,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              // Username
+              SizedBox(height: 15),
+
+              // name
               TextField(
-                controller: _userNameController,
+                controller: _nameController,
                 decoration: InputDecoration(
                   hintText: "Nama Asli",
                   border: OutlineInputBorder(
@@ -101,6 +95,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
+
+              SizedBox(height: 15),
 
               // Email
               TextField(
@@ -116,6 +112,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
+              SizedBox(height: 15),
+
               // Password
               TextField(
                 controller: _passwordController,
@@ -123,8 +121,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 onChanged: authProvider.validatePassword,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(onPressed: () => setState(() => _isObscure = !_isObscure ),
-                      icon: Icon(CupertinoIcons.eye_slash_fill)),
+                  suffixIcon: IconButton(
+                    onPressed: () => setState(() => _isObscure = !_isObscure),
+                    icon: Icon(CupertinoIcons.eye_slash_fill),
+                  ),
                   errorText: authProvider.passwordError,
                   hintText: "Kata Sandi",
                   border: OutlineInputBorder(
@@ -132,6 +132,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
+
+              SizedBox(height: 15),
 
               // WhatsApp Number
               TextField(
@@ -144,6 +146,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
+              SizedBox(height: 15),
+
               // Name
               TextField(
                 controller: _nameController,
@@ -154,6 +158,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
+
+              SizedBox(height: 15),
 
               // Name
               TextField(
@@ -166,6 +172,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
+              SizedBox(height: 15),
+
               Row(
                 children: [
                   DropdownMenuFormField(
@@ -174,6 +182,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return DropdownMenuEntry(value: e, label: e);
                     }).toList(),
                   ),
+
+                  SizedBox(width: 15),
+
                   DropdownMenuFormField(
                     label: const Text("Kelurahan"),
                     dropdownMenuEntries: ["A", "B", "C"].map((e) {
@@ -181,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }).toList(),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

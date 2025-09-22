@@ -5,11 +5,11 @@ import 'package:provider/provider.dart';
 import 'core/theme/theme.dart';
 
 void main() {
-  runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-      ],
-      child: EcoApp())
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      child: EcoApp(),
+    ),
   );
 }
 
@@ -22,10 +22,8 @@ class EcoApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'EcoZyne',
       theme: AppTheme.lightTheme,
-      initialRoute: AppRoutes.getStarted,
+      initialRoute: AppRoutes.login,
       routes: AppRoutes.routes,
     );
   }
 }
-
-
