@@ -107,7 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _formKey.currentState!.validate();
+                    },
                     child: const CustomText(
                       "Masuk Akun",
                       fontSize: 18,
