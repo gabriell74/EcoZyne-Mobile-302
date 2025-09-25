@@ -1,5 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:flutter/cupertino.dart';
@@ -85,7 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               SizedBox(height: 15),
 
-              // name
+              // Name
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -148,20 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               SizedBox(height: 15),
 
-              // Name
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: "Nama Pengguna",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              // Name
+              // Address
               TextField(
                 controller: _addressController,
                 decoration: InputDecoration(
@@ -176,23 +164,71 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               Row(
                 children: [
-                  DropdownMenuFormField(
-                    label: const Text("Kecamatan"),
-                    dropdownMenuEntries: ["A", "B", "C"].map((e) {
-                      return DropdownMenuEntry(value: e, label: e);
-                    }).toList(),
+                  Expanded(
+                    child: DropdownMenuFormField(
+                      label: const Text("Kecamatan"),
+                      dropdownMenuEntries: ["A", "B", "C"].map((e) {
+                        return DropdownMenuEntry(value: e, label: e);
+                      }).toList(),
+                    ),
                   ),
 
                   SizedBox(width: 15),
 
-                  DropdownMenuFormField(
-                    label: const Text("Kelurahan"),
-                    dropdownMenuEntries: ["A", "B", "C"].map((e) {
-                      return DropdownMenuEntry(value: e, label: e);
-                    }).toList(),
+                  Expanded(
+                    child: DropdownMenuFormField(
+                      label: const Text("Kelurahan"),
+                      dropdownMenuEntries: ["A", "B", "C"].map((e) {
+                        return DropdownMenuEntry(value: e, label: e);
+                      }).toList(),
+                    ),
                   ),
                 ],
               ),
+
+              SizedBox(height: 15),
+
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final email = _emailController.text;
+                    final password = _passwordController.text;
+
+                    final isValid = authProvider.validateEmailPassword(
+                      email,
+                      password,
+                    );
+                  },
+                  child: const CustomText(
+                    "Daftar Akun",
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText("Sudah punya akun? ", color: Colors.grey.shade500),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: const CustomText(
+                      "Masuk",
+                      color: Color(0xFF649B71),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 35),
             ],
           ),
         ),

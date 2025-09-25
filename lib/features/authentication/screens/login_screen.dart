@@ -3,6 +3,7 @@ import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
+import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -103,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     final email = _emailController.text;
                     final password = _passwordController.text;
-
+                    Navigator.pushNamed(context, AppRoutes.wasteDetail);
                     final isValid = authProvider.validateEmailPassword(
                       email,
                       password,
@@ -118,12 +119,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CustomText("Belum Punya Akun? ", color: Colors.grey.shade500),
+                  CustomText("Belum punya akun? ", color: Colors.grey.shade500),
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, '/register');
