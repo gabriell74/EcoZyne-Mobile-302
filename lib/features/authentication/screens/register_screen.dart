@@ -1,5 +1,7 @@
+import 'package:ecozyne_mobile/core/utils/validators.dart';
 import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,19 +16,24 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  late TextEditingController _userNameController;
+  final _formKey = GlobalKey<FormState>();
+
+  late TextEditingController _usernameController;
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late TextEditingController _whatsappNumController;
   late TextEditingController _addressController;
+
   bool _isObscure = true;
+  String? _selectedKecamatan;
+  String? _selectedKelurahan;
 
   @override
   void initState() {
     super.initState();
+    _usernameController = TextEditingController();
     _nameController = TextEditingController();
-    _userNameController = TextEditingController();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _whatsappNumController = TextEditingController();
@@ -35,8 +42,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+    _usernameController.dispose();
     _nameController.dispose();
-    _userNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _whatsappNumController.dispose();
@@ -47,153 +54,178 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
-    final AuthProvider authProvider = context.watch<AuthProvider>();
+
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.white.withValues(alpha: 0.1)),
       body: AppBackground(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: screenSize.height * 0.08),
-              SizedBox(width: screenSize.width * 0.25, child: FloatingLogo()),
-              const SizedBox(height: 5),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                SizedBox(height: screenSize.height * 0.08),
+                SizedBox(width: screenSize.width * 0.25, child: FloatingLogo()),
+                const SizedBox(height: 5),
 
-              AnimatedGradientText(
-                "Ecozyne",
-                colors: [Colors.green, Colors.blue],
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              // Username
-              TextField(
-                controller: _userNameController,
-                decoration: InputDecoration(
-                  hintText: "Nama Pengguna",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                AnimatedGradientText(
+                  "Ecozyne",
+                  colors: [Colors.green, Colors.blue],
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
-              ),
 
-              SizedBox(height: 15),
+                const SizedBox(height: 15),
 
-              // name
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: "Nama Asli",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                // Username
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    hintText: "Nama Pengguna",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: (v) => Validators.requiredField(v, fieldName: "Nama Pengguna"),
+                ),
+                const SizedBox(height: 15),
+
+                // Nama asli
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    hintText: "Nama Asli",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: (v) => Validators.requiredField(v, fieldName: "Nama Asli"),
+                ),
+                const SizedBox(height: 15),
+
+                // Email
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    hintText: "Email",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: Validators.email,
+                ),
+                const SizedBox(height: 15),
+
+                // Password
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  controller: _passwordController,
+                  obscureText: _isObscure,
+                  decoration: InputDecoration(
+                    hintText: "Kata Sandi",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () => setState(() => _isObscure = !_isObscure),
+                      icon: Icon(
+                        _isObscure ? CupertinoIcons.eye_slash_fill : CupertinoIcons.eye_fill,
+                      ),
+                    ),
+                  ),
+                  validator: Validators.password,
+                ),
+                const SizedBox(height: 15),
+
+                // WhatsApp
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  controller: _whatsappNumController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    hintText: "No WhatsApp",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: Validators.whatsapp,
+                ),
+                const SizedBox(height: 15),
+
+                // Alamat
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  controller: _addressController,
+                  decoration: InputDecoration(
+                    hintText: "Alamat",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: (v) => Validators.requiredField(v, fieldName: "Alamat"),
+                ),
+                const SizedBox(height: 15),
+
+                // Kecamatan & Kelurahan
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        initialValue: _selectedKecamatan,
+                        decoration: const InputDecoration(
+                          labelText: "Kecamatan",
+                          border: OutlineInputBorder(),
+                        ),
+                        items: ["A", "B", "C"]
+                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .toList(),
+                        onChanged: (value) => setState(() => _selectedKecamatan = value),
+                        validator: (v) => v == null ? "Pilih Kecamatan" : null,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        initialValue: _selectedKelurahan,
+                        decoration: const InputDecoration(
+                          labelText: "Kelurahan",
+                          border: OutlineInputBorder(),
+                        ),
+                        items: ["A", "B", "C"]
+                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .toList(),
+                        onChanged: (value) => setState(() => _selectedKelurahan = value),
+                        validator: (v) => v == null ? "Pilih Kelurahan" : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _formKey.currentState!.validate();
+                    },
+                    child: const CustomText(
+                      "Daftar Akun",
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-
-              SizedBox(height: 15),
-
-              // Email
-              TextField(
-                controller: _emailController,
-                onChanged: authProvider.validateEmail,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.email_outlined),
-                  hintText: "Email",
-                  errorText: authProvider.emailError,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              // Password
-              TextField(
-                controller: _passwordController,
-                obscureText: _isObscure,
-                onChanged: authProvider.validatePassword,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    onPressed: () => setState(() => _isObscure = !_isObscure),
-                    icon: Icon(CupertinoIcons.eye_slash_fill),
-                  ),
-                  errorText: authProvider.passwordError,
-                  hintText: "Kata Sandi",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              // WhatsApp Number
-              TextField(
-                controller: _whatsappNumController,
-                decoration: InputDecoration(
-                  hintText: "No WhatsApp",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              // Name
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: "Nama Pengguna",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              // Name
-              TextField(
-                controller: _addressController,
-                decoration: InputDecoration(
-                  hintText: "Alamat",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15),
-
-              Row(
-                children: [
-                  DropdownMenuFormField(
-                    label: const Text("Kecamatan"),
-                    dropdownMenuEntries: ["A", "B", "C"].map((e) {
-                      return DropdownMenuEntry(value: e, label: e);
-                    }).toList(),
-                  ),
-
-                  SizedBox(width: 15),
-
-                  DropdownMenuFormField(
-                    label: const Text("Kelurahan"),
-                    dropdownMenuEntries: ["A", "B", "C"].map((e) {
-                      return DropdownMenuEntry(value: e, label: e);
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
