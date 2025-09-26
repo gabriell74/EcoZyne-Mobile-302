@@ -7,7 +7,7 @@ class Validators {
   }
 
   static String? email(String? value) {
-    if (value == null || value.isEmpty) return "Email wajib diisi";
+    if (value == null || value.isEmpty) return requiredField(value, fieldName: "Email");
     final regex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
     if (!regex.hasMatch(value)) return "Format email tidak valid";
     return null;

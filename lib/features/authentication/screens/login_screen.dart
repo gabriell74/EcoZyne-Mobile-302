@@ -71,6 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _emailController,
                   validator: Validators.email,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email_outlined),
                     hintText: "Email",
@@ -85,6 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _passwordController,
                   validator: Validators.password,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   obscureText: _isObscure,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock_outline),
@@ -105,7 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _formKey.currentState!.validate();
+                    },
                     child: const CustomText(
                       "Masuk Akun",
                       fontSize: 18,
