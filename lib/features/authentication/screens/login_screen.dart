@@ -4,7 +4,6 @@ import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -92,7 +91,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       onPressed: () => setState(() => _isObscure = !_isObscure),
-                      icon: const Icon(CupertinoIcons.eye_slash_fill),
+                      icon: Icon(
+                        Icons.remove_red_eye_rounded,
+                        color: _isObscure ? Colors.grey : Colors.lightGreen,
+                      ),
                     ),
                     hintText: "Kata Sandi",
                     border: OutlineInputBorder(
@@ -124,8 +126,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomText("Belum Punya Akun? ",
-                        color: Colors.grey.shade500),
+                    CustomText(
+                      "Belum Punya Akun? ",
+                      color: Colors.grey.shade500,
+                    ),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, '/register');

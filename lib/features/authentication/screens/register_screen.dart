@@ -3,8 +3,6 @@ import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
-import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -89,7 +87,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  validator: (v) => Validators.requiredField(v, fieldName: "Nama Pengguna"),
+                  validator: (v) =>
+                      Validators.requiredField(v, fieldName: "Nama Pengguna"),
                 ),
                 const SizedBox(height: 15),
 
@@ -103,7 +102,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  validator: (v) => Validators.requiredField(v, fieldName: "Nama Asli"),
+                  validator: (v) =>
+                      Validators.requiredField(v, fieldName: "Nama Asli"),
                 ),
                 const SizedBox(height: 15),
 
@@ -134,7 +134,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     suffixIcon: IconButton(
                       onPressed: () => setState(() => _isObscure = !_isObscure),
                       icon: Icon(
-                        _isObscure ? CupertinoIcons.eye_slash_fill : CupertinoIcons.eye_fill,
+                        Icons.remove_red_eye_rounded,
+                        color: _isObscure ? Colors.grey : Colors.lightGreen,
                       ),
                     ),
                   ),
@@ -167,7 +168,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  validator: (v) => Validators.requiredField(v, fieldName: "Alamat"),
+                  validator: (v) =>
+                      Validators.requiredField(v, fieldName: "Alamat"),
                 ),
                 const SizedBox(height: 15),
 
@@ -183,9 +185,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           border: OutlineInputBorder(),
                         ),
                         items: ["A", "B", "C"]
-                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .map(
+                              (e) => DropdownMenuItem(value: e, child: Text(e)),
+                            )
                             .toList(),
-                        onChanged: (value) => setState(() => _selectedKecamatan = value),
+                        onChanged: (value) =>
+                            setState(() => _selectedKecamatan = value),
                         validator: (v) => v == null ? "Pilih Kecamatan" : null,
                       ),
                     ),
@@ -199,9 +204,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           border: OutlineInputBorder(),
                         ),
                         items: ["A", "B", "C"]
-                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .map(
+                              (e) => DropdownMenuItem(value: e, child: Text(e)),
+                            )
                             .toList(),
-                        onChanged: (value) => setState(() => _selectedKelurahan = value),
+                        onChanged: (value) =>
+                            setState(() => _selectedKelurahan = value),
                         validator: (v) => v == null ? "Pilih Kelurahan" : null,
                       ),
                     ),
