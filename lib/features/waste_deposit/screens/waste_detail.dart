@@ -15,15 +15,17 @@ class WasteDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
-                children: [
-                  Container(
-                    height: _screenSize.height * 0.53,
-                    width: double.infinity,
-                    color: Colors.lightGreen,
-                  ),
-                  BackButton(),
-                ],
+              SafeArea(
+                child: Stack(
+                  children: [
+                    Container(
+                      height: _screenSize.height * 0.45,
+                      width: double.infinity,
+                      color: Colors.lightGreen,
+                    ),
+                    BackButton(),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
               Padding(
@@ -37,7 +39,7 @@ class WasteDetailScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                     const CustomText(
-                      "sisa sayur, kulit buah, dedaunan",
+                      "Sisa sayur, Kulit buah, Dedaunan",
                       fontSize: 14,
                       color: Color.fromARGB(255, 88, 88, 88),
                     ),
@@ -49,7 +51,7 @@ class WasteDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     const CustomText(
-                      "Sampah yang diterima hanya yang termasuk ke dalam kategori sampah yaitu sisa sayur, kulit buah dan dedaunan.",
+                      "Sampah yang diterima hanya yang termasuk kedalam kategori sampah organik yaitu sisa sayur, kulit buah dan dedaunan.",
                       fontSize: 14,
                       color: Color.fromARGB(255, 88, 88, 88),
                     ),
@@ -84,7 +86,6 @@ class WasteDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 25),
                   ],
                 ),
               ),

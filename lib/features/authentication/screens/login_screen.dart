@@ -4,6 +4,7 @@ import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
+import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -109,10 +110,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _formKey.currentState!.validate();
+                    onPressed: authProvider.isLoading ? null : () async {
+                      if (_formKey.currentState!.validate()) {
+                        await authProvider.login(
+                          _emailController.text.trim(),
+                          _passwordController.text.trim(),
+                        );
+
+                        if (authProvider.user != null) {
+                          Navigator.pushReplacementNamed(context, AppRoutes.wasteDetail);
+                        } else if (authProvider.errorMessage != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(authProvider.errorMessage!),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
                     },
-                    child: const CustomText(
+                    child: authProvider.isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const CustomText(
                       "Masuk Akun",
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

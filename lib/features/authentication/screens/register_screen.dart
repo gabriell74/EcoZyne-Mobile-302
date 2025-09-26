@@ -88,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   validator: (v) =>
-                      Validators.requiredField(v, fieldName: "Nama Pengguna"),
+                      Validators.username(v),
                 ),
                 const SizedBox(height: 15),
 
@@ -97,13 +97,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   controller: _nameController,
                   decoration: InputDecoration(
-                    hintText: "Nama Asli",
+                    hintText: "Nama",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   validator: (v) =>
-                      Validators.requiredField(v, fieldName: "Nama Asli"),
+                      Validators.name(v),
                 ),
                 const SizedBox(height: 15),
 
@@ -169,7 +169,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   validator: (v) =>
-                      Validators.requiredField(v, fieldName: "Alamat"),
+                      Validators.address(v),
                 ),
                 const SizedBox(height: 15),
 
@@ -232,6 +232,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
+
+                SizedBox(height: 20),
               ],
             ),
           ),
