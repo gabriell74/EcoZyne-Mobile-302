@@ -110,33 +110,38 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: authProvider.isLoading ? null : () async {
-                      if (_formKey.currentState!.validate()) {
-                        await authProvider.login(
-                          _emailController.text.trim(),
-                          _passwordController.text.trim(),
-                        );
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : () async {
+                            if (_formKey.currentState!.validate()) {
+                              await authProvider.login(
+                                _emailController.text.trim(),
+                                _passwordController.text.trim(),
+                              );
 
-                        if (authProvider.user != null) {
-                          Navigator.pushReplacementNamed(context, AppRoutes.wasteDetail);
-                        } else if (authProvider.errorMessage != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(authProvider.errorMessage!),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      }
-                    },
+                              if (authProvider.user != null) {
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.home,
+                                );
+                              } else if (authProvider.errorMessage != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(authProvider.errorMessage!),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          },
                     child: authProvider.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const CustomText(
-                      "Masuk Akun",
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                            "Masuk Akun",
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                   ),
                 ),
 

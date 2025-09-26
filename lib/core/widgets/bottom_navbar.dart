@@ -1,0 +1,39 @@
+import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class BottomNavBar extends StatelessWidget {
+  const BottomNavBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    NavigationProvider _navProvider = context.watch<NavigationProvider>();
+    return NavigationBar(
+      onDestinationSelected: (value) => _navProvider.setIndex(value),
+      selectedIndex: _navProvider.currentIndex,
+      backgroundColor: Colors.white,
+      destinations: [
+        const NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          label: 'Home',
+          selectedIcon: Icon(Icons.home),
+        ),
+        const NavigationDestination(
+          icon: Icon(Icons.store_outlined),
+          label: 'Marketplace',
+          selectedIcon: Icon(Icons.store),
+        ),
+        const NavigationDestination(
+          icon: Icon(Icons.redeem_outlined),
+          label: 'Hadiah',
+          selectedIcon: Icon(Icons.redeem),
+        ),
+        const NavigationDestination(
+          icon: Icon(Icons.person_outlined),
+          label: 'Profile',
+          selectedIcon: Icon(Icons.person),
+        ),
+      ],
+    );
+  }
+}
