@@ -36,6 +36,33 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void handleLogin() async {
+    final authProvider = context.read<AuthProvider>();
+
+    await authProvider.login(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    if (!context.mounted) return;
+
+    if (authProvider.user != null) {
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.home,
+      );
+    } else if (authProvider.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: CustomText(authProvider.errorMessage!, color: Colors.red,),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          backgroundColor: Colors.white,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
@@ -114,24 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? null
                         : () async {
                             if (_formKey.currentState!.validate()) {
-                              await authProvider.login(
-                                _emailController.text.trim(),
-                                _passwordController.text.trim(),
-                              );
-
-                              if (authProvider.user != null) {
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  AppRoutes.home,
-                                );
-                              } else if (authProvider.errorMessage != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(authProvider.errorMessage!),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
+                              handleLogin();
                             }
                           },
                     child: authProvider.isLoading

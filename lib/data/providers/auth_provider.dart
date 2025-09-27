@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/data/models/user.dart';
 import 'package:ecozyne_mobile/data/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
@@ -6,11 +7,11 @@ class AuthProvider with ChangeNotifier {
 
   bool _isLoading = false;
   String? _errorMessage;
-  Map<String, dynamic>? _user;
+  User? _user;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  Map<String, dynamic>? get user => _user;
+  User? get user => _user;
 
   Future<void> login(String email, String password) async {
     _isLoading = true;
@@ -20,7 +21,7 @@ class AuthProvider with ChangeNotifier {
     final result = await _authService.login(email, password);
 
     if (result["success"]) {
-      _user = result["data"]["user"];
+      _user = result["user"] as User;
       _errorMessage = null;
     } else {
       _user = null;
