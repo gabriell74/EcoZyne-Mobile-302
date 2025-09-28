@@ -7,10 +7,10 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    NavigationProvider _navProvider = context.watch<NavigationProvider>();
+    NavigationProvider navProvider = context.watch<NavigationProvider>();
     return NavigationBar(
-      onDestinationSelected: (value) => _navProvider.setIndex(value),
-      selectedIndex: _navProvider.currentIndex,
+      onDestinationSelected: (value) => navProvider.setIndex(value),
+      selectedIndex: navProvider.currentIndex,
       backgroundColor: Colors.white,
       destinations: [
         const NavigationDestination(

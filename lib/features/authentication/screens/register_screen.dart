@@ -78,34 +78,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 15),
 
                 // Username
-                TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    hintText: "Nama Pengguna",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          hintText: "Nama Pengguna",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (v) =>
+                            Validators.username(v),
+                      ),
                     ),
-                  ),
-                  validator: (v) =>
-                      Validators.username(v),
+
+                    const SizedBox(width: 15),
+
+                    // Nama asli
+                    Expanded(
+                      child: TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          hintText: "Nama",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (v) =>
+                            Validators.name(v),
+                      ),
+                    ),],
                 ),
                 const SizedBox(height: 15),
 
-                // Nama asli
-                TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: "Nama",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  validator: (v) =>
-                      Validators.name(v),
-                ),
-                const SizedBox(height: 15),
+
 
                 // Email
                 TextFormField(
@@ -135,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPressed: () => setState(() => _isObscure = !_isObscure),
                       icon: Icon(
                         Icons.remove_red_eye_rounded,
-                        color: _isObscure ? Colors.grey : Colors.lightGreen,
+                        color: _isObscure ? Colors.grey : Color(0xFF649B71),
                       ),
                     ),
                   ),
@@ -233,7 +243,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomText(
+                      "Sudah Punya Akun? ",
+                      color: Colors.grey.shade500,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const CustomText(
+                        "Login",
+                        color: Color(0xFF649B71),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
               ],
             ),
           ),

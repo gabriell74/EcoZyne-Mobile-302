@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class FloatingLogo extends StatefulWidget {
-  final double height = 15;
-  const FloatingLogo({super.key});
+  final double height;
+  const FloatingLogo({super.key, this.height = 15});
 
   @override
   State<FloatingLogo> createState() => _FloatingLogoState();

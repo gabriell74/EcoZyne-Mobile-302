@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () => setState(() => _isObscure = !_isObscure),
                       icon: Icon(
                         Icons.remove_red_eye_rounded,
-                        color: _isObscure ? Colors.grey : Colors.lightGreen,
+                        color: _isObscure ? Colors.grey : Color(0xFF649B71),
                       ),
                     ),
                     hintText: "Kata Sandi",
@@ -138,20 +138,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 55,
                   child: ElevatedButton(
                     onPressed: authProvider.isLoading
-                        ? null
-                        : () async {
-                            if (_formKey.currentState!.validate()) {
-                              handleLogin();
-                            }
-                          },
+                      ? null
+                      : () async {
+                          if (_formKey.currentState!.validate()) {
+                            handleLogin();
+                          }
+                        },
                     child: authProvider.isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const CustomText(
-                            "Masuk Akun",
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const CustomText(
+                          "Masuk Akun",
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                   ),
                 ),
 
