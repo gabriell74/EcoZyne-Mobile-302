@@ -24,19 +24,34 @@ class HomeScreen extends StatelessWidget {
     final NavigationProvider navProvider = context.watch<NavigationProvider>();
     return Scaffold(
       appBar: AppBar(
-        leading: Image.asset("assets/images/logo.png"),
+        // biar bisa atur jarak sendiri
+        automaticallyImplyLeading: false,
         elevation: 1,
         shadowColor: Colors.grey.withValues(alpha: 0.5),
-        title: AnimatedGradientText(
-          "Eco Enzyne",
-          colors: [Colors.green, Colors.blue],
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        titleSpacing: 0, // biar nempel kiri
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 13,
+                right: 1,
+              ), // jarak kiri & kanan logo
+              child: Image.asset(
+                "assets/images/logo.png",
+                width: 65, // gedein logo (misal 48px)
+                height: 65,
+                fit: BoxFit.contain,
+              ),
+            ),
+            AnimatedGradientText(
+              "Eco Enzyne",
+              colors: [Colors.green, Colors.blue],
+              style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
+
       bottomNavigationBar: BottomNavBar(),
       body: _screens[navProvider.currentIndex],
     );
