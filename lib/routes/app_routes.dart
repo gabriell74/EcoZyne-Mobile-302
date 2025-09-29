@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/features/articles/screens/articles_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/register_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/login_screen.dart';
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
@@ -13,6 +14,7 @@ class AppRoutes {
   static const String register = '/register';
   static const String wasteDetail = '/waste-detail';
   static const String dashboard = 'dashboard';
+  static const String articles = '/articles';
 
   static Map<String, WidgetBuilder> routes = {
     // getStarted: (context) => GetStartedScreen(),
@@ -21,5 +23,6 @@ class AppRoutes {
     register: (context) => RegisterScreen(),
     wasteDetail: (context) => WasteDetailScreen(),
     dashboard: (context) => DashboardScreen(),
+    articles: (context) => ArticlesScreen(),
   };
 }
