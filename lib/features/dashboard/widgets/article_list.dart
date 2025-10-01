@@ -5,10 +5,11 @@ class ArticleList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.sizeOf(context);
+
     return Column(
       children: [
         const SizedBox(height: 24),
-        // Header Artikel + See All
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 9.0),
           child: Row(
@@ -28,47 +29,49 @@ class ArticleList extends StatelessWidget {
           ),
         ),
 
-        // List artikel horizontal
         SizedBox(
-          height: 150,
-          child: ListView(
+          height: screenSize.height * 0.17,
+          child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            children: [
-              _buildArticleCard("eco-enzyme", Colors.green),
-              _buildArticleCard("eco-enzyme", Colors.orange),
-              _buildArticleCard("eco-enzyme", Colors.blue),
-            ],
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return Container(
+                width: screenSize.width * 0.55,
+                margin: const EdgeInsets.only(left: 8, right: 8),
+                child: Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: screenSize.height * 0.118, width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/cover1.png"),
+                            fit: BoxFit.cover
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Eco Enzyme",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _buildArticleCard(String title, Color color) {
-    return Container(
-      width: 200,
-      margin: const EdgeInsets.only(left: 8, right: 8),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // gambar placeholder pakai warna
-            Container(height: 100, width: double.infinity, color: color),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
