@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/bottom_navbar.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
@@ -24,21 +25,20 @@ class HomeScreen extends StatelessWidget {
     final NavigationProvider navProvider = context.watch<NavigationProvider>();
     return Scaffold(
       appBar: AppBar(
-        // biar bisa atur jarak sendiri
         automaticallyImplyLeading: false,
         elevation: 1,
         shadowColor: Colors.grey.withValues(alpha: 0.5),
-        titleSpacing: 0, // biar nempel kiri
+        titleSpacing: 0,
         title: Row(
           children: [
             Padding(
               padding: const EdgeInsets.only(
                 left: 13,
                 right: 1,
-              ), // jarak kiri & kanan logo
+              ),
               child: Image.asset(
                 "assets/images/logo.png",
-                width: 65, // gedein logo (misal 48px)
+                width: 65,
                 height: 65,
                 fit: BoxFit.contain,
               ),
@@ -51,9 +51,9 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-
+    
       bottomNavigationBar: BottomNavBar(),
-      body: _screens[navProvider.currentIndex],
+      body: AppBackground(child: _screens[navProvider.currentIndex]),
     );
   }
 }
