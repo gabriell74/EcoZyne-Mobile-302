@@ -21,7 +21,7 @@ class ArticleList extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  // TODO: Arahkan ke halaman semua artikel
+                  Navigator.pushNamed(context, "/articles");
                 },
                 child: const Text("See All"),
               ),
@@ -30,7 +30,7 @@ class ArticleList extends StatelessWidget {
         ),
 
         SizedBox(
-          height: screenSize.height * 0.17,
+          height: 160,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: 3,
@@ -39,17 +39,20 @@ class ArticleList extends StatelessWidget {
                 width: screenSize.width * 0.55,
                 margin: const EdgeInsets.only(left: 8, right: 8),
                 child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   clipBehavior: Clip.antiAlias,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: screenSize.height * 0.118, width: double.infinity,
+                        height: 100,
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage("assets/images/cover1.png"),
-                            fit: BoxFit.cover
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
@@ -73,5 +76,4 @@ class ArticleList extends StatelessWidget {
       ],
     );
   }
-
 }

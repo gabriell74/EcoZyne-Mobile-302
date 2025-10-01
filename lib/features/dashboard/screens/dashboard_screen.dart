@@ -31,7 +31,6 @@ class DashboardScreen extends StatelessWidget {
             const CategoryMenu(),
 
             const ArticleList(),
-
           ],
         ),
       ),
