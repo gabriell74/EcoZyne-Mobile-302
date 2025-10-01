@@ -26,11 +26,7 @@ class EcoApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'EcoZyne',
       theme: AppTheme.lightTheme,
-<<<<<<< HEAD
       initialRoute: AppRoutes.home,
-=======
-      initialRoute: AppRoutes.articles,
->>>>>>> ed20cb4809e7f953de2ef32ebf77314bcc94adbd
       routes: AppRoutes.routes,
     );
   }
