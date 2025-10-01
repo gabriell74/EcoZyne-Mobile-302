@@ -24,7 +24,7 @@ class AuthService {
     } on DioException catch (e) {
       if (e.response != null) {
         return {
-          "success": e.response?.data["success"],
+          "success": e.response?.data["success"] ?? false,
           "message": e.response?.data["message"] ?? "Login gagal",
         };
       } else {
