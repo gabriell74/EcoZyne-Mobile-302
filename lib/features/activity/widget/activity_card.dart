@@ -14,14 +14,15 @@ class ActivityCard extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: CustomText(
-                "Berhasil Mendaftar",
+                "Berhasil Mendaftar di Tanam Pohon Bersama",
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                color: Colors.black,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
               behavior: SnackBarBehavior.floating,
+              backgroundColor: Color(0xFF649B71),
             ),
           );
           Navigator.pop(context);
@@ -45,7 +46,7 @@ class ActivityCard extends StatelessWidget {
             height: screenSize.height * 0.22,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/images/cover1.png"),
+                image: AssetImage("assets/images/cover3.png"),
                 fit: BoxFit.cover,
               ),
             ),
@@ -62,7 +63,13 @@ class ActivityCard extends StatelessWidget {
                   maxLines: 2,
                   fontWeight: FontWeight.bold,
                 ),
-                CustomText("Batam", color: Colors.grey, fontSize: 12),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on, size: 14, color: Colors.green),
+                    const SizedBox(width: 4),
+                    CustomText("Batam", color: Colors.grey, fontSize: 12),
+                  ],
+                ),
                 CustomText(
                   "12 Agustus 2025, 14.30",
                   color: Colors.grey,

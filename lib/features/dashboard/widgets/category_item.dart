@@ -17,29 +17,28 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 28,
+    return Column(
+      children: [
+        Material(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: 50,
+              height: 50,
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 28,
+              ),
             ),
           ),
-          
-          const SizedBox(height: 4),
-          
-          CustomText(label, fontSize: 12,),
-        ],
-      ),
+        ),
+        const SizedBox(height: 4),
+        CustomText(label, fontSize: 12),
+      ],
     );
   }
 }

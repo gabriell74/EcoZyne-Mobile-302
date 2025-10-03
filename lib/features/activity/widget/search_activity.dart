@@ -22,10 +22,11 @@ class _SearchActivityState extends State<SearchActivity> {
   Widget build(BuildContext context) {
     return SearchBar(
       controller: _controller,
-      hintText: "Cari artikel...",
+      hintText: "Cari kegiatan...",
       backgroundColor: const WidgetStatePropertyAll(Colors.white),
       elevation: const WidgetStatePropertyAll(1),
       leading: const Icon(Icons.search_rounded),
+      shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
       onSubmitted: (value) {
         if (widget.onSearch != null) {
           widget.onSearch!(value);

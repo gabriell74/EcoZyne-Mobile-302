@@ -76,7 +76,7 @@ class _CarouselVideoState extends State<CarouselVideo> {
               width: _currentPage == index ? 8 : 6,
               height: _currentPage == index ? 8 : 6,
               decoration: BoxDecoration(
-                color: _currentPage == index ? Colors.black : Colors.grey,
+                color: _currentPage == index ? Color(0xFF649B71) : Colors.grey,
                 shape: BoxShape.circle,
               ),
             ),

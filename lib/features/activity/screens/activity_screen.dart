@@ -1,6 +1,9 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/activity/widget/activity_card.dart';
+import 'package:ecozyne_mobile/features/activity/widget/activity_header.dart';
+import 'package:ecozyne_mobile/features/activity/widget/favorite_activity.dart';
+import 'package:ecozyne_mobile/features/activity/widget/filter_activity.dart';
 import 'package:ecozyne_mobile/features/activity/widget/search_activity.dart';
 import 'package:flutter/material.dart';
 
@@ -21,19 +24,56 @@ class ActivityScreen extends StatelessWidget {
       body: AppBackground(
         child: Padding(
           padding: const EdgeInsets.all(13.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 11),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SearchActivity(),
 
-              Expanded(
-                child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
+                    const SizedBox(height: 30),
+
+                    ActivityHeader(),
+
+                    const SizedBox(height: 25),
+                    
+                    const CustomText(
+                      "Kegiatan Unggulan",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+
+                    const SizedBox(height: 11),
+
+                    
+                    FavoriteActivity(),
+                    const SizedBox(height: 30),
+
+                    const CustomText(
+                      "Jelajahi Kegiatan",
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 11),
+
+                    FilterActivity(),
+
+                    const SizedBox(height: 8),
+
+                  ],
+                ),
+              ),
+
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      padding: const EdgeInsets.only(bottom: 16.0),
                       child: ActivityCard(),
                     );
                   },
+                  childCount: 9,
                 ),
               ),
             ],
