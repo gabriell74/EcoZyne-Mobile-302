@@ -10,16 +10,18 @@ class CategoryMenu extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         CategoryItem(
-          color: Color(0xFFDC9497), 
-          label: "Bank Sampah", 
-          icon: Icons.recycling_outlined, 
+          color: Color(0xFFDC9497),
+          label: "Bank Sampah",
+          icon: Icons.recycling_outlined,
           onTap: () {},
         ),
         CategoryItem(
-            color: Color(0xFF649B71),
-            label: "Kegiatan",
-            icon: Icons.volunteer_activism_outlined,
-            onTap: () {},
+          color: Color(0xFF649B71),
+          label: "Kegiatan",
+          icon: Icons.volunteer_activism_outlined,
+          onTap: () {
+            Navigator.pushNamed(context, '/activity');
+          },
         ),
         CategoryItem(
           color: Color(0xFFF5AD7E),

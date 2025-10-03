@@ -13,9 +13,7 @@ class ArticleCard extends StatelessWidget {
 
     return Card(
       elevation: 10,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: GestureDetector(
         onTap: () {
           Navigator.pushNamed(context, "");
@@ -36,7 +34,7 @@ class ArticleCard extends StatelessWidget {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/images/cover1.png"),
-                  fit: BoxFit.cover
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
