@@ -3,6 +3,9 @@ import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
+import 'package:ecozyne_mobile/data/models/region.dart';
+import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
+import 'package:ecozyne_mobile/data/providers/region_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,10 +25,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late TextEditingController _passwordController;
   late TextEditingController _whatsappNumController;
   late TextEditingController _addressController;
+  late TextEditingController _postalCodeController;
 
   bool _isObscure = true;
-  String? _selectedKecamatan;
-  String? _selectedKelurahan;
+  Kecamatan? _selectedKecamatan;
+  Kelurahan? _selectedKelurahan;
 
   @override
   void initState() {
@@ -36,6 +40,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController = TextEditingController();
     _whatsappNumController = TextEditingController();
     _addressController = TextEditingController();
+    _postalCodeController = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<RegionProvider>(context, listen: false).loadRegions();
+    });
   }
 
   @override
@@ -46,11 +55,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _whatsappNumController.dispose();
     _addressController.dispose();
+    _postalCodeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final regionProvider = Provider.of<RegionProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
     final screenSize = MediaQuery.sizeOf(context);
 
     return Scaffold(
@@ -77,50 +89,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 15),
 
-                // Username
+                // Username & Nama
                 Row(
                   children: [
                     Expanded(
                       child: TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: _usernameController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           hintText: "Nama Pengguna",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (v) =>
-                            Validators.username(v),
+                        validator: Validators.username,
                       ),
                     ),
-
                     const SizedBox(width: 15),
-
-                    // Nama asli
                     Expanded(
                       child: TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: _nameController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
                           hintText: "Nama",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (v) =>
-                            Validators.name(v),
+                        validator: Validators.name,
                       ),
-                    ),],
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 15),
 
-
-
                 // Email
                 TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   controller: _emailController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                     hintText: "Email",
                     border: OutlineInputBorder(
@@ -133,20 +139,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 // Password
                 TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   controller: _passwordController,
                   obscureText: _isObscure,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                     hintText: "Kata Sandi",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     suffixIcon: IconButton(
-                      onPressed: () => setState(() => _isObscure = !_isObscure),
                       icon: Icon(
                         Icons.remove_red_eye_rounded,
-                        color: _isObscure ? Colors.grey : Color(0xFF649B71),
+                        color: _isObscure ? Colors.grey : const Color(0xFF649B71),
                       ),
+                      onPressed: () => setState(() => _isObscure = !_isObscure),
                     ),
                   ),
                   validator: Validators.password,
@@ -155,9 +161,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 // WhatsApp
                 TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   controller: _whatsappNumController,
                   keyboardType: TextInputType.phone,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                     hintText: "No WhatsApp",
                     border: OutlineInputBorder(
@@ -170,16 +176,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 // Alamat
                 TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   controller: _addressController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                     hintText: "Alamat",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  validator: (v) =>
-                      Validators.address(v),
+                  validator: Validators.address,
+                ),
+                const SizedBox(height: 15),
+
+                // Postal Code
+                TextFormField(
+                  controller: _postalCodeController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "Kode Pos",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: (v) => v == null || v.isEmpty ? "Kode pos wajib diisi" : null,
                 ),
                 const SizedBox(height: 15),
 
@@ -187,54 +207,112 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: DropdownButtonFormField<String>(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        initialValue: _selectedKecamatan,
+                      child: regionProvider.kecamatanList.isEmpty
+                          ? const Center(child: CircularProgressIndicator())
+                          : DropdownButtonFormField<Kecamatan>(
                         decoration: const InputDecoration(
                           labelText: "Kecamatan",
                           border: OutlineInputBorder(),
                         ),
-                        items: ["A", "B", "C"]
-                            .map(
-                              (e) => DropdownMenuItem(value: e, child: Text(e)),
-                            )
+                        initialValue: _selectedKecamatan,
+                        isExpanded: true,
+                        items: regionProvider.kecamatanList
+                            .map((kec) => DropdownMenuItem<Kecamatan>(
+                          value: kec,
+                          child: Text(kec.kecamatan, overflow: TextOverflow.ellipsis),
+                        ))
                             .toList(),
-                        onChanged: (value) =>
-                            setState(() => _selectedKecamatan = value),
+                        onChanged: (kec) {
+                          setState(() {
+                            _selectedKecamatan = kec;
+                            _selectedKelurahan = null;
+                          });
+                          regionProvider.selectKecamatan(kec);
+                        },
                         validator: (v) => v == null ? "Pilih Kecamatan" : null,
                       ),
                     ),
                     const SizedBox(width: 15),
                     Expanded(
-                      child: DropdownButtonFormField<String>(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        initialValue: _selectedKelurahan,
+                      child: _selectedKecamatan == null
+                          ? const Text("Pilih Kecamatan dulu")
+                          : DropdownButtonFormField<Kelurahan>(
                         decoration: const InputDecoration(
                           labelText: "Kelurahan",
                           border: OutlineInputBorder(),
                         ),
-                        items: ["A", "B", "C"]
-                            .map(
-                              (e) => DropdownMenuItem(value: e, child: Text(e)),
-                            )
+                        initialValue: _selectedKelurahan,
+                        isExpanded: true,
+                        items: regionProvider.kelurahanList
+                            .map((kel) => DropdownMenuItem<Kelurahan>(
+                          value: kel,
+                          child: Text(kel.kelurahan, overflow: TextOverflow.ellipsis),
+                        ))
                             .toList(),
-                        onChanged: (value) =>
-                            setState(() => _selectedKelurahan = value),
+                        onChanged: (kel) => setState(() => _selectedKelurahan = kel),
                         validator: (v) => v == null ? "Pilih Kelurahan" : null,
                       ),
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 20),
 
+                // Tombol Daftar
                 SizedBox(
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _formKey.currentState!.validate();
+                    onPressed: authProvider.isLoading
+                        ? null
+                        : () async {
+                      if (_formKey.currentState!.validate()) {
+                        if (_selectedKecamatan == null || _selectedKelurahan == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Pilih kecamatan & kelurahan')),
+                          );
+                          return;
+                        }
+
+                        await authProvider.register(
+                          username: _usernameController.text,
+                          name: _nameController.text,
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                          phoneNumber: _whatsappNumController.text,
+                          address: _addressController.text,
+                          postalCode: _postalCodeController.text,
+                          kecamatanId: _selectedKecamatan!.id,
+                          kelurahanId: _selectedKelurahan!.id,
+                        );
+
+                        final message = authProvider.message;
+
+                        if (message != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: CustomText(message, color: Colors.red,),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              backgroundColor: Colors.white,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: CustomText(message!, color: Colors.green,),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              backgroundColor: Colors.white,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          Navigator.pop(context);
+                        }
+                      }
                     },
-                    child: const CustomText(
+                    child: authProvider.isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const CustomText(
                       "Daftar Akun",
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -253,9 +331,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       color: Colors.grey.shade500,
                     ),
                     GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
+                      onTap: () => Navigator.pop(context),
                       child: const CustomText(
                         "Login",
                         color: Color(0xFF649B71),
@@ -264,9 +340,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 20),
-
               ],
             ),
           ),
