@@ -12,11 +12,11 @@ class AuthService {
         data: {"email": email, "password": password},
       );
 
-      if (response.statusCode == 200) {
-        final User user = User.fromJson(response.data["user"]);
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        final user = User.fromJson(response.data["user"]);
         return {
           "success": true,
-          "message": response.data["message"],
+          "message": response.data["message"] ?? "Login berhasil",
           "user": user,
         };
       } else {
@@ -26,15 +26,24 @@ class AuthService {
         };
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        final data = e.response?.data;
+      final res = e.response;
+
+      if (res != null && res.data is Map<String, dynamic>) {
         return {
           "success": false,
-          "message": data["message"] ?? "Login gagal",
+          "message": res.data["message"] ?? "Terjadi kesalahan saat login",
         };
       } else {
-        return {"success": false, "message": "Tidak ada koneksi ke server"};
+        return {
+          "success": false,
+          "message": "Tidak ada koneksi ke server",
+        };
       }
+    } catch (_) {
+      return {
+        "success": false,
+        "message": "Terjadi kesalahan tak terduga",
+      };
     }
   }
 
@@ -62,7 +71,7 @@ class AuthService {
         'kelurahan': kelurahanId,
       });
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201 || response.data["success"] == true) {
         return {
           "success": true,
           "message": response.data["message"] ?? "Registrasi berhasil",
@@ -74,15 +83,30 @@ class AuthService {
         };
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode == 422) {
+      final res = e.response;
+
+      if (res?.statusCode == 422) {
         return {
           "success": false,
-          "message": e.response?.data["message"] ?? "Validasi gagal",
-          "errors": e.response?.data["errors"],
+          "message": res?.data["message"] ?? "Validasi gagal",
+          "errors": res?.data["errors"],
+        };
+      } else if (res != null && res.data is Map<String, dynamic>) {
+        return {
+          "success": false,
+          "message": res.data["message"] ?? "Registrasi gagal",
         };
       } else {
-        return {"success": false, "message": "Tidak ada koneksi ke server"};
+        return {
+          "success": false,
+          "message": "Tidak ada koneksi ke server",
+        };
       }
+    } catch (_) {
+      return {
+        "success": false,
+        "message": "Terjadi kesalahan tak terduga",
+      };
     }
   }
 }

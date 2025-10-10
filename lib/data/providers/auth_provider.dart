@@ -23,20 +23,20 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     _isLoading = true;
-    _message = null;
     _success = false;
+    _message = null;
     _user = null;
     notifyListeners();
 
     final result = await _authService.login(email, password);
 
-    if (result["success"] == true && result["user"] != null) {
-      _user = User.fromJson(result["user"]);
+    if (result["success"] == true) {
+      _user = result["user"];
       _success = true;
-      _message = null;
+      _message = result["message"] ?? "Login berhasil";
     } else {
-      _message = result["message"];
       _success = false;
+      _message = result["message"] ?? "Login gagal";
     }
 
     _isLoading = false;
@@ -55,8 +55,8 @@ class AuthProvider with ChangeNotifier {
     required int kelurahanId,
   }) async {
     _isLoading = true;
-    _message = null;
     _success = false;
+    _message = null;
     notifyListeners();
 
     final result = await _authService.register(
@@ -74,19 +74,18 @@ class AuthProvider with ChangeNotifier {
     if (result['success'] == true) {
       Validators.clearServerErrors();
       _success = true;
-      _message = result['message'];
+      _message = result['message'] ?? "Registrasi berhasil";
     } else {
+      _success = false;
       if (result['errors'] != null) {
         Validators.setServerErrors(result['errors']);
         _message = "Validasi gagal, periksa kembali input kamu.";
       } else {
         Validators.clearServerErrors();
-        _message = result['message'];
+        _message = result['message'] ?? "Registrasi gagal";
       }
-      _success = false;
     }
 
-    _success = true;
     _isLoading = false;
     notifyListeners();
   }
