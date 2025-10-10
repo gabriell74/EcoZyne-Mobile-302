@@ -6,6 +6,7 @@ import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/data/models/region.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/region_provider.dart';
+import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -101,6 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          errorText: Validators.validationError('username')
                         ),
                         validator: Validators.username,
                       ),
@@ -115,6 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          errorText: Validators.validationError('nama')
                         ),
                         validator: Validators.name,
                       ),
@@ -132,8 +135,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    errorText: Validators.validationError('email')
                   ),
                   validator: Validators.email,
+                  onChanged: (_) => Validators.clearFieldError('email'),
                 ),
                 const SizedBox(height: 15),
 
@@ -147,6 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    errorText: Validators.validationError('password'),
                     suffixIcon: IconButton(
                       icon: Icon(
                         Icons.remove_red_eye_rounded,
@@ -169,6 +175,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                  errorText: Validators.validationError('phone_number')
                   ),
                   validator: Validators.whatsapp,
                 ),
@@ -183,6 +190,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    errorText: Validators.validationError('address')
                   ),
                   validator: Validators.address,
                 ),
@@ -198,8 +206,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    errorText: Validators.validationError('postal_code')
                   ),
-                  validator: (v) => v == null || v.isEmpty ? "Kode pos wajib diisi" : null,
+                  validator: Validators.postalCode,
                 ),
                 const SizedBox(height: 15),
 
@@ -207,9 +216,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: regionProvider.kecamatanList.isEmpty
-                          ? const Center(child: CircularProgressIndicator())
-                          : DropdownButtonFormField<Kecamatan>(
+                      child: DropdownButtonFormField<Kecamatan>(
                         decoration: const InputDecoration(
                           labelText: "Kecamatan",
                           border: OutlineInputBorder(),
@@ -286,13 +293,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           kelurahanId: _selectedKelurahan!.id,
                         );
 
+                        if (!mounted) return;
+
                         final message = authProvider.message;
 
-                        if (message != null) {
+                        if (authProvider.success == false) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: CustomText(message, color: Colors.red,),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              content: CustomText(message as String, color: Colors.red),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15)
+                              ),
                               backgroundColor: Colors.white,
                               behavior: SnackBarBehavior.floating,
                             ),
@@ -300,13 +311,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: CustomText(message!, color: Colors.green,),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              content: const CustomText(
+                                'Pendaftaran berhasil! Silakan login.',
+                                color: Colors.green,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15)),
                               backgroundColor: Colors.white,
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
-                          Navigator.pop(context);
+
+                          await Future.delayed(const Duration(seconds: 1));
+
+                          if (!mounted) return;
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            AppRoutes.login,
+                            (route) => false,
+                          );
                         }
                       }
                     },

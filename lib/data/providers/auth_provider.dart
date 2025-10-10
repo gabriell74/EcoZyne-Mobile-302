@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/utils/validators.dart';
 import 'package:ecozyne_mobile/data/models/user.dart';
 import 'package:ecozyne_mobile/data/services/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,6 @@ class AuthProvider with ChangeNotifier {
   String? get message => _message;
   User? get user => _user;
 
-  int? _expiredUserId;
-  int? get expiredUserId => _expiredUserId;
-
   void clearErrorMessage() {
     _message = null;
     notifyListeners();
@@ -27,7 +25,6 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     _message = null;
     _success = false;
-    _expiredUserId = null;
     _user = null;
     notifyListeners();
 
@@ -37,10 +34,6 @@ class AuthProvider with ChangeNotifier {
       _user = User.fromJson(result["user"]);
       _success = true;
       _message = null;
-    } else if (result["message"] == "Password expired") {
-      _expiredUserId = result["data"]?["id"];
-      _message = result["message"];
-      _success = false;
     } else {
       _message = result["message"];
       _success = false;
@@ -79,13 +72,21 @@ class AuthProvider with ChangeNotifier {
     );
 
     if (result['success'] == true) {
+      Validators.clearServerErrors();
       _success = true;
       _message = result['message'];
     } else {
+      if (result['errors'] != null) {
+        Validators.setServerErrors(result['errors']);
+        _message = "Validasi gagal, periksa kembali input kamu.";
+      } else {
+        Validators.clearServerErrors();
+        _message = result['message'];
+      }
       _success = false;
-      _message = result['message'];
     }
 
+    _success = true;
     _isLoading = false;
     notifyListeners();
   }

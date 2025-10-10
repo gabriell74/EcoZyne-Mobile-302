@@ -28,14 +28,6 @@ class AuthService {
     } on DioException catch (e) {
       if (e.response != null) {
         final data = e.response?.data;
-        // handling password expired
-        if (data["message"] == "Password expired" && data["data"] != null) {
-          return {
-            "success": false,
-            "message": data["message"],
-            "user": data["data"],
-          };
-        }
         return {
           "success": false,
           "message": data["message"] ?? "Login gagal",
@@ -82,10 +74,11 @@ class AuthService {
         };
       }
     } on DioException catch (e) {
-      if (e.response != null) {
+      if (e.response?.statusCode == 422) {
         return {
           "success": false,
-          "message": e.response?.data["message"] ?? "Terjadi kesalahan saat registrasi",
+          "message": e.response?.data["message"] ?? "Validasi gagal",
+          "errors": e.response?.data["errors"],
         };
       } else {
         return {"success": false, "message": "Tidak ada koneksi ke server"};

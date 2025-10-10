@@ -131,33 +131,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                Visibility(
-                  visible: authProvider.message == 'Password expired',
-                  maintainSize: true,
-                  maintainAnimation: true,
-                  maintainState: true,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      const CustomText("Password sudah expired !", color: Colors.red,),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.change_password,
-                            arguments: authProvider.expiredUserId,
-                          );
-                        },
-                        child: const CustomText(
-                          "Ubah Password",
-                          color: Colors.green,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
                 SizedBox(height: screenSize.height * 0.12),
 
                 SizedBox(
