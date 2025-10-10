@@ -3,8 +3,10 @@ import 'package:ecozyne_mobile/features/articles/screens/articles_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/register_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/login_screen.dart';
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
+import 'package:ecozyne_mobile/features/dashboard/widgets/greeting_card.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_detail.dart';
 import 'package:ecozyne_mobile/features/home.dart';
+
 // import 'package:ecozyne_mobile/features/get_started_screen.dart';
 import 'package:flutter/material.dart';
 
