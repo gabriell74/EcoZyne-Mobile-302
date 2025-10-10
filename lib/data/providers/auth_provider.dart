@@ -30,7 +30,7 @@ class AuthProvider with ChangeNotifier {
 
     final result = await _authService.login(email, password);
 
-    if (result["success"] == true) {
+    if (result["success"] == true && result["user"] != null) {
       _user = result["user"];
       _success = true;
       _message = result["message"] ?? "Login berhasil";
