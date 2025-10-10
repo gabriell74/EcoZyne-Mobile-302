@@ -11,11 +11,11 @@ class ActivityHeader extends StatelessWidget {
       height: 130,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Color(0xFF649B71),
-        // image: DecorationImage(
-        //   image: AssetImage("assets/images/cover1.png"),
-        //   fit: BoxFit.cover,
-        // ),
+        // color: Color(0xFF649B71),
+        image: DecorationImage(
+          image: AssetImage("assets/images/activity_banner.jpeg"),
+          fit: BoxFit.cover,
+        ),
       ),
       child: Row(
         children:[

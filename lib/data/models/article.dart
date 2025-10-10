@@ -1,13 +1,13 @@
 class Article {
   final int id;
   final String title;
-  final String image;
+  final String photo;
   final String description;
 
   Article({
     required this.id,
     required this.title,
-    required this.image,
+    required this.photo,
     required this.description,
   });
 
@@ -15,7 +15,7 @@ class Article {
     return Article(
       id: json['id'],
       title: json['title'],
-      image: json['image'],
+      photo: json['photo'],
       description: json['description']
     );
   }

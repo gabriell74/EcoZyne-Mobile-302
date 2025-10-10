@@ -20,15 +20,21 @@ class ArticleProvider with ChangeNotifier {
     final result = await _articleService.getArticles();
 
     _isLoading = false;
-    _message = result["message"];
 
-    if(result["success"]) {
-      _articles = result["data"];
+    if (result["success"]) {
+      final data = result["data"];
+      if (data != null && data.isNotEmpty) {
+        _articles = data;
+        _message = "Berhasil mengambil artikel";
+      } else {
+        _articles = [];
+        _message = "Belum ada artikel yang tersedia";
+      }
     } else {
       _articles = [];
+      _message = result["message"] ?? "Gagal memuat artikel";
     }
 
     notifyListeners();
   }
-
 }

@@ -9,18 +9,26 @@ class ArticleService {
     try {
       final response = await _dio.get("/articles");
 
-      final List data = response.data["data"];
-      final articles = data.map((json) => Article.fromJson(json)).toList();
+      if (response.statusCode == 200) {
+        final List data = response.data["data"];
+        final articles = data.map((json) => Article.fromJson(json)).toList();
 
-      return {
-        "success": response.data["success"],
-        "message": response.data["message"],
-        "data": articles,
-      };
+        return {
+          "success": true,
+          "message": "Berhasil mengambil artikel",
+          "data": articles,
+        };
+      } else {
+        return {
+          "success": false,
+          "message": "Gagal load artikel",
+          "data": <Article>[],
+        };
+      }
     } on DioException catch (e) {
       if (e.response != null) {
         return {
-          "success": e.response?.data["success"] ?? false,
+          "success": false,
           "message": e.response?.data["message"] ?? "Gagal load artikel",
           "data": <Article>[],
         };

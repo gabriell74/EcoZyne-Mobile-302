@@ -43,7 +43,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                 child: Consumer<ArticleProvider>(
                   builder: (context, provider, child) {
                     if (provider.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator(strokeWidth: 2,));
                     }
 
                     if (provider.articles.isEmpty) {

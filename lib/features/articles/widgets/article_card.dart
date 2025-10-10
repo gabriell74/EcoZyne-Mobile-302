@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/models/article.dart';
 import 'package:flutter/material.dart';
@@ -12,41 +13,63 @@ class ArticleCard extends StatelessWidget {
     final screenSize = MediaQuery.sizeOf(context);
 
     return Card(
-      elevation: 10,
+      elevation: 6,
+      shadowColor: Colors.black.withValues(alpha: 0.2),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: GestureDetector(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
         onTap: () {
-          Navigator.pushNamed(context, "");
+          // Navigator.pushNamed(context, "/article-detail", arguments: article);
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(
+              height: screenSize.height * 0.22,
+              width: double.infinity,
+              child: CachedNetworkImage(
+                imageUrl: article.photo,
+                fit: BoxFit.cover,
+                fadeInDuration: const Duration(milliseconds: 400),
+                placeholder: (context, url) => Container(
+                  color: Colors.grey.shade200,
+                  child: const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey.shade100,
+                  child: const Center(
+                    child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                  ),
+                ),
+              ),
+            ),
+
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: CustomText(
                 article.title,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                maxLines: 2,
+                textOverflow: TextOverflow.ellipsis,
               ),
             ),
-            Container(
-              height: screenSize.height * 0.22,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/cover1.png"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: CustomText(
                 article.description,
                 fontSize: 15,
-                textOverflow: TextOverflow.ellipsis,
                 maxLines: 3,
+                textOverflow: TextOverflow.ellipsis,
+                color: Colors.black87,
               ),
             ),
+
+            const SizedBox(height: 10),
           ],
         ),
       ),
