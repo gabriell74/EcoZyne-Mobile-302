@@ -1,5 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 import 'package:ecozyne_mobile/features/articles/widgets/article_card.dart';
 import 'package:ecozyne_mobile/features/articles/widgets/search_article.dart';
@@ -43,7 +44,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                 child: Consumer<ArticleProvider>(
                   builder: (context, provider, child) {
                     if (provider.isLoading) {
-                      return const Center(child: CircularProgressIndicator(strokeWidth: 2,));
+                      return const LoadingWidget();
                     }
 
                     if (provider.articles.isEmpty) {

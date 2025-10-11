@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/models/article.dart';
+import 'package:ecozyne_mobile/features/articles/screens/article_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class ArticleCard extends StatelessWidget {
@@ -20,7 +21,13 @@ class ArticleCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // Navigator.pushNamed(context, "/article-detail", arguments: article);
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ArticleDetailScreen(
+                article: article,
+              ),
+            ),
+          );
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,20 +35,23 @@ class ArticleCard extends StatelessWidget {
             SizedBox(
               height: screenSize.height * 0.22,
               width: double.infinity,
-              child: CachedNetworkImage(
-                imageUrl: article.photo,
-                fit: BoxFit.cover,
-                fadeInDuration: const Duration(milliseconds: 400),
-                placeholder: (context, url) => Container(
-                  color: Colors.grey.shade200,
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
+              child: Hero(
+                tag: 'article-photo-tag-${article.id}',
+                child: CachedNetworkImage(
+                  imageUrl: article.photo,
+                  fit: BoxFit.cover,
+                  fadeInDuration: const Duration(milliseconds: 400),
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey.shade200,
+                    child: const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                   ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  color: Colors.grey.shade100,
-                  child: const Center(
-                    child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey.shade100,
+                    child: const Center(
+                      child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                    ),
                   ),
                 ),
               ),

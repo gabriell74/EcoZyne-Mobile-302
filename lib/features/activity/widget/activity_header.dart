@@ -15,21 +15,8 @@ class ActivityHeader extends StatelessWidget {
         image: DecorationImage(
           image: AssetImage("assets/images/activity_banner.jpeg"),
           fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
         ),
-      ),
-      child: Row(
-        children:[
-          Flexible(
-            flex: 50,
-            child: CustomText(
-              "Satukan Langkah, Wujudkan Kebersihan !",
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(width: 80)
-        ],
       ),
     );
   }

@@ -1,12 +1,30 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/models/article.dart';
+import 'package:ecozyne_mobile/data/providers/article_provider.dart';
+import 'package:ecozyne_mobile/features/articles/screens/article_detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ArticleList extends StatelessWidget {
+class ArticleList extends StatefulWidget {
   const ArticleList({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final screenSize = MediaQuery.sizeOf(context);
+  State<ArticleList> createState() => _ArticleListState();
+}
 
+class _ArticleListState extends State<ArticleList> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ArticleProvider>().fetchLatestArticles();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 24),
@@ -15,63 +33,97 @@ class ArticleList extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              const CustomText(
                 "Artikel",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, "/articles");
                 },
-                child: const Text("See All"),
+                child: const CustomText("Lihat Semua", color: Colors.blueGrey),
               ),
             ],
           ),
         ),
 
-        SizedBox(
-          height: 160,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return Container(
-                width: screenSize.width * 0.55,
-                margin: const EdgeInsets.only(left: 8, right: 8),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 100,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage("assets/images/cover1.png"),
-                            fit: BoxFit.cover,
+        Consumer<ArticleProvider>(
+          builder: (context, provider, child) {
+            return SizedBox(
+              height: 215,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: provider.latestArticles.length,
+                itemBuilder: (context, index) {
+                  final Article article = provider.latestArticles[index];
+
+                  return Container(
+                    width: 250,
+                    margin: const EdgeInsets.only(left: 6),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ArticleDetailScreen(
+                              article: article,
+                            ),
                           ),
+                        );
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 130,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: CachedNetworkImage(
+                                imageUrl: article.photo,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                                errorWidget: (context, url, error) => Center(
+                                  child: Icon(Icons.error),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top:8.0, left: 10.0),
+                              child: CustomText(
+                                article.title,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top:4.0, left: 10.0),
+                              child: CustomText(
+                                article.description,
+                                color: Colors.grey,
+                                fontSize: 12,
+                                maxLines: 2,
+                                textOverflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Eco Enzyme",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         ),
       ],
     );

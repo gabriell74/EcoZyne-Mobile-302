@@ -27,7 +27,9 @@ class CategoryMenu extends StatelessWidget {
           color: Color(0xFFF5AD7E),
           label: "Forum Diskusi",
           icon: Icons.question_answer_outlined,
-          onTap: () {},
+          onTap: () {
+            Navigator.pushNamed(context, '/discussion-forum');
+          },
         ),
         CategoryItem(
           color: Color(0xFFACA1CD),
