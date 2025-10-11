@@ -1,5 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/dashboard/widgets/article_list.dart';
+import 'package:ecozyne_mobile/features/dashboard/widgets/greeting_card.dart';
 import 'package:ecozyne_mobile/features/dashboard/widgets/carousel_video.dart';
 import 'package:ecozyne_mobile/features/dashboard/widgets/category_menu.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 15),
+
+            const GreetingCard(username: 'Vioni'),
 
             const CarouselVideo(),
 
