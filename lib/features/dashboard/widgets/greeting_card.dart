@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class GreetingCard extends StatelessWidget {
   final String username;
 
-  const GreetingCard({super.key, required this.username});
+  const GreetingCard({super.key, this.username = "User"});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class GreetingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 6,
             offset: const Offset(0, 3),
           ),
@@ -27,7 +27,7 @@ class GreetingCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -38,7 +38,6 @@ class GreetingCard extends StatelessWidget {
           ),
           const SizedBox(width: 14),
 
-          // Teks ucapan
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

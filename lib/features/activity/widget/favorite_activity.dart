@@ -10,7 +10,7 @@ class FavoriteActivity extends StatelessWidget {
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
-      child: Container(
+      child: SizedBox(
         height: 130,
         child: InkWell(
           onTap: () {},

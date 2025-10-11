@@ -27,7 +27,6 @@ class _ArticleListState extends State<ArticleList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 24),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 9.0),
           child: Row(
