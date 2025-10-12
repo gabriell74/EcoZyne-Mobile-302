@@ -13,20 +13,38 @@ class ActivityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: CustomText(
-          "Kegiatan Sosial",
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),
-      ),
       body: AppBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(13.0),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 100,
+              backgroundColor: const Color(0xFF55C173),
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
+                title: const Text(
+                  "Kegiatan",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                centerTitle: true,
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF55C173), Color(0xFF2EB67D)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(13.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -37,7 +55,7 @@ class ActivityScreen extends StatelessWidget {
                     ActivityHeader(),
 
                     const SizedBox(height: 25),
-                    
+
                     const CustomText(
                       "Kegiatan Unggulan",
                       fontWeight: FontWeight.bold,
@@ -46,7 +64,7 @@ class ActivityScreen extends StatelessWidget {
 
                     const SizedBox(height: 11),
 
-                    
+
                     FavoriteActivity(),
                     const SizedBox(height: 30),
 
@@ -64,20 +82,20 @@ class ActivityScreen extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
 
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: ActivityCard(),
-                    );
-                  },
-                  childCount: 9,
-                ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: ActivityCard(),
+                  );
+                },
+                childCount: 9,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

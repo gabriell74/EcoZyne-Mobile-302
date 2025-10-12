@@ -19,52 +19,87 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
   @override
   void initState() {
     super.initState();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<ArticleProvider>().fetchArticles();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ArticleProvider>().fetchArticles();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: CustomText("Artikel", fontWeight: FontWeight.bold, fontSize: 24),
-      ),
       body: AppBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              SearchArticle(),
-
-              const SizedBox(height: 11),
-
-              Expanded(
-                child: Consumer<ArticleProvider>(
-                  builder: (context, provider, child) {
-                    if (provider.isLoading) {
-                      return const LoadingWidget();
-                    }
-
-                    if (provider.articles.isEmpty) {
-                      return Center(child: Text(provider.message));
-                    }
-
-                    return ListView.builder(
-                      itemCount: provider.articles.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: ArticleCard(article: provider.articles[index]),
-                        );
-                      },
-                    );
-                  },
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 100,
+              backgroundColor: const Color(0xFF55C173),
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
+                title: const CustomText(
+                  "Artikel",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.white,
+                ),
+                centerTitle: true,
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF55C173), Color(0xFF2EB67D)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(13.0),
+                child: SearchArticle(),
+              ),
+            ),
+
+            Consumer<ArticleProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: LoadingWidget(),
+                    ),
+                  );
+                }
+
+                if (provider.articles.isEmpty) {
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(provider.message),
+                      ),
+                    ),
+                  );
+                }
+
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                      final article = provider.articles[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 12.0),
+                        child: ArticleCard(article: article),
+                      );
+                    },
+                    childCount: provider.articles.length,
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
