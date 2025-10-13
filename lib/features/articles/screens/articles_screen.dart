@@ -1,5 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 import 'package:ecozyne_mobile/features/articles/widgets/article_card.dart';
@@ -59,7 +60,10 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Text(provider.message),
+                        child: EmptyState(
+                          connected: provider.connected,
+                          message: provider.message
+                        ),
                       ),
                     ),
                   );

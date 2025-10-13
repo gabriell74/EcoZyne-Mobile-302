@@ -8,11 +8,13 @@ class ArticleProvider with ChangeNotifier {
   List<Article> _latestArticles = [];
   List<Article> _articles = [];
   bool _isLoading = false;
+  bool _connected = true;
   String _message = "";
 
   List<Article> get articles => _articles;
   List<Article> get latestArticles => _latestArticles;
   bool get isLoading => _isLoading;
+  bool get connected => _connected;
   String get message => _message;
 
   Future<void> fetchArticles() async {
@@ -22,6 +24,7 @@ class ArticleProvider with ChangeNotifier {
     final result = await _articleService.getArticles();
 
     _isLoading = false;
+    _connected = result["connected"] ?? false;
 
     if (result["success"]) {
       final data = result["data"];
@@ -47,6 +50,7 @@ class ArticleProvider with ChangeNotifier {
     final result = await _articleService.getLatestArticles();
 
     _isLoading = false;
+    _connected = result["connected"] ?? false;
 
     if (result["success"]) {
       final data = result["data"];
