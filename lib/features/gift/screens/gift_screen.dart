@@ -140,6 +140,9 @@ class GiftScreen extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF55C173),
                                 foregroundColor: Colors.black,
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
