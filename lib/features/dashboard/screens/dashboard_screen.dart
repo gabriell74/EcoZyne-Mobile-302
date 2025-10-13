@@ -13,7 +13,7 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String authName = context.read<AuthProvider>().user!.username;
+    // String authName = context.read<AuthProvider>().user!.username;
 
     return SingleChildScrollView(
       child: Padding(
@@ -22,7 +22,7 @@ class DashboardScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 5),
 
-            GreetingCard(username: authName),
+            GreetingCard(username: "Vio"),
 
             const CarouselVideo(),
 
