@@ -5,7 +5,7 @@ import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_screen.dart';
 import 'package:ecozyne_mobile/features/marketplace/screens/marketplace_screen.dart';
-import 'package:ecozyne_mobile/features/profile/screens/profile_screen.dart';
+import 'package:ecozyne_mobile/features/profile/screens/account_screen.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
     DashboardScreen(),
     MarketplaceScreen(),
     GiftScreen(),
-    ProfileScreen(),
+    AccountScreen(),
   ];
 
   @override
