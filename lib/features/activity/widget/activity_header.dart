@@ -1,4 +1,3 @@
-import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class ActivityHeader extends StatelessWidget {

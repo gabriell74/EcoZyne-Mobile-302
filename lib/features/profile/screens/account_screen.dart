@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'edit_account_screen.dart';
 
 void main() {
   runApp(AccountScreen());
