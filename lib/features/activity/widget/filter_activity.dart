@@ -22,7 +22,7 @@ class _FilterActivityState extends State<FilterActivity> {
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: selectedFilter == "semua"
-                ? const Color(0xFF649B71)
+                ? const Color(0xFF55C173)
                 : Colors.white,
             foregroundColor: Colors.black
           ),
@@ -37,7 +37,7 @@ class _FilterActivityState extends State<FilterActivity> {
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: selectedFilter == "on going"
-                ? const Color(0xFF649B71)
+                ? const Color(0xFF55C173)
                 : Colors.white,
               foregroundColor: Colors.black
           ),

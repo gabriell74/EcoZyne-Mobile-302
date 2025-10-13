@@ -33,13 +33,6 @@ class ArticleDetailScreen extends StatelessWidget {
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
-              title: const CustomText(
-                'Artikel',
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-              ),
-              centerTitle: true,
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   fit: StackFit.expand,
@@ -130,7 +123,7 @@ class ArticleDetailScreen extends StatelessWidget {
         tag: 'article-photo-tag-${article.id}',
         child: CachedNetworkImage(
           imageUrl: article.photo,
-          fit: BoxFit.contain,
+          fit: BoxFit.cover,
           fadeInDuration: const Duration(milliseconds: 400),
           placeholder: (context, url) => Container(
             color: Colors.grey.shade200,
