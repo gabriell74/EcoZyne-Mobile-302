@@ -138,10 +138,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                     trailing: Icon(Icons.chevron_right, color: Colors.grey[500]),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EditAccountScreen()),
-                      );
+                  
                     },
                   ),
             Divider(height: 1, color: Colors.grey[300]),

@@ -89,10 +89,13 @@ class _ArticleListState extends State<ArticleList> {
                                 imageUrl: article.photo,
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => Center(
-                                  child: CircularProgressIndicator(),
+                                  child: CircularProgressIndicator(strokeWidth: 2,),
                                 ),
-                                errorWidget: (context, url, error) => Center(
-                                  child: Icon(Icons.error),
+                                errorWidget: (context, url, error) => Container(
+                                  color: Colors.grey.shade100,
+                                  child: const Center(
+                                    child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                                  ),
                                 ),
                               ),
                             ),

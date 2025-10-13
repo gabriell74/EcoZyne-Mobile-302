@@ -16,12 +16,14 @@ class ArticleService {
         return {
           "success": true,
           "message": "Berhasil mengambil artikel",
+          "connected": true,
           "data": articles,
         };
       } else {
         return {
           "success": false,
           "message": "Gagal load artikel",
+          "connected": true,
           "data": <Article>[],
         };
       }
@@ -30,12 +32,14 @@ class ArticleService {
         return {
           "success": false,
           "message": e.response?.data["message"] ?? "Gagal load artikel",
+          "connected": true, // tetap terkoneksi tapi gagal
           "data": <Article>[],
         };
       } else {
         return {
           "success": false,
           "message": "Tidak ada koneksi ke server",
+          "connected": false,
           "data": <Article>[],
         };
       }
@@ -53,12 +57,14 @@ class ArticleService {
         return {
           "success": true,
           "message": "Berhasil mengambil artikel",
+          "connected": true,
           "data": articles,
         };
       } else {
         return {
           "success": false,
           "message": "Gagal load artikel",
+          "connected": true,
           "data": <Article>[],
         };
       }
@@ -67,12 +73,14 @@ class ArticleService {
         return {
           "success": false,
           "message": e.response?.data["message"] ?? "Gagal load artikel",
+          "connected": true,
           "data": <Article>[],
         };
       } else {
         return {
           "success": false,
           "message": "Tidak ada koneksi ke server",
+          "connected": false,
           "data": <Article>[],
         };
       }
