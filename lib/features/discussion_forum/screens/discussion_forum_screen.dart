@@ -11,7 +11,7 @@ class DiscussionForumScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Forum DIskusi", fontWeight: FontWeight.bold,),
+        title: CustomText("Forum DIskusi", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFF7F8FA),
@@ -20,7 +20,9 @@ class DiscussionForumScreen extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 20, right: 10),
         child: FloatingActionButton(
           backgroundColor: const Color(0xFF55C173),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/question');
+          },
           child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
@@ -51,7 +53,7 @@ class DiscussionForumScreen extends StatelessWidget {
                 ),
               ),
             ),
-        
+
             SliverList(
               delegate: SliverChildListDelegate([
                 QuestionCard(),
@@ -61,8 +63,8 @@ class DiscussionForumScreen extends StatelessWidget {
                 QuestionCard(),
                 QuestionCard(),
                 QuestionCard(),
-        
-                SizedBox(height: 20,)
+
+                SizedBox(height: 20),
               ]),
             ),
           ],
