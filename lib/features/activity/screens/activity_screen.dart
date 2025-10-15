@@ -63,11 +63,15 @@ class ActivityScreen extends StatelessWidget {
               ),
             ),
 
-            SliverList(
+            SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.8,
+              ),
               delegate: SliverChildBuilderDelegate(
                     (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
+                    padding: const EdgeInsets.only(bottom: 16.0, right: 5, left: 5),
                     child: ActivityCard(),
                   );
                 },

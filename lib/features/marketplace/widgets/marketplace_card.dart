@@ -12,7 +12,7 @@ class MarketplaceCard extends StatelessWidget {
       elevation: 6,
       shadowColor: Colors.black.withValues(alpha: 0.5),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.0),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -31,7 +31,7 @@ class MarketplaceCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               child: CustomText(
                 item["name"]!,
                 fontSize: 18,
@@ -41,7 +41,7 @@ class MarketplaceCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: CustomText(
                 item["price"]!,
                 fontSize: 16,
@@ -49,6 +49,22 @@ class MarketplaceCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 textOverflow: TextOverflow.ellipsis,
                 color: Colors.black87,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(Icons.location_on, color: Colors.green,),
+                  SizedBox(width: 5,),
+                  Expanded(
+                    child: CustomText("Bank Sampah Poltek",
+                      textOverflow: TextOverflow.ellipsis,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

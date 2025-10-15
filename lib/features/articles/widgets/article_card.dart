@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/models/article.dart';
 import 'package:ecozyne_mobile/features/articles/screens/article_detail_screen.dart';
@@ -57,15 +58,31 @@ class ArticleCard extends StatelessWidget {
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: CustomText(
-                article.title,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                maxLines: 2,
-                textOverflow: TextOverflow.ellipsis,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: CustomText(
+                    article.title,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    maxLines: 2,
+                    textOverflow: TextOverflow.ellipsis,
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: CustomText(
+                    DateFormatter.formatDate(article.created_at),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    maxLines: 2,
+                    textOverflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
 
             Padding(

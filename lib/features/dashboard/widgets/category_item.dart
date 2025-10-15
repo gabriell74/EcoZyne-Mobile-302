@@ -26,8 +26,8 @@ class CategoryItem extends StatelessWidget {
             onTap: onTap,
             borderRadius: BorderRadius.circular(12),
             child: SizedBox(
-              width: 50,
-              height: 50,
+              width: 55,
+              height: 55,
               child: Icon(
                 icon,
                 color: Colors.white,
@@ -37,7 +37,7 @@ class CategoryItem extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        CustomText(label, fontSize: 12),
+        CustomText(label, fontSize: 12,),
       ],
     );
   }

@@ -43,6 +43,68 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
               ),
             ),
 
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(13.0),
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.0),
+                    color: const Color(0xFF55C173)
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: CustomText(
+                            "Punya pertanyaan seputar Eco Enzyme?",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            maxLines: 1,
+                            textOverflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xFF55C173),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            textStyle: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, '/discussion-forum');
+                          },
+                          child: const Text("Gabung Diskusi Komunitas"),
+                        ),
+                      ],
+                    )
+
+                  ),
+                ),
+              ),
+            ),
+            
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 8),
+                child: CustomText(
+                  "Jelajahi Artikel",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
+              ),
+            ),
+
             Consumer<ArticleProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
@@ -74,7 +136,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                         (context, index) {
                       final article = provider.articles[index];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 12.0),
+                        padding: const EdgeInsets.all(13.0),
                         child: ArticleCard(article: article),
                       );
                     },

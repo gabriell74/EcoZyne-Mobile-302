@@ -16,40 +16,27 @@ class ArticleDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: CustomText("Artikel", fontWeight: FontWeight.bold,),
+        centerTitle: true,
+      ),
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
+              forceMaterialTransparency: true,
               pinned: true,
-              expandedHeight: 260,
-              backgroundColor: Colors.white,
-              elevation: 0,
+              expandedHeight: 300,
               automaticallyImplyLeading: false,
               leading: Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
               ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
                     _buildHeroImage(),
-                    Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.center,
-                          colors: [
-                            Colors.black12,
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

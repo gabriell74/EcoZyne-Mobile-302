@@ -22,7 +22,7 @@ class _SearchArticleState extends State<SearchArticle> {
   Widget build(BuildContext context) {
     return SearchBar(
       controller: _controller,
-      hintText: "Cari artikel...",
+      hintText: "Cari artikel atau topik...",
       backgroundColor: const WidgetStatePropertyAll(Colors.white),
       elevation: const WidgetStatePropertyAll(1),
       leading: const Icon(Icons.search_rounded),

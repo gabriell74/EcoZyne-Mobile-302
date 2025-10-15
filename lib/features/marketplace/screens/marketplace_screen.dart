@@ -50,7 +50,7 @@ class MarketplaceScreen extends StatelessWidget {
             slivers: [
               const SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: EdgeInsets.all(8),
                   child: CustomText(
                     "Marketplace",
                     fontSize: 24,
@@ -64,6 +64,17 @@ class MarketplaceScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: MarketplaceSearchBar()
+                ),
+              ),
+
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: CustomText(
+                    "Produk Eco Enzyme",
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
 
