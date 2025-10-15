@@ -6,38 +6,75 @@ class CategoryMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        CategoryItem(
-          color: Color(0xFFDC9497),
-          label: "Bank Sampah",
-          icon: Icons.recycling_outlined,
-          onTap: () {},
-        ),
-        CategoryItem(
-          color: Color(0xFF649B71),
-          label: "Kegiatan",
-          icon: Icons.volunteer_activism_outlined,
-          onTap: () {
-            Navigator.pushNamed(context, '/activity');
-          },
-        ),
-        CategoryItem(
-          color: Color(0xFFF5AD7E),
-          label: "Forum Diskusi",
-          icon: Icons.question_answer_outlined,
-          onTap: () {
-            Navigator.pushNamed(context, '/discussion-forum');
-          },
-        ),
-        CategoryItem(
-          color: Color(0xFFACA1CD),
-          label: "Komik",
-          icon: Icons.book_outlined,
-          onTap: () {},
-        ),
-      ],
+    final List<Map<String, dynamic>> categories = [
+      {
+        'color': Color(0xFFDC9497),
+        'label': "Bank Sampah",
+        'icon': Icons.recycling_outlined,
+        'onTap': () {},
+      },
+      {
+        'color': Color(0xFF55C173),
+        'label': "Kegiatan",
+        'icon': Icons.volunteer_activism_outlined,
+        'onTap': () {
+          Navigator.pushNamed(context, '/activity');
+        },
+      },
+      {
+        'color': Color(0xFFF5AD7E),
+        'label': "Forum Diskusi",
+        'icon': Icons.question_answer_outlined,
+        'onTap': () {
+          Navigator.pushNamed(context, '/discussion-forum');
+        },
+      },
+      {
+        'color': Color(0xFFACA1CD),
+        'label': "Komik",
+        'icon': Icons.book_outlined,
+        'onTap': () {},
+      },
+      {
+        'color': Colors.purpleAccent,
+        'label': "Setoran",
+        'icon': Icons.upload,
+        'onTap': () {},
+      },
+      {
+        'color': Colors.pink,
+        'label': "Pesanan",
+        'icon': Icons.receipt_long,
+        'onTap': () {},
+      },
+      {
+        'color': Colors.blueGrey,
+        'label': "Riwayat",
+        'icon': Icons.history,
+        'onTap': () {},
+      },
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: categories.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+      ),
+      itemBuilder: (context, index) {
+        final item = categories[index];
+        return Column(
+          children: [
+            CategoryItem(
+              color: item['color'],
+              label: item['label'],
+              icon: item['icon'],
+              onTap: item['onTap'],
+            ),
+          ],
+        );
+      },
     );
   }
 }

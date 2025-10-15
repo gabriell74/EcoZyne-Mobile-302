@@ -44,8 +44,6 @@ class DashboardScreen extends StatelessWidget {
 
             LatestActivity(),
 
-            const Divider(),
-
             const SizedBox(height: 10),
 
             const ArticleList(),
