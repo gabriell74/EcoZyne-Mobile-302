@@ -38,7 +38,7 @@ class ArticleService {
       } else {
         return {
           "success": false,
-          "message": "Tidak ada koneksi ke server",
+          "message": "Tidak ada koneksi",
           "connected": false,
           "data": <Article>[],
         };
@@ -79,7 +79,7 @@ class ArticleService {
       } else {
         return {
           "success": false,
-          "message": "Tidak ada koneksi ke server",
+          "message": "Tidak ada koneksi",
           "connected": false,
           "data": <Article>[],
         };
