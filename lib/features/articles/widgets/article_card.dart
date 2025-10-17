@@ -72,14 +72,16 @@ class ArticleCard extends StatelessWidget {
                   ),
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: CustomText(
-                    DateFormatter.formatDate(article.created_at),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    maxLines: 2,
-                    textOverflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: CustomText(
+                      DateFormatter.formatDate(article.created_at),
+                      fontSize: 14,
+                      color: Colors.grey,
+                      maxLines: 2,
+                      textOverflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],
