@@ -7,14 +7,18 @@ class ArticleProvider with ChangeNotifier {
 
   List<Article> _latestArticles = [];
   List<Article> _articles = [];
+  List<Article> _filteredArticles = [];
+  bool _isSearching = false;
   bool _isLoading = false;
   bool _connected = true;
   String _message = "";
 
-  List<Article> get articles => _articles;
+  List<Article> get articles => _filteredArticles.isNotEmpty ? _filteredArticles : _articles;
+  List<Article> get filteredArticles => _filteredArticles;
   List<Article> get latestArticles => _latestArticles;
   bool get isLoading => _isLoading;
   bool get connected => _connected;
+  bool get isSearching => _isSearching;
   String get message => _message;
 
   Future<void> fetchArticles() async {
@@ -66,6 +70,27 @@ class ArticleProvider with ChangeNotifier {
       _message = result["message"] ?? "Gagal memuat artikel";
     }
 
+    notifyListeners();
+  }
+
+  void searchArticles(String query) {
+    _isSearching = true;
+    if (query.isEmpty) {
+      _filteredArticles = [];
+      _isSearching = false;
+    } else {
+      _filteredArticles = _articles
+          .where((article) =>
+            article.title.toLowerCase().contains(query.toLowerCase()) ||
+            article.description.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  void clearSearch() {
+    _isSearching = false;
+    _filteredArticles = [];
     notifyListeners();
   }
 }
