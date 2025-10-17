@@ -11,7 +11,7 @@ class DiscussionForumScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Forum DIskusi", fontWeight: FontWeight.bold),
+        title: CustomText("Forum Dskusi", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFF7F8FA),
