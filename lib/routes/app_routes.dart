@@ -3,6 +3,7 @@ import 'package:ecozyne_mobile/features/articles/screens/articles_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/register_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/login_screen.dart';
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
+import 'package:ecozyne_mobile/features/discussion_forum/screens/discussion_comen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/discussion_forum_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_screen.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_screen.dart';
@@ -23,6 +24,7 @@ class AppRoutes {
   static const String discussionForum = '/discussion-forum';
   static const String question = '/question';
   static const String gift = '/gift';
+  // static const String discussionComen = '/discussion-comen';
 
   static Map<String, WidgetBuilder> routes = {
     // getStarted: (context) => GetStartedScreen(),
@@ -36,5 +38,6 @@ class AppRoutes {
     discussionForum: (context) => DiscussionForumScreen(),
     question: (context) => QuestionScreen(),
     gift: (context) => GiftScreen(),
+    // discussionComen: (context) => DiscussionComen(),
   };
 }
