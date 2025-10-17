@@ -36,7 +36,7 @@ class AuthService {
       } else {
         return {
           "success": false,
-          "message": "Tidak ada koneksi ke server",
+          "message": "Tidak ada koneksi",
         };
       }
     } catch (_) {
@@ -99,7 +99,7 @@ class AuthService {
       } else {
         return {
           "success": false,
-          "message": "Tidak ada koneksi ke server",
+          "message": "Tidak ada koneksi",
         };
       }
     } catch (_) {

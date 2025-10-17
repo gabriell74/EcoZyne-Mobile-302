@@ -13,7 +13,7 @@ class LoadingWidget extends StatelessWidget {
         width: width,
         height: height,
         child: Lottie.asset(
-          'assets/videos/app_loading.json',
+          'assets/videos/loading.json',
           fit: BoxFit.contain,
         ),
       ),
