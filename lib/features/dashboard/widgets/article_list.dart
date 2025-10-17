@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/models/article.dart';
 import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 import 'package:ecozyne_mobile/features/articles/screens/article_detail_screen.dart';
@@ -49,6 +50,13 @@ class _ArticleListState extends State<ArticleList> {
 
         Consumer<ArticleProvider>(
           builder: (context, provider, child) {
+
+            if (provider.isLoading) {
+              return const Center(
+                child: LoadingWidget(height: 215, width: 100,),
+              );
+            }
+
             return SizedBox(
               height: 215,
               child: ListView.builder(

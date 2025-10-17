@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 
 class SearchArticle extends StatefulWidget {
   final Function(String)? onSearch;
@@ -11,6 +13,14 @@ class SearchArticle extends StatefulWidget {
 
 class _SearchArticleState extends State<SearchArticle> {
   final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {});
+    });
+  }
 
   @override
   void dispose() {
@@ -30,8 +40,20 @@ class _SearchArticleState extends State<SearchArticle> {
       onSubmitted: (value) {
         if (widget.onSearch != null) {
           widget.onSearch!(value);
+          setState(() {});
         }
       },
+      trailing: [
+        if (_controller.text.isNotEmpty)
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              _controller.clear();
+              context.read<ArticleProvider>().clearSearch();
+              setState(() {});
+            },
+          ),
+      ],
     );
   }
 }

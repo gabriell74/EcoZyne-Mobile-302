@@ -45,7 +45,7 @@ class ProfileMenuList extends StatelessWidget {
                 color: Colors.red,
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
               },
             ),
           ],

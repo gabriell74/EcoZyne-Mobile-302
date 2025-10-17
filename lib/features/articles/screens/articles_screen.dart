@@ -27,6 +27,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ArticleProvider articleProvider = context.read<ArticleProvider>();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
@@ -36,10 +37,10 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
       body: AppBackground(
         child: CustomScrollView(
           slivers: [
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.all(13.0),
-                child: SearchArticle(),
+                child: SearchArticle(onSearch: (query) => articleProvider.searchArticles(query)),
               ),
             ),
 
@@ -110,13 +111,26 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                 if (provider.isLoading) {
                   return const SliverFillRemaining(
                     hasScrollBody: false,
+                    child: Center(child: LoadingWidget()),
+                  );
+                }
+
+                if (provider.isSearching && provider.filteredArticles.isEmpty) {
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Center(
-                      child: LoadingWidget(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: EmptyState(
+                          connected: true,
+                          message: "Artikel tidak ditemukan.",
+                        ),
+                      ),
                     ),
                   );
                 }
 
-                if (provider.articles.isEmpty) {
+                if (!provider.isSearching && provider.articles.isEmpty) {
                   return SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
@@ -124,7 +138,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: EmptyState(
                           connected: provider.connected,
-                          message: provider.message
+                          message: provider.message,
                         ),
                       ),
                     ),
@@ -145,6 +159,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                 );
               },
             ),
+
           ],
         ),
       ),
