@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/features/discussion_forum/screens/question_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class QuestionCard extends StatelessWidget {
@@ -16,7 +17,15 @@ class QuestionCard extends StatelessWidget {
         shadowColor: Colors.black.withValues(alpha: 0.05),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => QuestionDetailScreen(
+
+                  ),
+              )
+            );
+          },
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

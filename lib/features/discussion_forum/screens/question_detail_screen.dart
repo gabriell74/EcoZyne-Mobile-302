@@ -1,0 +1,165 @@
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/features/discussion_forum/widgets/reply_item.dart';
+import 'package:flutter/material.dart';
+
+class QuestionDetailScreen extends StatefulWidget {
+  const QuestionDetailScreen({super.key});
+
+  @override
+  State<QuestionDetailScreen> createState() => _QuestionDetailScreenState();
+}
+
+class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
+  final TextEditingController _replyController = TextEditingController();
+
+  final List<Map<String, String>> replies = [
+    {
+      "username": "AAA",
+      "reply": "eco enzyme adalah cairan alami hasil fermentasi sampah organik seperti kulit buah."
+    },
+    {
+      "username": "BBB",
+      "reply": "eco enzyme bisa digunakan untuk pupuk tanaman dan pembersih alami."
+    },
+    {
+      "username": "CCC",
+      "reply": "proses pembuatannya sekitar 3 bulan, dengan bahan air, gula merah, dan limbah organik."
+    },
+    {
+      "username": "DDD",
+      "reply": "aku sudah coba bikin sendiri, hasilnya lumayan bagus untuk tanaman."
+    },
+    {
+      "username": "EEE",
+      "reply": "eco enzyme juga bisa bantu kurangi sampah rumah tangga, loh!"
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF55C173),
+        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
+        centerTitle: true,
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10,),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.deepPurple,
+                  child: Icon(Icons.chat_bubble_outline, color: Colors.white),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        "nama pengguna",
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                      SizedBox(height: 4),
+                      CustomText(
+                        "Apa sih eco enzyme itu? gimana cara mengolahnya?",
+                        fontSize: 15,
+                        color: Colors.black87,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            const Divider(),
+
+            const SizedBox(height: 16),
+
+            const CustomText(
+              "Balasan",
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+
+            const SizedBox(height: 8),
+            Container(height: 2, width: 60, color: Colors.blueAccent),
+            const SizedBox(height: 16),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: replies.length,
+                itemBuilder: (context, index) {
+                  final item = replies[index];
+                  return ReplyItem(
+                    username: item['username']!,
+                    reply: item['reply']!,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(top: BorderSide(
+                color: Colors.grey.shade300)
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _replyController,
+                  decoration: InputDecoration(
+                    hintText: "Tulis balasan...",
+                    contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.send, color: Color(0xFF55C173)),
+                onPressed: () {
+                  final text = _replyController.text.trim();
+                  if (text.isEmpty) return;
+
+                  setState(() {
+                    replies.add({
+                      "username": "Kamu",
+                      "reply": text,
+                    });
+                  });
+
+                  _replyController.clear();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
