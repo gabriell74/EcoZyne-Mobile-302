@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: const CustomText(
                         "Daftar",
-                        color: Color(0xFF649B71),
+                        color: Color(0xFF55C173),
                         fontWeight: FontWeight.w600,
                       ),
                     ),

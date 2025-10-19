@@ -5,6 +5,7 @@ import 'package:ecozyne_mobile/features/authentication/screens/login_screen.dart
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/discussion_forum_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_screen.dart';
+import 'package:ecozyne_mobile/features/get_started_screen.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_screen.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_detail.dart';
 import 'package:ecozyne_mobile/features/home.dart';
@@ -12,7 +13,7 @@ import 'package:ecozyne_mobile/features/home.dart';
 import 'package:flutter/material.dart';
 
 class AppRoutes {
-  // static const String getStarted = '/';
+  static const String getStarted = '/';
   static const String home = '/home';
   static const String login = '/login';
   static const String register = '/register';
@@ -26,7 +27,7 @@ class AppRoutes {
   // static const String discussionComen = '/discussion-comen';
 
   static Map<String, WidgetBuilder> routes = {
-    // getStarted: (context) => GetStartedScreen(),
+    getStarted: (context) => GetStartedScreen(),
     home: (context) => HomeScreen(),
     login: (context) => LoginScreen(),
     register: (context) => RegisterScreen(),

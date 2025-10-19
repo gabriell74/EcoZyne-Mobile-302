@@ -322,14 +322,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           );
 
-                          await Future.delayed(const Duration(seconds: 1));
-
                           if (!mounted) return;
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            AppRoutes.login,
-                            (route) => false,
-                          );
+                          Navigator.pop(context);
                         }
                       }
                     },
@@ -357,7 +351,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onTap: () => Navigator.pop(context),
                       child: const CustomText(
                         "Login",
-                        color: Color(0xFF649B71),
+                        color: Color(0xFF55C173),
                         fontWeight: FontWeight.w600,
                       ),
                     ),

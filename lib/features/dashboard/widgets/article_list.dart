@@ -86,13 +86,9 @@ class _ArticleListState extends State<ArticleList> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
+                            SizedBox(
                               height: 130,
                               width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              clipBehavior: Clip.antiAlias,
                               child: CachedNetworkImage(
                                 imageUrl: article.photo,
                                 fit: BoxFit.cover,
@@ -111,6 +107,8 @@ class _ArticleListState extends State<ArticleList> {
                               padding: const EdgeInsets.only(top:8.0, left: 10.0),
                               child: CustomText(
                                 article.title,
+                                maxLines: 1,
+                                textOverflow: TextOverflow.ellipsis,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),
