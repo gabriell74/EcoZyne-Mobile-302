@@ -18,7 +18,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String wasteDetail = '/waste-detail';
-  static const String dashboard = 'dashboard';
+  static const String dashboard = '/dashboard';
   static const String articles = '/articles';
   static const String activity = '/activity';
   static const String discussionForum = '/discussion-forum';

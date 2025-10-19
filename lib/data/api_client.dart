@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:ecozyne_mobile/data/services/secure_storage_service.dart';
 
 class ApiClient {
   static final Dio dio = Dio(
@@ -8,5 +9,16 @@ class ApiClient {
       receiveTimeout: const Duration(seconds: 30),
       headers: {"Accept": "application/json"},
     ),
-  );
+  )..interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      final token = await SecureStorageService.getToken();
+      if (token != null) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
+      return handler.next(options);
+    },
+    onError: (DioException e, handler) {
+      return handler.next(e);
+    },
+  ));
 }

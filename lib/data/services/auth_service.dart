@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:ecozyne_mobile/data/api_client.dart';
 import 'package:ecozyne_mobile/data/models/user.dart';
+import 'package:ecozyne_mobile/data/services/secure_storage_service.dart';
 
 class AuthService {
   final _dio = ApiClient.dio;
@@ -14,6 +15,12 @@ class AuthService {
 
       if (response.statusCode == 200 && response.data["success"] == true) {
         final user = User.fromJson(response.data["user"]);
+        final token = response.data["token"];
+
+        if (token != null) {
+          await SecureStorageService.saveToken(token);
+        }
+
         return {
           "success": true,
           "message": response.data["message"] ?? "Login berhasil",
@@ -108,5 +115,9 @@ class AuthService {
         "message": "Terjadi kesalahan tak terduga",
       };
     }
+  }
+
+  Future<void> logout() async {
+    await SecureStorageService.deleteToken();
   }
 }

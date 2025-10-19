@@ -1,13 +1,8 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
-import 'package:ecozyne_mobile/features/home.dart';
 import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-void main() {
-  runApp(AccountScreen());
-}
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});

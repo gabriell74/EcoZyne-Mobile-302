@@ -2,10 +2,23 @@ import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
+import 'package:ecozyne_mobile/data/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
+
+  Future<void> _handleStart(BuildContext context) async {
+    final token = await SecureStorageService.getToken();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (token != null && token.isNotEmpty) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +51,7 @@ class GetStartedScreen extends StatelessWidget {
               ),
               const SizedBox(height: 80),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/login');
-                },
+                onPressed: () => _handleStart(context),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                   backgroundColor: Colors.black,

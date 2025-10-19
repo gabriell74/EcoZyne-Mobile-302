@@ -1,87 +1,82 @@
 import 'package:dio/dio.dart';
 import 'package:ecozyne_mobile/data/api_client.dart';
-import 'package:ecozyne_mobile/data/models/article.dart';
+import 'package:ecozyne_mobile/data/models/question.dart';
 
-class ArticleService {
+class QuestionService {
   final Dio _dio = ApiClient.dio;
 
-  Future<Map<String, dynamic>> getArticles() async {
+  Future<Map<String,dynamic>> fetchQuestions() async {
     try {
-      final response = await _dio.get("/articles");
+      final response = await _dio.get("/questions");
 
       if (response.statusCode == 200) {
-        final List data = response.data["data"];
-        final articles = data.map((json) => Article.fromJson(json)).toList();
+        final List data = response.data["data"] ?? [];
+        final questions = data.map((json) => Question.fromJson(json)).toList();
 
         return {
-          "success": true,
-          "message": "Berhasil mengambil artikel",
+          "success": response.data["success"],
+          "message": response.data["message"],
           "connected": true,
-          "data": articles,
+          "data": questions,
         };
       } else {
         return {
           "success": false,
-          "message": "Gagal memuat artikel",
+          "message": "Gagal memuat pertanyaan",
           "connected": true,
-          "data": <Article>[],
+          "data": <Question>[],
         };
       }
     } on DioException catch (e) {
       if (e.response != null) {
         return {
           "success": false,
-          "message": e.response?.data["message"] ?? "Gagal memuat artikel",
+          "message": e.response?.data["message"] ?? "Gagal memuat pertanyaan",
           "connected": true,
-          "data": <Article>[],
+          "data": <Question>[],
         };
       } else {
         return {
           "success": false,
           "message": "Tidak ada koneksi",
           "connected": false,
-          "data": <Article>[],
+          "data": <Question>[],
         };
       }
     }
   }
 
-  Future<Map<String, dynamic>> getLatestArticles() async {
+  Future<Map<String, dynamic>> toggleLike(int questionId) async {
     try {
-      final response = await _dio.get("/articles/latest");
+      final response = await _dio.post("/question/$questionId/like");
 
       if (response.statusCode == 200) {
-        final List data = response.data["data"];
-        final articles = data.map((json) => Article.fromJson(json)).toList();
-
         return {
           "success": true,
-          "message": "Berhasil mengambil artikel",
+          "message": response.data["message"],
           "connected": true,
-          "data": articles,
+          "total_like": response.data["total_like"],
+          "is_liked": response.data["is_liked"],
         };
       } else {
         return {
           "success": false,
-          "message": "Gagal load artikel",
+          "message": "Gagal memperbarui like",
           "connected": true,
-          "data": <Article>[],
         };
       }
     } on DioException catch (e) {
       if (e.response != null) {
         return {
           "success": false,
-          "message": e.response?.data["message"] ?? "Gagal load artikel",
+          "message": e.response?.data["message"] ?? "Gagal memperbarui like",
           "connected": true,
-          "data": <Article>[],
         };
       } else {
         return {
           "success": false,
           "message": "Tidak ada koneksi",
           "connected": false,
-          "data": <Article>[],
         };
       }
     }

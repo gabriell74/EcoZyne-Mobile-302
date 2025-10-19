@@ -86,10 +86,29 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
             const SizedBox(height: 16),
 
-            const CustomText(
-              "Balasan",
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const CustomText(
+                  "Balasan",
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.favorite_border,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(width: 4),
+                    CustomText(
+                      "5",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ],
+                ),
+              ],
             ),
 
             const SizedBox(height: 8),

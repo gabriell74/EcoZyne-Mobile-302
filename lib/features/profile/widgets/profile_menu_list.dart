@@ -1,6 +1,8 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_item.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProfileMenuList extends StatelessWidget {
 
@@ -26,6 +28,7 @@ class ProfileMenuList extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    AuthProvider authProvider = context.read<AuthProvider>();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -44,8 +47,11 @@ class ProfileMenuList extends StatelessWidget {
                 "Keluar",
                 color: Colors.red,
               ),
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+              onPressed: () async {
+                await authProvider.logout();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                });
               },
             ),
           ],
