@@ -5,7 +5,7 @@ import 'package:ecozyne_mobile/data/models/question.dart';
 class QuestionService {
   final Dio _dio = ApiClient.dio;
 
-  Future<Map<String,dynamic>> fetchQuestions() async {
+  Future<Map<String, dynamic>> fetchQuestions() async {
     try {
       final response = await _dio.get("/questions");
 
@@ -41,6 +41,46 @@ class QuestionService {
           "message": "Tidak ada koneksi",
           "connected": false,
           "data": <Question>[],
+        };
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> storeQuestion(String question) async {
+    try {
+      final response = await _dio.post(
+        "/question/store",
+        data: {"question": question},
+      );
+
+      if (response.statusCode == 201) {
+        final data = response.data["data"];
+        final newQuestion = Question.fromJson(data);
+        return {
+          "success": response.data["success"],
+          "message": response.data["message"],
+          "connected": true,
+          "data": newQuestion,
+        };
+      } else {
+        return {
+          "success": false,
+          "message": "Gagal membuat pertanyaan",
+          "connected": true,
+        };
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": "Gagal membuat pertanyaan",
+          "connected": true,
+        };
+      } else {
+        return {
+          "success": false,
+          "message": "Tidak ada koneksi",
+          "connected": false,
         };
       }
     }

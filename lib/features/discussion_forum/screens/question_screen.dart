@@ -1,11 +1,28 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class QuestionScreen extends StatelessWidget {
+class QuestionScreen extends StatefulWidget {
   const QuestionScreen({super.key});
+
+  @override
+  State<QuestionScreen> createState() => _QuestionScreenState();
+}
+
+class _QuestionScreenState extends State<QuestionScreen> {
+  
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     final TextEditingController questionController = TextEditingController();
+
+    QuestionProvider questionProvider = context.read<QuestionProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -47,9 +64,13 @@ class QuestionScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                onPressed: () {
-                  // TODO: simpan pertanyaan ke database / API
-                  Navigator.pop(context);
+                onPressed: () async {
+                  final text = questionController.text.trim();
+                  if (text.isEmpty) return;
+                  await questionProvider.addQuestion(text);
+
+                  questionController.clear();
+                  if (!mounted) return;
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

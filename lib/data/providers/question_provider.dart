@@ -41,6 +41,20 @@ class QuestionProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addQuestion(String question) async {
+    final result = await _questionService.storeQuestion(question);
+
+    if (result["success"] == true && result["data"] != null) {
+      final newQuestion = result["data"] as Question;
+
+      _questions.insert(0, newQuestion);
+      _message = result["message"];
+      notifyListeners();
+    } else {
+      _message = result["message"];
+    }
+  }
+
   Future<void> toggleLike(int questionId) async {
     final index = _questions.indexWhere((q) => q.id == questionId);
     if (index == -1) return;
