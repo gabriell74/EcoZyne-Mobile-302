@@ -16,6 +16,7 @@ class ArticlesScreen extends StatefulWidget {
 }
 
 class _ArticlesScreenState extends State<ArticlesScreen> {
+  String _query = "";
 
   @override
   void initState() {
@@ -27,11 +28,10 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ArticleProvider articleProvider = context.read<ArticleProvider>();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Artikel", fontWeight: FontWeight.bold,),
+        title: const CustomText("Artikel", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
       body: AppBackground(
@@ -39,27 +39,32 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.all(13.0),
-                child: SearchArticle(onSearch: (query) => articleProvider.searchArticles(query)),
+                padding: const EdgeInsets.all(13.0),
+                child: SearchArticle(
+                  onSearch: (query) {
+                    setState(() {
+                      _query = query;
+                    });
+                  },
+                ),
               ),
             ),
 
             SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.all(13.0),
+                padding: const EdgeInsets.all(13.0),
                 child: Container(
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16.0),
-                    color: const Color(0xFF55C173)
+                    color: const Color(0xFF55C173),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Flexible(
+                        const Flexible(
                           child: CustomText(
                             "Punya pertanyaan seputar Eco Enzyme?",
                             fontWeight: FontWeight.bold,
@@ -68,7 +73,6 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                             textOverflow: TextOverflow.ellipsis,
                           ),
                         ),
-
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -88,13 +92,12 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                           child: const Text("Gabung Diskusi Komunitas"),
                         ),
                       ],
-                    )
-
+                    ),
                   ),
                 ),
               ),
             ),
-            
+
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 8),
@@ -108,6 +111,16 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
 
             Consumer<ArticleProvider>(
               builder: (context, provider, child) {
+                final articles = provider.articles;
+
+                final filtered = _query.isEmpty
+                    ? articles
+                    : articles
+                    .where((article) =>
+                      article.title.toLowerCase().contains(_query.toLowerCase()) ||
+                      article.description.toLowerCase().contains(_query.toLowerCase()))
+                    .toList();
+
                 if (provider.isLoading) {
                   return const SliverFillRemaining(
                     hasScrollBody: false,
@@ -115,31 +128,25 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                   );
                 }
 
-                if (provider.isSearching && provider.filteredArticles.isEmpty) {
+                if (!provider.connected || articles.isEmpty) {
                   return SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: EmptyState(
-                          connected: true,
-                          message: "Artikel tidak ditemukan.",
-                        ),
+                      child: EmptyState(
+                        connected: provider.connected,
+                        message: provider.message,
                       ),
                     ),
                   );
                 }
 
-                if (!provider.isSearching && provider.articles.isEmpty) {
-                  return SliverFillRemaining(
+                if (filtered.isEmpty) {
+                  return const SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: EmptyState(
-                          connected: provider.connected,
-                          message: provider.message,
-                        ),
+                      child: EmptyState(
+                        connected: true,
+                        message: "Artikel tidak ditemukan.",
                       ),
                     ),
                   );
@@ -148,18 +155,17 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                 return SliverList(
                   delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                      final article = provider.articles[index];
+                      final article = filtered[index];
                       return Padding(
                         padding: const EdgeInsets.all(13.0),
                         child: ArticleCard(article: article),
                       );
                     },
-                    childCount: provider.articles.length,
+                    childCount: filtered.length,
                   ),
                 );
               },
             ),
-
           ],
         ),
       ),

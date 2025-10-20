@@ -4,6 +4,7 @@ import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/widgets/question_card.dart';
+import 'package:ecozyne_mobile/features/discussion_forum/widgets/search_discussion.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +16,7 @@ class DiscussionForumScreen extends StatefulWidget {
 }
 
 class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
+  String _query = "";
 
   @override
   void initState() {
@@ -29,7 +31,7 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
+        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFF7F8FA),
@@ -49,31 +51,38 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 16),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          hintText: "Cari topik...",
-                          prefixIcon: Icon(Icons.search),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 14),
-                        ),
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.all(13.0),
+                child: SearchDiscussion(
+                  onSearch: (query) {
+                    setState(() {
+                      _query = query;
+                    });
+                  },
+                ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 8),
+                child: CustomText(
+                  "Temukan pertanyaan menarik",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
                 ),
               ),
             ),
 
             Consumer<QuestionProvider>(
               builder: (context, provider, child) {
+                final questions = provider.questions;
+
+                final filtered = _query.isEmpty
+                    ? questions
+                    : questions
+                        .where((q) => q.question.toLowerCase().contains(_query.toLowerCase()))
+                    .toList();
+
                 if (provider.isLoading) {
                   return const SliverFillRemaining(
                     hasScrollBody: false,
@@ -81,47 +90,43 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   );
                 }
 
-                if (provider.isSearching && provider.filteredQuestions.isEmpty) {
+                if (!provider.connected || questions.isEmpty) {
                   return SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: EmptyState(
-                          connected: true,
-                          message: "Pertanyaan tidak ditemukan.",
-                        ),
+                      child: EmptyState(
+                        connected: provider.connected,
+                        message: provider.message,
                       ),
                     ),
                   );
                 }
 
-                if (!provider.isSearching && provider.questions.isEmpty) {
-                  return SliverFillRemaining(
+                if (filtered.isEmpty) {
+                  return const SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: EmptyState(
-                          connected: provider.connected,
-                          message: provider.message,
-                        ),
+                      child: EmptyState(
+                        connected: true,
+                        message: "Pertanyaan tidak ditemukan.",
                       ),
                     ),
                   );
                 }
-
 
                 return SliverList(
                   delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                      final question = provider.questions[index];
+                      final question = filtered[index];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 13.0,
+                          vertical: 6.0,
+                        ),
                         child: QuestionCard(question: question),
                       );
                     },
-                    childCount: provider.questions.length,
+                    childCount: filtered.length,
                   ),
                 );
               },

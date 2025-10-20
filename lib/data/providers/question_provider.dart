@@ -6,19 +6,14 @@ class QuestionProvider with ChangeNotifier {
   final QuestionService _questionService = QuestionService();
 
   List<Question> _questions = [];
-  List<Question> _filteredQuestions = [];
   bool _isLoading = false;
   String _message = "";
   bool _connected = true;
-  bool _isSearching = false;
-
 
   List<Question> get questions => _questions;
-  List<Question> get filteredQuestions => _filteredQuestions;
   bool get isLoading => _isLoading;
   String get message => _message;
   bool get connected => _connected;
-  bool get isSearching => _isSearching;
 
   Future<void> getQuestions() async {
     _isLoading = true;
@@ -69,5 +64,4 @@ class QuestionProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
 }

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class SearchArticle extends StatefulWidget {
+class SearchDiscussion extends StatefulWidget {
   final Function(String)? onSearch;
 
-  const SearchArticle({super.key, this.onSearch});
+  const SearchDiscussion({super.key, this.onSearch});
 
   @override
-  State<SearchArticle> createState() => _SearchArticleState();
+  State<SearchDiscussion> createState() => _SearchDiscussionState();
 }
 
-class _SearchArticleState extends State<SearchArticle> {
+class _SearchDiscussionState extends State<SearchDiscussion> {
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -30,7 +30,7 @@ class _SearchArticleState extends State<SearchArticle> {
   Widget build(BuildContext context) {
     return SearchBar(
       controller: _controller,
-      hintText: "Cari artikel atau topik...",
+      hintText: "Cari pertanyaan...",
       backgroundColor: const WidgetStatePropertyAll(Colors.white),
       elevation: const WidgetStatePropertyAll(1),
       leading: const Icon(Icons.search_rounded),
