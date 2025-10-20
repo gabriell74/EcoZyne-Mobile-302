@@ -1,17 +1,35 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/widgets/question_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class DiscussionForumScreen extends StatelessWidget {
+class DiscussionForumScreen extends StatefulWidget {
   const DiscussionForumScreen({super.key});
+
+  @override
+  State<DiscussionForumScreen> createState() => _DiscussionForumScreenState();
+}
+
+class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<QuestionProvider>().getQuestions();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Forum Dskusi", fontWeight: FontWeight.bold),
+        title: CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFFF7F8FA),
@@ -54,18 +72,59 @@ class DiscussionForumScreen extends StatelessWidget {
               ),
             ),
 
-            SliverList(
-              delegate: SliverChildListDelegate([
-                QuestionCard(),
-                QuestionCard(),
-                QuestionCard(),
-                QuestionCard(),
-                QuestionCard(),
-                QuestionCard(),
-                QuestionCard(),
+            Consumer<QuestionProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: LoadingWidget()),
+                  );
+                }
 
-                SizedBox(height: 20),
-              ]),
+                if (provider.isSearching && provider.filteredQuestions.isEmpty) {
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: EmptyState(
+                          connected: true,
+                          message: "Pertanyaan tidak ditemukan.",
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (!provider.isSearching && provider.questions.isEmpty) {
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: EmptyState(
+                          connected: provider.connected,
+                          message: provider.message,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                      final question = provider.questions[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        child: QuestionCard(question: question),
+                      );
+                    },
+                    childCount: provider.questions.length,
+                  ),
+                );
+              },
             ),
           ],
         ),

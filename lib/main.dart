@@ -1,6 +1,7 @@
 import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
+import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/data/providers/region_provider.dart';
 import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ void main() async{
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider(create: (_) => ArticleProvider()),
         ChangeNotifierProvider(create: (_) => RegionProvider()),
+        ChangeNotifierProvider(create: (_) => QuestionProvider()),
       ],
       child: EcoApp(),
     ),
