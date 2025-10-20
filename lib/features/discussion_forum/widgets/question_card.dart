@@ -1,8 +1,10 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/models/question.dart';
+import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/edit_question_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class QuestionCard extends StatelessWidget {
   final Question question;
@@ -12,6 +14,9 @@ class QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final currentUserId = authProvider.user?.id;
+
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
@@ -47,12 +52,9 @@ class QuestionCard extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
+                if (currentUserId != null && currentUserId == question.userId)
                   PopupMenuButton<String>(
-                    icon: const Icon(
-                      Icons.more_vert,
-                      color: Colors.grey,
-                      size: 22,
-                    ),
+                    icon: const Icon(Icons.more_vert, color: Colors.grey, size: 22),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -67,7 +69,8 @@ class QuestionCard extends StatelessWidget {
                             SizedBox(width: 8),
                             CustomText(
                               "Edit Pertanyaan",
-                              fontSize: 14, color: Colors.white,
+                              fontSize: 14,
+                              color: Colors.white,
                             ),
                           ],
                         ),

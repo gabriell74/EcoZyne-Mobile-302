@@ -1,5 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
+import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -49,9 +50,8 @@ class ProfileMenuList extends StatelessWidget {
               ),
               onPressed: () async {
                 await authProvider.logout();
-                WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.read<NavigationProvider>().setIndex(0);
                   Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-                });
               },
             ),
           ],
