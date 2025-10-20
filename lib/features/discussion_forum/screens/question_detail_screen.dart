@@ -1,9 +1,14 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/models/question.dart';
+import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/widgets/reply_item.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class QuestionDetailScreen extends StatefulWidget {
-  const QuestionDetailScreen({super.key});
+  final Question question;
+
+  const QuestionDetailScreen({super.key, required this.question});
 
   @override
   State<QuestionDetailScreen> createState() => _QuestionDetailScreenState();
@@ -36,7 +41,15 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   ];
 
   @override
+  void dispose() {
+    _replyController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    QuestionProvider questionProvider = context.watch<QuestionProvider>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
@@ -59,18 +72,18 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                   child: Icon(Icons.chat_bubble_outline, color: Colors.white),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        "nama pengguna",
+                        widget.question.username,
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                       ),
                       SizedBox(height: 4),
                       CustomText(
-                        "Apa sih eco enzyme itu? gimana cara mengolahnya?",
+                        widget.question.question,
                         fontSize: 15,
                         color: Colors.black87,
                       ),
@@ -94,19 +107,33 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.favorite_border,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(width: 4),
-                    CustomText(
-                      "5",
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ],
+                GestureDetector(
+                  onTap: () {
+                    questionProvider.toggleLike(widget.question.id);
+                  },
+                  child: Row(
+                    children: [
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder: (child, animation) => ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        ),
+                        child: Icon(
+                          widget.question.isLiked ? Icons.favorite : Icons.favorite_border,
+                          key: ValueKey(widget.question.isLiked),
+                          color: Colors.red,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      CustomText(
+                        widget.question.totalLike.toString(),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

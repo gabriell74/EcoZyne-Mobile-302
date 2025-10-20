@@ -1,8 +1,8 @@
 class Question {
   final int id;
-  final String question;
+  String question;
   int totalLike;
-  final int totalComment;
+  int totalComment;
   bool isLiked;
   final String username;
 

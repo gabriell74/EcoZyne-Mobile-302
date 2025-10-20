@@ -1,7 +1,11 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class QuestionScreen extends StatefulWidget {
   const QuestionScreen({super.key});
@@ -11,28 +15,28 @@ class QuestionScreen extends StatefulWidget {
 }
 
 class _QuestionScreenState extends State<QuestionScreen> {
-  
-@override
+  final TextEditingController _questionController = TextEditingController();
+
+  @override
   void dispose() {
-    // TODO: implement dispose
+    _questionController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController questionController = TextEditingController();
-
-    QuestionProvider questionProvider = context.read<QuestionProvider>();
+    QuestionProvider questionProvider = context.watch<QuestionProvider>();
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Forum Dskusi", fontWeight: FontWeight.bold),
+        title: const CustomText("Forum Dskusi", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: questionProvider.isLoading ? LoadingWidget()
+        : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const CustomText(
@@ -48,7 +52,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 border: Border.all(color: Colors.black, width: 1),
               ),
               child: TextField(
-                controller: questionController,
+                controller: _questionController,
                 maxLines: 5,
                 decoration: const InputDecoration(
                   hintText: "Ketik pertanyaanmu di sini...",
@@ -65,13 +69,19 @@ class _QuestionScreenState extends State<QuestionScreen> {
               alignment: Alignment.centerRight,
               child: ElevatedButton(
                 onPressed: () async {
-                  final text = questionController.text.trim();
+                  final text = _questionController.text.trim();
                   if (text.isEmpty) return;
+
                   await questionProvider.addQuestion(text);
 
-                  questionController.clear();
                   if (!mounted) return;
+
+                  showSuccessTopSnackBar(context, "Pertanyaanmu berhasil dibuat!");
+
+                  _questionController.clear();
+                  Navigator.pop(context);
                 },
+
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   shape: RoundedRectangleBorder(

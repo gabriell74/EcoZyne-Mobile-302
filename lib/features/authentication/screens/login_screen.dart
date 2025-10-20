@@ -3,6 +3,8 @@ import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void handleLogin() async {
+  Future<bool> handleLogin(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
 
     await authProvider.login(
@@ -44,22 +46,26 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordController.text.trim(),
     );
 
-    if (!context.mounted) return;
+    if (!context.mounted) return false;
 
     if (authProvider.user != null) {
-      Navigator.pushReplacementNamed(
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
+
+      Future.delayed(const Duration(milliseconds: 300), () {
+        showSuccessTopSnackBar(
+          context,
+          "Selamat datang, ${authProvider.user!.username}!",
+          icon: const Icon(Icons.waving_hand),
+        );
+      });
+
+      return true;
+    } else {
+      showErrorTopSnackBar(
         context,
-        AppRoutes.home,
+        authProvider.message ?? "Login gagal, periksa kembali data Anda.",
       );
-    } else if (!authProvider.success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: CustomText(authProvider.message!, color: Colors.red,),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          backgroundColor: Colors.white,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      return false;
     }
   }
 
@@ -141,11 +147,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? null
                       : () async {
                           if (_formKey.currentState!.validate()) {
-                            handleLogin();
+                            handleLogin(context);
                           }
                         },
                     child: authProvider.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? const LoadingWidget()
                       : const CustomText(
                           "Masuk Akun",
                           fontSize: 18,

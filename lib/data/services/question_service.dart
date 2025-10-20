@@ -86,9 +86,47 @@ class QuestionService {
     }
   }
 
+  Future<Map<String, dynamic>> updateQuestion(int questionId, String question) async {
+    try {
+      final response = await ApiClient.dio.put(
+        "/question/update/$questionId",
+        data: {"question": question},
+      );
+
+      if (response.statusCode == 200) {
+        return {
+          "success": response.data["success"],
+          "message": response.data["message"],
+          "data": response.data["data"],
+          "connected": true,
+        };
+      } else {
+        return {
+          "success": false,
+          "message": "Gagal memperbarui pertanyaan",
+          "connected": true,
+        };
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal memperbarui pertanyaan",
+          "connected": true,
+        };
+      } else {
+        return {
+          "success": false,
+          "message": "Tidak ada koneksi",
+          "connected": false,
+        };
+      }
+    }
+  }
+
   Future<Map<String, dynamic>> toggleLike(int questionId) async {
     try {
-      final response = await _dio.post("/question/$questionId/like");
+      final response = await _dio.patch("/question/$questionId/like");
 
       if (response.statusCode == 200) {
         return {
