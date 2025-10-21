@@ -15,7 +15,7 @@ class ActivityScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Kegiatan", fontWeight: FontWeight.bold,),
+        title: CustomText("Kegiatan", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
       body: AppBackground(
@@ -43,7 +43,6 @@ class ActivityScreen extends StatelessWidget {
 
                     const SizedBox(height: 11),
 
-
                     FavoriteActivity(),
                     const SizedBox(height: 30),
 
@@ -57,7 +56,6 @@ class ActivityScreen extends StatelessWidget {
                     FilterActivity(),
 
                     const SizedBox(height: 8),
-
                   ],
                 ),
               ),
@@ -68,15 +66,16 @@ class ActivityScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 childAspectRatio: 0.8,
               ),
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0, right: 5, left: 5),
-                    child: ActivityCard(),
-                  );
-                },
-                childCount: 9,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 16.0,
+                    right: 5,
+                    left: 5,
+                  ),
+                  child: ActivityCard(),
+                );
+              }, childCount: 9),
             ),
           ],
         ),

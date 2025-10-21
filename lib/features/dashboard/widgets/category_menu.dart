@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/features/dashboard/widgets/category_item.dart';
+import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_screen.dart';
 import 'package:flutter/material.dart';
 
 class CategoryMenu extends StatelessWidget {
@@ -11,7 +12,9 @@ class CategoryMenu extends StatelessWidget {
         'color': Color(0xFFDC9497),
         'label': "Bank Sampah",
         'icon': Icons.recycling_outlined,
-        'onTap': () {},
+        'onTap': () {
+          Navigator.pushNamed(context, '/waste-bank');
+        },
       },
       {
         'color': Color(0xFF55C173),
@@ -36,13 +39,13 @@ class CategoryMenu extends StatelessWidget {
         'onTap': () {},
       },
       {
-        'color': Colors.purpleAccent,
+        'color': Colors.cyan,
         'label': "Setoran",
         'icon': Icons.upload,
         'onTap': () {},
       },
       {
-        'color': Colors.pink,
+        'color': Colors.pinkAccent,
         'label': "Pesanan",
         'icon': Icons.receipt_long,
         'onTap': () {},

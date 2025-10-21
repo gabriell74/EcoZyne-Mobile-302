@@ -7,6 +7,8 @@ import 'package:ecozyne_mobile/features/discussion_forum/screens/discussion_foru
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_screen.dart';
 import 'package:ecozyne_mobile/features/get_started_screen.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_screen.dart';
+import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_screen.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_card.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_detail.dart';
 import 'package:ecozyne_mobile/features/home.dart';
 // import 'package:ecozyne_mobile/features/get_started_screen.dart';
@@ -24,6 +26,8 @@ class AppRoutes {
   static const String discussionForum = '/discussion-forum';
   static const String question = '/question';
   static const String gift = '/gift';
+  static const String wasteBank = '/waste-bank';
+  static const String wasteBankCard = '/waste-bank-card';
   // static const String discussionComen = '/discussion-comen';
 
   static Map<String, WidgetBuilder> routes = {
@@ -38,6 +42,8 @@ class AppRoutes {
     discussionForum: (context) => DiscussionForumScreen(),
     question: (context) => QuestionScreen(),
     gift: (context) => GiftScreen(),
+    wasteBank: (context) => WasteBankScreen(),
+    wasteBankCard: (context) => WasteBankCard(),
     // discussionComen: (context) => DiscussionComen(),
   };
 }

@@ -1,0 +1,74 @@
+import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_search.dart';
+import 'package:flutter/material.dart';
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_card.dart';
+
+class WasteBankScreen extends StatelessWidget {
+  const WasteBankScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF55C173),
+        title: const CustomText("Bank Sampah", fontWeight: FontWeight.bold),
+        centerTitle: true,
+      ),
+      body: AppBackground(
+        child: CustomScrollView(
+          slivers: [
+            // Bagian search dan tombol
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    // 🔍 Search bar di atas tombol
+                    const SearchWasteBank(),
+
+                    const SizedBox(height: 30),
+
+                    // Tombol daftar sebagai bank sampah
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFB9F5C6),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 17,
+                        ),
+                      ),
+                      child: const CustomText(
+                        "Daftar sebagai bank sampah",
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                  ],
+                ),
+              ),
+            ),
+
+            // Daftar bank sampah
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: const WasteBankCard(),
+                );
+              }, childCount: 6),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
