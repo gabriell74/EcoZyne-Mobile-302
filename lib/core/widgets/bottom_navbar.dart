@@ -15,12 +15,12 @@ class BottomNavBar extends StatelessWidget {
       destinations: [
         const NavigationDestination(
           icon: Icon(Icons.home_outlined),
-          label: 'Home',
+          label: 'Beranda',
           selectedIcon: Icon(Icons.home),
         ),
         const NavigationDestination(
           icon: Icon(Icons.store_outlined),
-          label: 'Marketplace',
+          label: 'Toko',
           selectedIcon: Icon(Icons.store),
         ),
         const NavigationDestination(
@@ -30,7 +30,7 @@ class BottomNavBar extends StatelessWidget {
         ),
         const NavigationDestination(
           icon: Icon(Icons.person_outlined),
-          label: 'Profile',
+          label: 'Profil',
           selectedIcon: Icon(Icons.person),
         ),
       ],

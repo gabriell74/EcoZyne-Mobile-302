@@ -31,10 +31,14 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
+        title: const CustomText(
+          "Forum Diskusi",
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
         centerTitle: true,
       ),
-      backgroundColor: const Color(0xFFF7F8FA),
+      backgroundColor: Colors.grey[200],
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20, right: 10),
@@ -46,93 +50,92 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
           child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
-      body: AppBackground(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(13.0),
-                child: SearchDiscussion(
-                  onSearch: (query) {
-                    setState(() {
-                      _query = query;
-                    });
-                  },
-                ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(13.0),
+              child: SearchDiscussion(
+                onSearch: (query) {
+                  setState(() {
+                    _query = query;
+                  });
+                },
               ),
             ),
+          ),
 
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 8),
-                child: CustomText(
-                  "Temukan pertanyaan menarik",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 8),
+              child: CustomText(
+                "Temukan pertanyaan menarik",
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
               ),
             ),
+          ),
 
-            Consumer<QuestionProvider>(
-              builder: (context, provider, child) {
-                final questions = provider.questions;
+          Consumer<QuestionProvider>(
+            builder: (context, provider, child) {
+              final questions = provider.questions;
 
-                final filtered = _query.isEmpty
-                    ? questions
-                    : questions
-                        .where((q) => q.question.toLowerCase().contains(_query.toLowerCase()))
-                    .toList();
+              final filtered = _query.isEmpty
+                  ? questions
+                  : questions
+                        .where(
+                          (q) => q.question.toLowerCase().contains(
+                            _query.toLowerCase(),
+                          ),
+                        )
+                        .toList();
 
-                if (provider.isLoading) {
-                  return const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: LoadingWidget()),
-                  );
-                }
+              if (provider.isLoading) {
+                return const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: LoadingWidget()),
+                );
+              }
 
-                if (!provider.connected || questions.isEmpty) {
-                  return SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: EmptyState(
-                        connected: provider.connected,
-                        message: provider.message,
-                      ),
+              if (!provider.connected || questions.isEmpty) {
+                return SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: EmptyState(
+                      connected: provider.connected,
+                      message: provider.message,
                     ),
-                  );
-                }
-
-                if (filtered.isEmpty) {
-                  return const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(
-                      child: EmptyState(
-                        connected: true,
-                        message: "Pertanyaan tidak ditemukan.",
-                      ),
-                    ),
-                  );
-                }
-
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                      final question = filtered[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 13.0,
-                          vertical: 6.0,
-                        ),
-                        child: QuestionCard(question: question),
-                      );
-                    },
-                    childCount: filtered.length,
                   ),
                 );
-              },
-            ),
-          ],
-        ),
+              }
+
+              if (filtered.isEmpty) {
+                return const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: EmptyState(
+                      connected: true,
+                      message: "Pertanyaan tidak ditemukan.",
+                    ),
+                  ),
+                );
+              }
+
+              return SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final question = filtered[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13.0,
+                      vertical: 6.0,
+                    ),
+                    child: QuestionCard(question: question),
+                  );
+                }, childCount: filtered.length),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
