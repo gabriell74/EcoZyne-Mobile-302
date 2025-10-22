@@ -9,7 +9,7 @@ class CategoryMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> categories = [
       {
-        'color': Color(0xFF81C784), // hijau segar
+        'color': Color(0xFF81C784),
         'label': "Bank Sampah",
         'icon': Icons.recycling_outlined,
         'onTap': () {
@@ -17,7 +17,7 @@ class CategoryMenu extends StatelessWidget {
         },
       },
       {
-        'color': Color(0xFFFFB74D), // oranye hangat
+        'color': Color(0xFFFFB74D),
         'label': "Kegiatan",
         'icon': Icons.volunteer_activism_outlined,
         'onTap': () {
@@ -25,7 +25,7 @@ class CategoryMenu extends StatelessWidget {
         },
       },
       {
-        'color': Color(0xFF64B5F6), // biru muda cerah
+        'color': Color(0xFF64B5F6),
         'label': "Forum Diskusi",
         'icon': Icons.question_answer_outlined,
         'onTap': () {
@@ -33,31 +33,33 @@ class CategoryMenu extends StatelessWidget {
         },
       },
       {
-        'color': Color(0xFFBA68C8), // ungu lembut
+        'color': Color(0xFFBA68C8),
         'label': "Komik",
         'icon': Icons.book_outlined,
         'onTap': () {},
       },
       {
-        'color': Color(0xFF4DB6AC), // toska
+        'color': Color(0xFF4DB6AC),
         'label': "Setoran",
         'icon': Icons.upload,
-        'onTap': () {},
+        'onTap': () {
+          Navigator.pushNamed(context, '/waste-bank-deposit');
+        },
       },
       {
-        'color': Color(0xFFFF8A65), // oranye muda
+        'color': Color(0xFFFF8A65),
         'label': "Pesanan",
         'icon': Icons.receipt_long,
         'onTap': () {},
       },
       {
-        'color': Color(0xFFF48FB1), // hijau muda untuk tracking
+        'color': Color(0xFFF48FB1),
         'label': "Tracking",
         'icon': Icons.hourglass_bottom_rounded,
         'onTap': () {},
       },
       {
-        'color': Color(0xFF9E9E9E), // abu netral
+        'color': Color(0xFF9E9E9E),
         'label': "Riwayat",
         'icon': Icons.history,
         'onTap': () {},
