@@ -72,14 +72,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   final text = _questionController.text.trim();
                   if (text.isEmpty) return;
 
-                  await questionProvider.addQuestion(text);
+                  final success = await questionProvider.addQuestion(text);
 
                   if (!mounted) return;
 
-                  showSuccessTopSnackBar(context, "Pertanyaanmu berhasil dibuat!");
-
-                  _questionController.clear();
-                  Navigator.pop(context);
+                  if (success) {
+                    showSuccessTopSnackBar(context, "Pertanyaanmu berhasil dibuat!");
+                    _questionController.clear();
+                    Navigator.pop(context);
+                  } else {
+                    showErrorTopSnackBar(context, "Gagal membuat pertanyaan. Coba lagi!");
+                  }
                 },
 
                 style: ElevatedButton.styleFrom(

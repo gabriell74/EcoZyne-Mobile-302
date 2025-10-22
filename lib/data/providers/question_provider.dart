@@ -41,24 +41,29 @@ class QuestionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addQuestion(String question) async {
+  Future<bool> addQuestion(String question) async {
     _isLoading = true;
     notifyListeners();
 
     final result = await _questionService.storeQuestion(question);
+
+    bool success = false;
 
     if (result["success"] == true && result["data"] != null) {
       final newQuestion = result["data"] as Question;
 
       _questions.insert(0, newQuestion);
       _message = result["message"];
+      success = true;
       notifyListeners();
     } else {
       _message = result["message"];
     }
 
+    print(result);
     _isLoading = false;
     notifyListeners();
+    return success;
   }
 
   Future<void> updateQuestion(int questionId, String newQuestionText) async {
