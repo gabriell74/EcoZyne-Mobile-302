@@ -50,7 +50,9 @@ class CategoryMenu extends StatelessWidget {
         'color': Color(0xFFFF8A65),
         'label': "Pesanan",
         'icon': Icons.receipt_long,
-        'onTap': () {},
+        'onTap': () {
+          Navigator.pushNamed(context, '/order');
+        },
       },
       {
         'color': Color(0xFFF48FB1),
