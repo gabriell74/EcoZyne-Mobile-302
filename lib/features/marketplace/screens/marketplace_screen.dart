@@ -45,7 +45,7 @@ class MarketplaceScreen extends StatelessWidget {
     return Scaffold(
       body: AppBackground(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(5),
           child: CustomScrollView(
             slivers: [
               const SliverToBoxAdapter(
@@ -88,8 +88,7 @@ class MarketplaceScreen extends StatelessWidget {
                 ),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 10,
                   childAspectRatio: 0.8,
                 ),
               ),

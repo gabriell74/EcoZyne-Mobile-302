@@ -10,64 +10,63 @@ class WasteBankScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
         title: const CustomText("Bank Sampah", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
-      body: AppBackground(
-        child: CustomScrollView(
-          slivers: [
-            // Bagian search dan tombol
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // 🔍 Search bar di atas tombol
-                    const SearchWasteBank(),
+      body: CustomScrollView(
+        slivers: [
+          // Bagian search dan tombol
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // 🔍 Search bar di atas tombol
+                  const SearchWasteBank(),
 
-                    const SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
-                    // Tombol daftar sebagai bank sampah
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFB9F5C6),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 17,
-                        ),
+                  // Tombol daftar sebagai bank sampah
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB9F5C6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      child: const CustomText(
-                        "Daftar sebagai bank sampah",
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 17,
                       ),
                     ),
-                    const SizedBox(height: 1),
-                  ],
-                ),
+                    child: const CustomText(
+                      "Daftar sebagai bank sampah",
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                ],
               ),
             ),
+          ),
 
-            // Daftar bank sampah
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  child: const WasteBankCard(),
-                );
-              }, childCount: 6),
-            ),
-          ],
-        ),
+          // Daftar bank sampah
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: const WasteBankCard(),
+              );
+            }, childCount: 6),
+          ),
+        ],
       ),
     );
   }
