@@ -59,6 +59,14 @@ class CategoryMenu extends StatelessWidget {
         'onTap': () {},
       },
       {
+        'color': Colors.teal,
+        'label': "Eco Kalkulator",
+        'icon': Icons.calculate_outlined,
+        'onTap': () {
+          Navigator.pushNamed(context, '/eco-calculator');
+        },
+      },
+      {
         'color': Color(0xFF9E9E9E),
         'label': "Riwayat",
         'icon': Icons.history,
