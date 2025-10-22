@@ -10,6 +10,7 @@ class WasteBankScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
         title: const CustomText("Bank Sampah", fontWeight: FontWeight.bold),
@@ -22,12 +23,10 @@ class WasteBankScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  // 🔍 Search bar di atas tombol
                   const SearchWasteBank(),
 
                   const SizedBox(height: 30),
 
-                  // Tombol daftar sebagai bank sampah
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
@@ -36,8 +35,8 @@ class WasteBankScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 17,
+                        horizontal: 27,
+                        vertical: 15,
                       ),
                     ),
                     child: const CustomText(
