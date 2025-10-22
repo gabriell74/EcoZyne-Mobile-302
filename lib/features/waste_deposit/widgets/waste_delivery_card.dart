@@ -29,8 +29,10 @@ class WasteDeliveryCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Nama Pengguna',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const CustomText(
+                    'Nama Pengguna',
+                    fontWeight: FontWeight.bold
+                  ),
                   const SizedBox(height: 4),
                   const Text('Nama asli'),
                   const Text('Email'),

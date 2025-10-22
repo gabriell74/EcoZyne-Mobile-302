@@ -13,6 +13,7 @@ class WasteDepositScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
+          backgroundColor: const Color(0xFF55C173),
           title: const CustomText(
             'Setoran Sampah',
             fontWeight: FontWeight.bold
@@ -20,7 +21,7 @@ class WasteDepositScreen extends StatelessWidget {
           centerTitle: true,
           bottom: const TabBar(
             labelColor: Colors.black,
-            unselectedLabelColor: Colors.grey,
+            unselectedLabelColor: Colors.white,
             indicatorColor: Colors.black,
             tabs: [
               Tab(text: 'Saat ini'),
