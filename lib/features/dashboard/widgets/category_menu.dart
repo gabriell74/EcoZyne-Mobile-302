@@ -10,7 +10,7 @@ class CategoryMenu extends StatelessWidget {
     final List<Map<String, dynamic>> categories = [
       {
         'color': Color(0xFF81C784),
-        'label': "Bank Sampah",
+        'label': "Bank Sampah Eco",
         'icon': Icons.recycling_outlined,
         'onTap': () {
           Navigator.pushNamed(context, '/waste-bank');
@@ -59,6 +59,14 @@ class CategoryMenu extends StatelessWidget {
         'label': "Tracking",
         'icon': Icons.hourglass_bottom_rounded,
         'onTap': () {},
+      },
+      {
+        'color': Colors.teal,
+        'label': "Eco Kalkulator",
+        'icon': Icons.calculate_outlined,
+        'onTap': () {
+          Navigator.pushNamed(context, '/eco-calculator');
+        },
       },
       {
         'color': Color(0xFF9E9E9E),

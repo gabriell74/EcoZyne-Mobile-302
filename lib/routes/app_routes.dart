@@ -5,6 +5,7 @@ import 'package:ecozyne_mobile/features/authentication/screens/login_screen.dart
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/discussion_forum_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_screen.dart';
+import 'package:ecozyne_mobile/features/eco_enzyme_calculator/screens/eco_enzyme_calculator_screen.dart';
 import 'package:ecozyne_mobile/features/get_started_screen.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_screen.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_screen.dart';
@@ -29,6 +30,7 @@ class AppRoutes {
   static const String gift = '/gift';
   static const String wasteBank = '/waste-bank';
   static const String wasteBankDeposit = '/waste-bank-deposit';
+  static const String ecoCalculator = '/eco-calculator';
   static const String order = '/order';
   // static const String discussionComen = '/discussion-comen';
 
@@ -46,6 +48,7 @@ class AppRoutes {
     gift: (context) => GiftScreen(),
     wasteBank: (context) => WasteBankScreen(),
     wasteBankDeposit: (context) => WasteDepositScreen(),
+    ecoCalculator: (context) => EcoEnzymeCalculatorScreen(),
     order: (context) => OrderScreen(),
     // discussionComen: (context) => DiscussionComen(),
   };
