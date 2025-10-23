@@ -1,6 +1,5 @@
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_search.dart';
 import 'package:flutter/material.dart';
-import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_card.dart';
 
@@ -31,13 +30,6 @@ class WasteBankScreen extends StatelessWidget {
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFB9F5C6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 27,
-                        vertical: 15,
-                      ),
                     ),
                     child: const CustomText(
                       "Daftar sebagai bank sampah",
@@ -56,12 +48,12 @@ class WasteBankScreen extends StatelessWidget {
             delegate: SliverChildBuilderDelegate((context, index) {
               return Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
+                  horizontal: 15.0,
+                  vertical: 5.0,
                 ),
                 child: const WasteBankCard(),
               );
-            }, childCount: 6),
+            }, childCount: 10),
           ),
         ],
       ),

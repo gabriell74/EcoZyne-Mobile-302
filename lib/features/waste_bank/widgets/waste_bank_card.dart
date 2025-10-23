@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 
@@ -12,7 +13,9 @@ class WasteBankCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          // untuk navigasi ke detail bank sampah
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => WasteBankDetailScreen()));
         },
         child: Row(
           children: [
