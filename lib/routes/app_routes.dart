@@ -2,12 +2,14 @@ import 'package:ecozyne_mobile/features/activity/screens/activity_screen.dart';
 import 'package:ecozyne_mobile/features/articles/screens/articles_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/register_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/login_screen.dart';
+import 'package:ecozyne_mobile/features/comic/screens/comic_screen.dart';
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/discussion_forum_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_screen.dart';
 import 'package:ecozyne_mobile/features/eco_enzyme_calculator/screens/eco_enzyme_calculator_screen.dart';
 import 'package:ecozyne_mobile/features/get_started_screen.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_screen.dart';
+import 'package:ecozyne_mobile/features/manage_product/screens/manage_product_screen.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_screen.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_screen.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_deposit_screen.dart';
@@ -32,6 +34,8 @@ class AppRoutes {
   static const String wasteBankDeposit = '/waste-bank-deposit';
   static const String ecoCalculator = '/eco-calculator';
   static const String order = '/order';
+  static const String comic = '/comic';
+  static const String manageProduct = '/manage-product';
   // static const String discussionComen = '/discussion-comen';
 
   static Map<String, WidgetBuilder> routes = {
@@ -50,6 +54,8 @@ class AppRoutes {
     wasteBankDeposit: (context) => WasteDepositScreen(),
     ecoCalculator: (context) => EcoEnzymeCalculatorScreen(),
     order: (context) => OrderScreen(),
+    comic: (context) => ComicScreen(),
+    manageProduct: (context) => ManageProductScreen(),
     // discussionComen: (context) => DiscussionComen(),
   };
 }

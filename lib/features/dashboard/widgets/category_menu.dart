@@ -36,7 +36,9 @@ class CategoryMenu extends StatelessWidget {
         'color': Color(0xFFBA68C8),
         'label': "Komik",
         'icon': Icons.book_outlined,
-        'onTap': () {},
+        'onTap': () {
+          Navigator.pushNamed(context, '/comic');
+        },
       },
       {
         'color': Color(0xFF4DB6AC),
@@ -64,7 +66,9 @@ class CategoryMenu extends StatelessWidget {
         'color': Colors.orange,
         'label': "Kelola Produk",
         'icon': Icons.shopping_bag_outlined,
-        'onTap': () {},
+        'onTap': () {
+          Navigator.pushNamed(context, '/manage-product');
+        },
       },
       {
         'color': Colors.teal,

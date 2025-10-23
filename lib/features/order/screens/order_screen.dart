@@ -138,12 +138,12 @@ class OrderScreenState extends State<OrderScreen>
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('Terima'),
+                        child: const Text('Tolak'),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -151,12 +151,12 @@ class OrderScreenState extends State<OrderScreen>
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('Tolak'),
+                        child: const Text('Terima'),
                       ),
                     ),
                   ],
