@@ -6,10 +6,14 @@ import 'package:ecozyne_mobile/features/comic/screens/comic_screen.dart';
 import 'package:ecozyne_mobile/features/dashboard/screens/dashboard_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/discussion_forum_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_screen.dart';
+import 'package:ecozyne_mobile/features/eco_enzyme_tracking/screens/eco_enzyme_tracking.dart';
 import 'package:ecozyne_mobile/features/eco_enzyme_calculator/screens/eco_enzyme_calculator_screen.dart';
+import 'package:ecozyne_mobile/features/eco_enzyme_tracking/screens/eco_enzyme_tracking_form.dart';
 import 'package:ecozyne_mobile/features/get_started_screen.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_screen.dart';
 import 'package:ecozyne_mobile/features/manage_product/screens/manage_product_screen.dart';
+import 'package:ecozyne_mobile/features/marketplace/screens/checkout_screen.dart';
+import 'package:ecozyne_mobile/features/marketplace/screens/marketplace_screen.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_screen.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_screen.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_deposit_screen.dart';
@@ -25,6 +29,7 @@ class AppRoutes {
   static const String register = '/register';
   static const String wasteDetail = '/waste-detail';
   static const String dashboard = '/dashboard';
+  static const String marketplace = '/marketplace';
   static const String articles = '/articles';
   static const String activity = '/activity';
   static const String discussionForum = '/discussion-forum';
@@ -36,6 +41,9 @@ class AppRoutes {
   static const String order = '/order';
   static const String comic = '/comic';
   static const String manageProduct = '/manage-product';
+  static const String ecoEnzymeTracking = '/eco-enzyme-tracking';
+  static const String ecoEnzymeTrackingForm = '/eco-enzyme-tracking-form';
+  static const String checkout = '/checkout';
   // static const String discussionComen = '/discussion-comen';
 
   static Map<String, WidgetBuilder> routes = {
@@ -56,6 +64,10 @@ class AppRoutes {
     order: (context) => OrderScreen(),
     comic: (context) => ComicScreen(),
     manageProduct: (context) => ManageProductScreen(),
+    ecoEnzymeTracking: (context) => EcoEnzymeTrackingScreen(),
+    ecoEnzymeTrackingForm: (context) => EcoEnzymeTrackingFormScreen(),
+    checkout: (context) => CheckoutScreen(),
+    marketplace: (context) => MarketplaceScreen(),
     // discussionComen: (context) => DiscussionComen(),
   };
 }

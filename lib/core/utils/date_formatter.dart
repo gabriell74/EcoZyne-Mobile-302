@@ -1,11 +1,19 @@
 import 'package:intl/intl.dart';
 
 class DateFormatter {
-  static String formatDate(String date) {
+  static String formatDate(dynamic date) {
     try {
-      final dateTime = DateTime.parse(date);
-      final formattedDate = DateFormat('dd MMMM yyyy', 'id_ID').format(dateTime);
-      return formattedDate;
+      DateTime dateTime;
+
+      if (date is String) {
+        dateTime = DateTime.parse(date);
+      } else if (date is DateTime) {
+        dateTime = date;
+      } else {
+        return '-';
+      }
+
+      return DateFormat('dd MMMM yyyy', 'id_ID').format(dateTime);
     } catch (e) {
       return '-';
     }

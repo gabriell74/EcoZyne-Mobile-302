@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/features/marketplace/screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class MarketplaceCard extends StatelessWidget {
@@ -16,7 +17,16 @@ class MarketplaceCard extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return ProductDetailScreen();
+              },
+            )
+          );
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

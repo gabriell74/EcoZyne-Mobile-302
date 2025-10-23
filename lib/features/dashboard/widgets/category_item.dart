@@ -37,7 +37,7 @@ class CategoryItem extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        CustomText(label, fontSize: 12,),
+        CustomText(label, fontSize: 12, textAlign: TextAlign.center,),
       ],
     );
   }

@@ -1,4 +1,6 @@
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:flutter/material.dart';
 
 class GiftCard extends StatelessWidget {
@@ -21,7 +23,7 @@ class GiftCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 100,
+              height: 120,
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -61,7 +63,22 @@ class GiftCard extends StatelessWidget {
                   ),
 
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => ConfirmationDialog(
+                          "Apakah anda yakin menukar produk ini?",
+                          onTap: () {
+                            Navigator.pop(context);
+                            showSuccessTopSnackBar(
+                              context,
+                              "Penukaran Sedang Diproses",
+                              icon: const Icon(Icons.shopping_bag),
+                            );
+                          },
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF55C173),
                       foregroundColor: Colors.black,
