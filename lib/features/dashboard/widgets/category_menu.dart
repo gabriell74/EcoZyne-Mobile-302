@@ -61,6 +61,12 @@ class CategoryMenu extends StatelessWidget {
         'onTap': () {},
       },
       {
+        'color': Colors.orange,
+        'label': "Kelola Produk",
+        'icon': Icons.shopping_bag_outlined,
+        'onTap': () {},
+      },
+      {
         'color': Colors.teal,
         'label': "Eco Kalkulator",
         'icon': Icons.calculate_outlined,
