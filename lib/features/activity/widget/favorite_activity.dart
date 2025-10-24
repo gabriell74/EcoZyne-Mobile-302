@@ -2,7 +2,9 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteActivity extends StatelessWidget {
-  const FavoriteActivity({super.key});
+  final Map<String,dynamic> activity;
+
+  const FavoriteActivity({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +20,9 @@ class FavoriteActivity extends StatelessWidget {
             children: [
               Container(
                 width: 120,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("assets/images/cover2.png"),
+                    image: AssetImage(activity["image"]),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -39,7 +41,7 @@ class FavoriteActivity extends StatelessWidget {
                           const SizedBox(),
           
                           CustomText(
-                            "50/200",
+                            activity["quota"],
                             fontWeight: FontWeight.bold,
                           ),
                         ],
@@ -48,17 +50,10 @@ class FavoriteActivity extends StatelessWidget {
           
                       Row(
                         children: [
-                          Expanded(
-                            child: CustomText(
-                              "Jumat",
-                              fontSize: 12,
-                              color: Colors.black87,
-                            ),
-                          ),
                           const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                           const SizedBox(width: 4),
                           CustomText(
-                            "03 Oktober 2025",
+                            activity["date"],
                             fontSize: 12,
                             color: Colors.grey,
                           ),
@@ -67,7 +62,7 @@ class FavoriteActivity extends StatelessWidget {
                       const SizedBox(height: 8),
           
                       CustomText(
-                        "Bersih-bersih Pantai Ocarina",
+                        activity["title"],
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                         maxLines: 2,
@@ -80,7 +75,7 @@ class FavoriteActivity extends StatelessWidget {
                           const Icon(Icons.location_on, size: 14, color: Colors.green),
                           const SizedBox(width: 4),
                           CustomText(
-                            "Batam",
+                            activity["location"],
                             fontSize: 12,
                             color: Colors.grey,
                           ),

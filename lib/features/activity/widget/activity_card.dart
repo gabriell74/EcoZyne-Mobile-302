@@ -3,7 +3,10 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class ActivityCard extends StatelessWidget {
-  const ActivityCard({super.key});
+  final Map<String,dynamic> activity;
+
+  const ActivityCard({super.key, required this.activity});
+
 
   void _showConfirmDialog(BuildContext context) {
     showDialog(
@@ -44,9 +47,9 @@ class ActivityCard extends StatelessWidget {
             Container(
               height: 100,
               width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/images/cover3.png"),
+                  image: AssetImage(activity["image"]),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -59,21 +62,21 @@ class ActivityCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
-                      "Tanam Pohon Bersama",
+                      activity["title"],
                       fontSize: 14,
                       maxLines: 2,
                       textOverflow: TextOverflow.ellipsis,
                       fontWeight: FontWeight.bold,
                     ),
                     Row(
-                      children: const [
+                      children: [
                         Icon(Icons.location_on, size: 14, color: Colors.green),
                         SizedBox(width: 4),
-                        CustomText("Batam", color: Colors.grey, fontSize: 12),
+                        CustomText(activity["location"], color: Colors.grey, fontSize: 12),
                       ],
                     ),
                     CustomText(
-                      "12 Agustus 2025, 14.30",
+                      activity["date"],
                       color: Colors.grey,
                       fontSize: 12,
                     ),

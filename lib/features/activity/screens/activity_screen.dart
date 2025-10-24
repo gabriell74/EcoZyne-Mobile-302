@@ -8,7 +8,46 @@ import 'package:ecozyne_mobile/features/activity/widget/search_activity.dart';
 import 'package:flutter/material.dart';
 
 class ActivityScreen extends StatelessWidget {
-  const ActivityScreen({super.key});
+
+  final List<Map<String, dynamic>> _activities = [
+    {
+      "image": "assets/images/activity.png",
+      "title": "Tanam Pohon Bersama",
+      "location": "Batu Aji",
+      "date": "12 Agustus 2025, 14.30",
+      "quota": "50/200",
+    },
+    {
+      "image": "assets/images/activity2.png",
+      "title": "Beach-bersih Pantai Ocarina",
+      "location": "Nongsa",
+      "date": "18 Agustus 2025, 09.00",
+      "quota": "100/100",
+    },
+    {
+      "image": "assets/images/activity3.png",
+      "title": "Workshop Eco Enzyme",
+      "location": "Tembesi",
+      "date": "20 Agustus 2025, 13.00",
+      "quota": "10/100",
+    },
+    {
+      "image": "assets/images/activity4.png",
+      "title": "Kampanye Pengurangan Plastik",
+      "location": "Politeknik Batam",
+      "date": "25 Agustus 2025, 10.00",
+      "quota": "67/70",
+    },
+    {
+      "image": "assets/images/activity5.png",
+      "title": "Donasi Bibit Pohon",
+      "location": "Mata Kucing",
+      "date": "30 Agustus 2025, 08.30",
+      "quota": "30/80",
+    }
+  ];
+
+  ActivityScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +81,7 @@ class ActivityScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 11),
-
-                  FavoriteActivity(),
+                  FavoriteActivity(activity: _activities[1]),
                   const SizedBox(height: 30),
 
                   const CustomText(
@@ -67,15 +105,16 @@ class ActivityScreen extends StatelessWidget {
               childAspectRatio: 0.75,
             ),
             delegate: SliverChildBuilderDelegate((context, index) {
+              final activity = _activities[index];
               return Padding(
                 padding: const EdgeInsets.only(
                   bottom: 16.0,
                   right: 5,
                   left: 5,
                 ),
-                child: ActivityCard(),
+                child: ActivityCard(activity: activity,),
               );
-            }, childCount: 9),
+            }, childCount: _activities.length),
           ),
         ],
       ),
