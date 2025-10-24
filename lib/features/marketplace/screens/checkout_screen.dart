@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/core/utils/validators.dart';
+import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
@@ -60,7 +61,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         title: const CustomText("Checkout", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -74,50 +74,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 fontWeight: FontWeight.bold,
               ),
               const SizedBox(height: 16),
-
-              TextFormField(
+              BuildFormField(
+                label: "Nama Lengkap",
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: "Nama Lengkap",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person_outline),
-                ),
-                validator: (value) => Validators.name(value),
+                validator: Validators.name,
+                prefixIcon: Icons.person_outline,
               ),
-              const SizedBox(height: 16),
-
-              TextFormField(
+              BuildFormField(
+                label: "Nomor WhatsApp",
                 controller: _phoneController,
+                validator: Validators.whatsapp,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: "Nomor WhatsApp",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.phone_outlined),
-                ),
-                validator: (value) => Validators.whatsapp(value),
+                prefixIcon: Icons.phone_outlined,
               ),
-              const SizedBox(height: 16),
-
-              TextFormField(
+              BuildFormField(
+                label: "Alamat Lengkap",
                 controller: _addressController,
+                validator: Validators.address,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: "Alamat Lengkap",
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
-                  prefixIcon: Icon(Icons.location_on_outlined),
-                ),
-                validator: (value) => Validators.address(value),
+                prefixIcon: Icons.location_on_outlined,
               ),
               const SizedBox(height: 24),
-
               ProductCheckoutDetail(),
               const SizedBox(height: 60),
             ],
           ),
         ),
       ),
-
       bottomNavigationBar: Container(
         color: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -156,7 +139,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
         ),
       ),
-
     );
   }
 }

@@ -53,24 +53,39 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
         title: const CustomText(
           "Kalkulator Eco Enzyme",
           fontWeight: FontWeight.bold,
-          color: Colors.white,
         ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomText(
-              "Masukkan kapasitas wadah Anda untuk menghitung takaran bahan pembuatan Eco Enzyme.",
-              textAlign: TextAlign.center,
+            Container(
+              clipBehavior: Clip.antiAlias,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const CustomText(
+                "Masukkan kapasitas wadah Anda untuk menghitung takaran bahan pembuatan Eco Enzyme.",
+                textAlign: TextAlign.center,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 25),
+            CustomText(
+              "Kapasitas Wadah (Liter)",
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              textAlign: TextAlign.start,
+            ),
+            const SizedBox(height: 15),
             TextField(
               controller: _controller,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: "Kapasitas Wadah (Liter)",
                 hintText: "Masukkan kapasitas wadah",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -79,22 +94,24 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
               onSubmitted: (_) => _hitungEcoEnzyme(),
             ),
             const SizedBox(height: 28),
-            ElevatedButton(
-              onPressed: _hitungEcoEnzyme,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF55C173),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 24,
+            Center(
+              child: ElevatedButton(
+                onPressed: _hitungEcoEnzyme,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF55C173),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                child: const CustomText(
+                  "Hitung Takaran",
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              child: const CustomText(
-                "Hitung Takaran",
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 25),
