@@ -2,15 +2,18 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class AcceptedWasteDeliveryTab extends StatelessWidget {
-  const AcceptedWasteDeliveryTab({super.key});
+  final List<Map<String, dynamic>> acceptedWaste;
+
+  const AcceptedWasteDeliveryTab({super.key, required this.acceptedWaste});
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
-      itemCount: 4,
+      itemCount: acceptedWaste.length,
       separatorBuilder: (context, index) => const Divider(height: 20),
       itemBuilder: (context, index) {
+        final data = acceptedWaste[index];
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -23,29 +26,28 @@ class AcceptedWasteDeliveryTab extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   CustomText(
-                    'Nama Pengguna',
+                    data['username'],
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   CustomText(
-                    '10 kg, sisa sayur dan kulit buah',
+                    '${data['weight']}, ${data['description']}',
                     color: Colors.black54,
                     fontSize: 13,
                   ),
                 ],
               ),
             ),
-
-            const CustomText(
-              '100 poin',
-              fontWeight: FontWeight.bold, fontSize: 14
+            CustomText(
+              data['point'],
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
             ),
           ],
         );

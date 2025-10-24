@@ -9,7 +9,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+  final Map<String, dynamic> _activities =
+    {
+      "image": "assets/images/activity.png",
+      "title": "Tanam Pohon Bersama",
+      "currentQuota": 50,
+      "maxQuota": 200,
+      "location": "Batu Aji",
+      "startDate": "12 Agustus 2025, 08.00",
+      "dueDate": "12 Agustus 2025, 12.00",
+      "description": "Ikut serta dalam kegiatan menanam pohon untuk menghijaukan lingkungan dan mengurangi polusi udara."
+    };
+
+  DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +54,7 @@ class DashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            LatestActivity(),
+            LatestActivity(activity: _activities),
 
             const SizedBox(height: 10),
 

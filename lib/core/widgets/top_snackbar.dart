@@ -6,6 +6,7 @@ void showSuccessTopSnackBar(
     BuildContext context,
     String message, {
       Icon? icon,
+      double size = 80
     }) {
 
   final defaultIcon = Icon(
@@ -18,7 +19,7 @@ void showSuccessTopSnackBar(
       ? Icon(
           icon.icon,
           color: Colors.white,
-          size: 80,
+          size: size,
         )
       : defaultIcon;
 

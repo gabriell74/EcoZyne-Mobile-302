@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/features/activity/screens/activity_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteActivity extends StatelessWidget {
@@ -15,7 +16,14 @@ class FavoriteActivity extends StatelessWidget {
       child: SizedBox(
         height: 130,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context, 
+              MaterialPageRoute(
+                builder: (context) => ActivityDetailScreen(activity: activity),
+              )
+            );
+          },
           child: Row(
             children: [
               Container(
@@ -39,9 +47,9 @@ class FavoriteActivity extends StatelessWidget {
                         children: [
           
                           const SizedBox(),
-          
+
                           CustomText(
-                            activity["quota"],
+                            '${activity['currentQuota']}/${activity['maxQuota']}',
                             fontWeight: FontWeight.bold,
                           ),
                         ],
@@ -53,7 +61,7 @@ class FavoriteActivity extends StatelessWidget {
                           const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                           const SizedBox(width: 4),
                           CustomText(
-                            activity["date"],
+                            activity["startDate"],
                             fontSize: 12,
                             color: Colors.grey,
                           ),

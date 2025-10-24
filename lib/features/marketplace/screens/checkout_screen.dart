@@ -123,15 +123,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               height: 55,
               child: ElevatedButton(
                 onPressed: _submitCheckout,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF55C173),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
                 child: const CustomText(
                   "Buat Order",
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),

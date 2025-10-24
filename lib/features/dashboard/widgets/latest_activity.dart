@@ -1,8 +1,11 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/features/activity/screens/activity_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class LatestActivity extends StatelessWidget {
-  const LatestActivity({super.key});
+  final Map<String, dynamic> activity;
+
+  const LatestActivity({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,14 @@ class LatestActivity extends StatelessWidget {
           child: SizedBox(
             height: 80,
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActivityDetailScreen(activity: activity),
+                  ),
+                );
+              },
               child: Row(
                 children: [
 
@@ -42,7 +52,7 @@ class LatestActivity extends StatelessWidget {
 
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: AssetImage("assets/images/cover1.png"),
+                    backgroundImage: AssetImage(activity["image"]),
                   ),
 
                   Expanded(
@@ -55,7 +65,7 @@ class LatestActivity extends StatelessWidget {
                           const SizedBox(height: 4),
 
                           CustomText(
-                            "Bersih-bersih Pantai Ocarina",
+                            activity["title"],
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                             maxLines: 2,
@@ -66,7 +76,7 @@ class LatestActivity extends StatelessWidget {
                               const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                               const SizedBox(width: 4),
                               CustomText(
-                                "03 Oktober 2025",
+                                activity["startDate"],
                                 fontSize: 12,
                                 color: Colors.grey,
                               ),

@@ -4,7 +4,58 @@ import 'package:ecozyne_mobile/features/waste_deposit/widgets/waste_delivery_tab
 import 'package:flutter/material.dart';
 
 class WasteDepositScreen extends StatefulWidget {
-  const WasteDepositScreen({super.key});
+  final List<Map<String, dynamic>> _wasteDeposit = [
+    {
+      "username": "green123",
+      "name": "Andi Wijaya",
+      "email": "andi.wijaya@example.com"
+    },
+    {
+      "username": "eco_lover",
+      "name": "Sari Putri",
+      "email": "sari.putri@example.com"
+    },
+    {
+      "username": "recycle_master",
+      "name": "Budi Santoso",
+      "email": "budi.santoso@example.com"
+    },
+    {
+      "username": "wastewatcher",
+      "name": "Rina Dewi",
+      "email": "rina.dewi@example.com"
+    },
+  ];
+
+  final List<Map<String, dynamic>> _acceptedWaste = [
+    {
+      "username": "green123",
+      "weight": "5 kg",
+      "description": "Sisa sayur dan kulit buah",
+      "point": "50 poin"
+    },
+    {
+      "username": "eco_lover",
+      "weight": "8 kg",
+      "description": "Kertas bekas dan kardus",
+      "point": "80 poin"
+    },
+    {
+      "username": "recycle_master",
+      "weight": "12 kg",
+      "description": "Botol plastik dan kaleng",
+      "point": "120 poin"
+    },
+    {
+      "username": "wastewatcher",
+      "weight": "7 kg",
+      "description": "Sisa makanan dan daun kering",
+      "point": "70 poin"
+    },
+  ];
+
+
+  WasteDepositScreen({super.key});
 
   @override
   State<WasteDepositScreen> createState() => _WasteDepositScreenState();
@@ -62,9 +113,9 @@ class _WasteDepositScreenState extends State<WasteDepositScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          WasteDeliveryTab(),
-          AcceptedWasteDeliveryTab(),
+        children: [
+          WasteDeliveryTab(wasteDeposit: widget._wasteDeposit),
+          AcceptedWasteDeliveryTab(acceptedWaste: widget._acceptedWaste,),
         ],
       ),
     );

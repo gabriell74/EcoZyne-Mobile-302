@@ -13,37 +13,52 @@ class ActivityScreen extends StatelessWidget {
     {
       "image": "assets/images/activity.png",
       "title": "Tanam Pohon Bersama",
+      "currentQuota": 50,
+      "maxQuota": 200,
       "location": "Batu Aji",
-      "date": "12 Agustus 2025, 14.30",
-      "quota": "50/200",
+      "startDate": "12 Agustus 2025, 08.00",
+      "dueDate": "12 Agustus 2025, 12.00",
+      "description": "Ikut serta dalam kegiatan menanam pohon untuk menghijaukan lingkungan dan mengurangi polusi udara."
     },
     {
       "image": "assets/images/activity2.png",
       "title": "Beach-bersih Pantai Ocarina",
+      "currentQuota": 100,
+      "maxQuota": 100,
       "location": "Nongsa",
-      "date": "18 Agustus 2025, 09.00",
-      "quota": "100/100",
+      "startDate": "18 Agustus 2025, 09.00",
+      "dueDate": "18 Agustus 2025, 12.00",
+      "description": "Aksi bersih pantai bersama komunitas untuk menjaga kebersihan laut dan pantai dari sampah plastik."
     },
     {
       "image": "assets/images/activity3.png",
       "title": "Workshop Eco Enzyme",
+      "currentQuota": 10,
+      "maxQuota": 100,
       "location": "Tembesi",
-      "date": "20 Agustus 2025, 13.00",
-      "quota": "10/100",
+      "startDate": "20 Agustus 2025, 13.00",
+      "dueDate": "20 Agustus 2025, 16.00",
+      "description": "Pelajari cara membuat Eco Enzyme dari limbah organik rumah tangga untuk solusi ramah lingkungan."
     },
     {
       "image": "assets/images/activity4.png",
       "title": "Kampanye Pengurangan Plastik",
+      "currentQuota": 67,
+      "maxQuota": 70,
       "location": "Politeknik Batam",
-      "date": "25 Agustus 2025, 10.00",
-      "quota": "67/70",
+      "startDate": "25 Agustus 2025, 10.00",
+      "dueDate": "25 Agustus 2025, 14.00",
+      "description": "Kampanye edukatif untuk mengurangi penggunaan plastik sekali pakai di lingkungan kampus dan sekitarnya."
     },
     {
       "image": "assets/images/activity5.png",
       "title": "Donasi Bibit Pohon",
+      "currentQuota": 30,
+      "maxQuota": 80,
       "location": "Mata Kucing",
-      "date": "30 Agustus 2025, 08.30",
-      "quota": "30/80",
+      "startDate": "30 Agustus 2025, 08.30",
+      "dueDate": "30 Agustus 2025, 12.30",
+      "description": "Berpartisipasi dalam program donasi bibit pohon untuk penghijauan area sekitar dan konservasi alam."
     }
   ];
 

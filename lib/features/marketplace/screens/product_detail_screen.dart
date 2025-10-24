@@ -146,7 +146,6 @@ class ProductDetailScreen extends StatelessWidget {
                     "Beli Sekarang",
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Colors.white,
                   ),
                 ),
               ),

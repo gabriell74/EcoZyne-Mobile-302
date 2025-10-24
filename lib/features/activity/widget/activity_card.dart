@@ -1,38 +1,12 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/features/activity/screens/activity_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class ActivityCard extends StatelessWidget {
   final Map<String,dynamic> activity;
 
   const ActivityCard({super.key, required this.activity});
-
-
-  void _showConfirmDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => ConfirmationDialog(
-        "Anda yakin daftar kegiatan ini?",
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: CustomText(
-                "Berhasil Mendaftar di Tanam Pohon Bersama",
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Color(0xFF649B71),
-            ),
-          );
-          Navigator.pop(context);
-        },
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +18,16 @@ class ActivityCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 100,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(activity["image"]),
-                  fit: BoxFit.cover,
+            Hero(
+              tag: "activity-image-${activity["title"]}",
+              child: Container(
+                height: 100,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(activity["image"]),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -76,7 +53,7 @@ class ActivityCard extends StatelessWidget {
                       ],
                     ),
                     CustomText(
-                      activity["date"],
+                      activity["startDate"],
                       color: Colors.grey,
                       fontSize: 12,
                     ),
@@ -94,7 +71,14 @@ class ActivityCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           textStyle: const TextStyle(fontSize: 12),
                         ),
-                        onPressed: () => _showConfirmDialog(context),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ActivityDetailScreen(activity: activity),
+                            )
+                          );
+                        },
                         child: const Text("Daftar"),
                       ),
                     ),
