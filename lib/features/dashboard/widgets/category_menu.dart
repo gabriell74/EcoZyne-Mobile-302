@@ -84,7 +84,9 @@ class CategoryMenu extends StatelessWidget {
         'color': Color(0xFF9E9E9E),
         'label': "Riwayat",
         'icon': Icons.history,
-        'onTap': () {},
+        'onTap': () {
+          Navigator.pushNamed(context, '/history');
+        },
       },
     ];
 

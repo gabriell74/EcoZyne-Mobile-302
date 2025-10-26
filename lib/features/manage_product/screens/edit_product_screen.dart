@@ -13,12 +13,13 @@ class _EditProdukScreenState extends State<EditProductScreen> {
   final _picker = ImagePicker();
   File? _selectedImage;
 
-  final TextEditingController namaCtrl =
-      TextEditingController(text: 'Bank Sampah A');
-  final TextEditingController hargaCtrl =
-      TextEditingController(text: '10000');
-  final TextEditingController alamatCtrl =
-      TextEditingController(text: 'Jl. Contoh No. 1');
+  final TextEditingController namaCtrl = TextEditingController(
+    text: 'Bank Sampah A',
+  );
+  final TextEditingController hargaCtrl = TextEditingController(text: '10000');
+  final TextEditingController alamatCtrl = TextEditingController(
+    text: 'Jl. Contoh No. 1',
+  );
 
   Future<void> _pickImage() async {
     final picked = await showModalBottomSheet<XFile?>(
@@ -30,7 +31,9 @@ class _EditProdukScreenState extends State<EditProductScreen> {
               leading: const Icon(Icons.photo_library),
               title: const Text('Pilih dari Galeri'),
               onTap: () async {
-                final file = await _picker.pickImage(source: ImageSource.gallery);
+                final file = await _picker.pickImage(
+                  source: ImageSource.gallery,
+                );
                 Navigator.pop(context, file);
               },
             ),
@@ -38,7 +41,9 @@ class _EditProdukScreenState extends State<EditProductScreen> {
               leading: const Icon(Icons.camera_alt),
               title: const Text('Ambil Foto'),
               onTap: () async {
-                final file = await _picker.pickImage(source: ImageSource.camera);
+                final file = await _picker.pickImage(
+                  source: ImageSource.camera,
+                );
                 Navigator.pop(context, file);
               },
             ),
@@ -57,10 +62,7 @@ class _EditProdukScreenState extends State<EditProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Edit Produk'),
-      ),
+      appBar: AppBar(centerTitle: true, title: const Text('Edit Produk')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -79,7 +81,10 @@ class _EditProdukScreenState extends State<EditProductScreen> {
                 ),
                 child: _selectedImage != null
                     ? Image.file(_selectedImage!, fit: BoxFit.cover)
-                    : Image.asset('assets/images/pupuk.png', fit: BoxFit.contain),
+                    : Image.asset(
+                        'assets/images/cover1.png',
+                        fit: BoxFit.contain,
+                      ),
               ),
             ),
             const SizedBox(height: 16),
@@ -105,7 +110,7 @@ class _EditProdukScreenState extends State<EditProductScreen> {
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Edit Produk'),
+                child: const Text('Simpan'),
               ),
             ),
           ],

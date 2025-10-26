@@ -97,7 +97,6 @@ class _WasteDepositScreenState extends State<WasteDepositScreen>
         backgroundColor: const Color(0xFF55C173),
         title: const CustomText(
           'Setoran Sampah',
-          fontWeight: FontWeight.bold,
         ),
         centerTitle: true,
         bottom: TabBar(

@@ -32,7 +32,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Artikel", fontWeight: FontWeight.bold),
+        title: const CustomText("Artikel"),
         centerTitle: true,
       ),
       body: CustomScrollView(

@@ -29,10 +29,7 @@ class GetStartedScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(
-                width: 100,
-                child: FloatingLogo(),
-              ),
+              const SizedBox(width: 100, child: FloatingLogo()),
               const SizedBox(height: 15),
               const CustomText(
                 'Selamat Datang di',
@@ -44,10 +41,7 @@ class GetStartedScreen extends StatelessWidget {
               const AnimatedGradientText(
                 "Ecozyne",
                 colors: [Colors.green, Colors.blue],
-                style: TextStyle(
-                  fontSize: 34.0,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 34.0, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 80),
               ElevatedButton(
@@ -71,7 +65,7 @@ class GetStartedScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomText(
-                    'Bersama kita bisa membuat bumi lebih hijau ',
+                    'Bersama, kita bisa membuat bumi lebih hijau ',
                     fontSize: 14,
                     textAlign: TextAlign.center,
                   ),

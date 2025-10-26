@@ -52,7 +52,6 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
         backgroundColor: const Color(0xFF55C173),
         title: const CustomText(
           "Kalkulator Eco Enzyme",
-          fontWeight: FontWeight.bold,
         ),
         centerTitle: true,
       ),

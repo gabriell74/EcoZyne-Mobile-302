@@ -33,8 +33,7 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
         backgroundColor: const Color(0xFF55C173),
         title: const CustomText(
           "Forum Diskusi",
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: Colors.black,
         ),
         centerTitle: true,
       ),

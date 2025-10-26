@@ -8,7 +8,6 @@ import 'package:ecozyne_mobile/features/activity/widget/search_activity.dart';
 import 'package:flutter/material.dart';
 
 class ActivityScreen extends StatelessWidget {
-
   final List<Map<String, dynamic>> _activities = [
     {
       "image": "assets/images/activity.png",
@@ -18,7 +17,8 @@ class ActivityScreen extends StatelessWidget {
       "location": "Batu Aji",
       "startDate": "12 Agustus 2025, 08.00",
       "dueDate": "12 Agustus 2025, 12.00",
-      "description": "Ikut serta dalam kegiatan menanam pohon untuk menghijaukan lingkungan dan mengurangi polusi udara."
+      "description":
+          "Ikut serta dalam kegiatan menanam pohon untuk menghijaukan lingkungan dan mengurangi polusi udara.",
     },
     {
       "image": "assets/images/activity2.png",
@@ -28,7 +28,8 @@ class ActivityScreen extends StatelessWidget {
       "location": "Nongsa",
       "startDate": "18 Agustus 2025, 09.00",
       "dueDate": "18 Agustus 2025, 12.00",
-      "description": "Aksi bersih pantai bersama komunitas untuk menjaga kebersihan laut dan pantai dari sampah plastik."
+      "description":
+          "Aksi bersih pantai bersama komunitas untuk menjaga kebersihan laut dan pantai dari sampah plastik.",
     },
     {
       "image": "assets/images/activity3.png",
@@ -38,7 +39,8 @@ class ActivityScreen extends StatelessWidget {
       "location": "Tembesi",
       "startDate": "20 Agustus 2025, 13.00",
       "dueDate": "20 Agustus 2025, 16.00",
-      "description": "Pelajari cara membuat Eco Enzyme dari limbah organik rumah tangga untuk solusi ramah lingkungan."
+      "description":
+          "Pelajari cara membuat Eco Enzyme dari limbah organik rumah tangga untuk solusi ramah lingkungan.",
     },
     {
       "image": "assets/images/activity4.png",
@@ -48,7 +50,8 @@ class ActivityScreen extends StatelessWidget {
       "location": "Politeknik Batam",
       "startDate": "25 Agustus 2025, 10.00",
       "dueDate": "25 Agustus 2025, 14.00",
-      "description": "Kampanye edukatif untuk mengurangi penggunaan plastik sekali pakai di lingkungan kampus dan sekitarnya."
+      "description":
+          "Kampanye edukatif untuk mengurangi penggunaan plastik sekali pakai di lingkungan kampus dan sekitarnya.",
     },
     {
       "image": "assets/images/activity5.png",
@@ -58,8 +61,9 @@ class ActivityScreen extends StatelessWidget {
       "location": "Mata Kucing",
       "startDate": "30 Agustus 2025, 08.30",
       "dueDate": "30 Agustus 2025, 12.30",
-      "description": "Berpartisipasi dalam program donasi bibit pohon untuk penghijauan area sekitar dan konservasi alam."
-    }
+      "description":
+          "Berpartisipasi dalam program donasi bibit pohon untuk penghijauan area sekitar dan konservasi alam.",
+    },
   ];
 
   ActivityScreen({super.key});
@@ -70,7 +74,7 @@ class ActivityScreen extends StatelessWidget {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Kegiatan", fontWeight: FontWeight.bold),
+        title: CustomText("Kegiatan"),
         centerTitle: true,
       ),
       body: CustomScrollView(
@@ -122,12 +126,8 @@ class ActivityScreen extends StatelessWidget {
             delegate: SliverChildBuilderDelegate((context, index) {
               final activity = _activities[index];
               return Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 16.0,
-                  right: 5,
-                  left: 5,
-                ),
-                child: ActivityCard(activity: activity,),
+                padding: const EdgeInsets.only(bottom: 16.0, right: 5, left: 5),
+                child: ActivityCard(activity: activity),
               );
             }, childCount: _activities.length),
           ),

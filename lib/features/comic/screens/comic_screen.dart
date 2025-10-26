@@ -10,22 +10,19 @@ class ComicScreen extends StatelessWidget {
       {
         'title': 'Eco Buster',
         'image': 'assets/images/cover1.png',
-        'comicImage': 'assets/images/cover3.png',
+        'comicImage': 'assets/images/cover1.png',
       },
       {
         'title': 'Mico dan Lobak',
-        'image': 'assets/images/cover3.png',
-        'comicImage': 'assets/images/cover3.png',
+        'image': 'assets/images/cover1.png',
+        'comicImage': 'assets/images/cover1.png',
       },
     ];
 
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text(
-          'Komik',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Komik'),
         centerTitle: true,
         backgroundColor: Color(0xFF55C173),
         foregroundColor: Colors.black,

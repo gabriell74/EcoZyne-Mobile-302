@@ -12,7 +12,7 @@ class WasteBankScreen extends StatelessWidget {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Bank Sampah", fontWeight: FontWeight.bold),
+        title: const CustomText("Bank Sampah"),
         centerTitle: true,
       ),
       body: CustomScrollView(
@@ -43,7 +43,6 @@ class WasteBankScreen extends StatelessWidget {
             ),
           ),
 
-          // Daftar bank sampah
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
               return Padding(
