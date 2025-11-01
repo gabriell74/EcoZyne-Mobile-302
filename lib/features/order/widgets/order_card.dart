@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class OrderCard extends StatelessWidget {
@@ -19,9 +20,7 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -32,13 +31,11 @@ class OrderCard extends StatelessWidget {
             if (tanggal != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
+                child: CustomText(
                   tanggal!,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.grey,
                 ),
               ),
             Row(
@@ -56,15 +53,13 @@ class OrderCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      CustomText(
                         produk,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-                      Text(jumlah.toString()),
-                      Text(metode),
+                      CustomText(jumlah.toString()),
+                      CustomText(metode),
                     ],
                   ),
                 ),
@@ -84,7 +79,7 @@ class OrderCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text('Tolak'),
+                      child: const CustomText('Tolak', color: Colors.white),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -97,7 +92,7 @@ class OrderCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text('Terima'),
+                      child: const CustomText('Terima', color: Colors.white),
                     ),
                   ),
                 ],

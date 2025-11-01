@@ -8,22 +8,22 @@ class WasteDepositScreen extends StatefulWidget {
     {
       "username": "green123",
       "name": "Andi Wijaya",
-      "email": "andi.wijaya@example.com"
+      "email": "andi.wijaya@example.com",
     },
     {
       "username": "eco_lover",
       "name": "Sari Putri",
-      "email": "sari.putri@example.com"
+      "email": "sari.putri@example.com",
     },
     {
       "username": "recycle_master",
       "name": "Budi Santoso",
-      "email": "budi.santoso@example.com"
+      "email": "budi.santoso@example.com",
     },
     {
       "username": "wastewatcher",
       "name": "Rina Dewi",
-      "email": "rina.dewi@example.com"
+      "email": "rina.dewi@example.com",
     },
   ];
 
@@ -32,28 +32,27 @@ class WasteDepositScreen extends StatefulWidget {
       "username": "green123",
       "weight": "5 kg",
       "description": "Sisa sayur dan kulit buah",
-      "point": "50 poin"
+      "point": "50 poin",
     },
     {
       "username": "eco_lover",
       "weight": "8 kg",
       "description": "Kertas bekas dan kardus",
-      "point": "80 poin"
+      "point": "80 poin",
     },
     {
       "username": "recycle_master",
       "weight": "12 kg",
       "description": "Botol plastik dan kaleng",
-      "point": "120 poin"
+      "point": "120 poin",
     },
     {
       "username": "wastewatcher",
       "weight": "7 kg",
       "description": "Sisa makanan dan daun kering",
-      "point": "70 poin"
+      "point": "70 poin",
     },
   ];
-
 
   WasteDepositScreen({super.key});
 
@@ -95,9 +94,7 @@ class _WasteDepositScreenState extends State<WasteDepositScreen>
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText(
-          'Setoran Sampah',
-        ),
+        title: const CustomText('Setoran Sampah'),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
@@ -114,7 +111,7 @@ class _WasteDepositScreenState extends State<WasteDepositScreen>
         controller: _tabController,
         children: [
           WasteDeliveryTab(wasteDeposit: widget._wasteDeposit),
-          AcceptedWasteDeliveryTab(acceptedWaste: widget._acceptedWaste,),
+          AcceptedWasteDeliveryTab(acceptedWaste: widget._acceptedWaste),
         ],
       ),
     );

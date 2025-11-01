@@ -68,7 +68,7 @@ class ComicDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(title, style: const TextStyle(color: Colors.black)),
         centerTitle: true,
         backgroundColor: Color(0xFF55C173),
         foregroundColor: Colors.black,
