@@ -25,9 +25,9 @@ class OrderScreenState extends State<OrderScreen>
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Pesanan', style: TextStyle(color: Colors.white)),
+        title: const Text('Pesanan', style: TextStyle(color: Colors.black)),
         centerTitle: true,
-        backgroundColor: Colors.green,
+        backgroundColor: Color(0xFF55C173),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),

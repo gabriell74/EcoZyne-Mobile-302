@@ -18,6 +18,14 @@ class ProfileMenuList extends StatelessWidget {
           label: "Edit Akun",
           onTap: () {},
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Divider(
+            color: Colors.grey.withValues(alpha: 0.2),
+            thickness: 1,
+            height: 1,
+          ),
+        ),
         ProfileMenuItem(
           icon: Icons.exit_to_app_rounded,
           label: "Keluar",

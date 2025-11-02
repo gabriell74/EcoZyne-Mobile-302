@@ -29,39 +29,6 @@ class OrderScreenState extends State<PointOutScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Bagian hijau untuk judul dan tombol back
-            Container(
-              color: Colors.green,
-              padding: const EdgeInsets.only(
-                top: 40,
-                left: 8,
-                right: 16,
-                bottom: 16,
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        'Pesanan',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48), // biar teks tetap center
-                ],
-              ),
-            ),
-
-            // Bagian TabBar putih
             Container(
               color: Colors.white,
               child: TabBar(

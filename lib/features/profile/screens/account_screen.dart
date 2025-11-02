@@ -16,7 +16,7 @@ class AccountScreen extends StatelessWidget {
       body: AppBackground(
         child: SafeArea(
           child: Container(
-            color: Colors.grey[50],
+            color: Colors.grey[200],
             width: double.infinity,
             child: Column(
               children: [
