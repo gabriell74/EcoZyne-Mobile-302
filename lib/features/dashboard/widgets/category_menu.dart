@@ -1,5 +1,4 @@
 import 'package:ecozyne_mobile/features/dashboard/widgets/category_item.dart';
-import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_screen.dart';
 import 'package:flutter/material.dart';
 
 class CategoryMenu extends StatelessWidget {

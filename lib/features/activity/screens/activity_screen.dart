@@ -1,4 +1,3 @@
-import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/activity/widget/activity_card.dart';
 import 'package:ecozyne_mobile/features/activity/widget/activity_header.dart';

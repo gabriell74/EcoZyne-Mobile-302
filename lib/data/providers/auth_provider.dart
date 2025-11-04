@@ -1,7 +1,6 @@
 import 'package:ecozyne_mobile/core/utils/validators.dart';
 import 'package:ecozyne_mobile/data/models/user.dart';
 import 'package:ecozyne_mobile/data/services/auth_service.dart';
-import 'package:ecozyne_mobile/data/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 
 class AuthProvider with ChangeNotifier {

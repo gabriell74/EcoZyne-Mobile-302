@@ -1,4 +1,3 @@
-import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';

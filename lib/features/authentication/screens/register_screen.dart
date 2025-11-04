@@ -6,7 +6,6 @@ import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/data/models/region.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/region_provider.dart';
-import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

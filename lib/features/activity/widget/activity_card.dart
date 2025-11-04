@@ -1,4 +1,3 @@
-import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/activity/screens/activity_detail_screen.dart';
 import 'package:flutter/material.dart';

@@ -4,8 +4,6 @@ import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class QuestionScreen extends StatefulWidget {
   const QuestionScreen({super.key});
