@@ -41,7 +41,7 @@ class ActivityCard extends StatelessWidget {
                     CustomText(
                       activity["title"],
                       fontSize: 14,
-                      maxLines: 2,
+                      maxLines: 1,
                       textOverflow: TextOverflow.ellipsis,
                       fontWeight: FontWeight.bold,
                     ),

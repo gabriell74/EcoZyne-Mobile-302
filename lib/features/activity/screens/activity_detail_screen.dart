@@ -143,7 +143,7 @@ class ActivityDetailScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => _showConfirmDialog(context),
                 child: const CustomText(
-                  "Buat Order",
+                  "Daftar Kegiatan",
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
