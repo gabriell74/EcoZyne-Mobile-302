@@ -30,21 +30,17 @@ class MarketplaceCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 120,
+            Image.asset(
+              item["image"]!,
+              fit: BoxFit.cover,
               width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(item["image"]!),
-                  fit: BoxFit.cover,
-                ),
-              ),
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               child: CustomText(
                 item["name"]!,
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 maxLines: 2,
                 textOverflow: TextOverflow.ellipsis,

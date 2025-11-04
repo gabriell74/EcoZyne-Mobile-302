@@ -3,6 +3,7 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/marketplace/widgets/marketplace_card.dart';
 import 'package:ecozyne_mobile/features/marketplace/widgets/marketplace_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class MarketplaceScreen extends StatelessWidget {
   const MarketplaceScreen({super.key});
@@ -11,32 +12,22 @@ class MarketplaceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, String>> products = [
       {
-        'image': 'assets/images/cover1.png',
-        'name': 'Pupuk Kompos',
+        'image': 'assets/images/product.png',
+        'name': 'Pupuk Kompos, Bibit Cabai, dan Tanah Subur',
         'price': 'Rp 10.000',
       },
       {
-        'image': 'assets/images/cover2.png'    ,
+        'image': 'assets/images/product2.png'    ,
         'name': 'Bibit Cabai',
         'price': 'Rp 15.000',
       },
       {
-        'image': 'assets/images/cover3.png',
+        'image': 'assets/images/product3.png',
         'name': 'Tanah Subur',
         'price': 'Rp 12.000',
       },
       {
-        'image': 'assets/images/cover1.png',
-        'name': 'Pupuk Cair',
-        'price': 'Rp 20.000',
-      },
-      {
-        'image': 'assets/images/cover1.png',
-        'name': 'Pupuk Cair',
-        'price': 'Rp 20.000',
-      },
-      {
-        'image': 'assets/images/cover1.png',
+        'image': 'assets/images/product4.png',
         'name': 'Pupuk Cair',
         'price': 'Rp 20.000',
       },
@@ -78,20 +69,15 @@ class MarketplaceScreen extends StatelessWidget {
                 ),
               ),
 
-              SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final item = products[index];
-                    return MarketplaceCard(item: item);
-                  },
-                  childCount: products.length,
-                ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.8,
-                ),
-              ),
+              SliverMasonryGrid.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 5,
+                crossAxisSpacing: 2,
+                childCount: products.length,
+                itemBuilder: (context, index) {
+                  return MarketplaceCard(item: products[index]);
+                },
+              )
             ],
           ),
         ),

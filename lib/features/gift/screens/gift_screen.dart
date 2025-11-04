@@ -3,6 +3,7 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_card.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class GiftScreen extends StatelessWidget {
   const GiftScreen({super.key});
@@ -11,51 +12,31 @@ class GiftScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, String>> products = [
       {
-        'image': 'assets/images/cover1.png',
+        'image': 'assets/images/gift.png',
         'name': 'Beras Premium',
         'poin': '200 poin',
       },
       {
-        'image': 'assets/images/cover2.png',
-        'name': 'Gula Pasir',
-        'poin': '200 poin',
+        'image': 'assets/images/gift2.png',
+        'name': 'Gula Pasir Pantai Putih Seputih Kertas Panjang Sekali',
+        'poin': '250 poin',
       },
       {
-        'image': 'assets/images/cover3.png',
+        'image': 'assets/images/gift3.png',
         'name': 'Minyak Goreng',
-        'poin': '200 poin',
+        'poin': '150 poin',
       },
       {
-        'image': 'assets/images/cover1.png',
-        'name': 'Sirup Buah',
-        'poin': '200 poin',
-      },
-      {
-        'image': 'assets/images/cover3.png',
-        'name': 'Minyak Goreng',
-        'poin': '200 poin',
-      },
-      {
-        'image': 'assets/images/cover1.png',
-        'name': 'Sirup Buah',
-        'poin': '200 poin',
-      },
-      {
-        'image': 'assets/images/cover3.png',
-        'name': 'Minyak Goreng',
-        'poin': '200 poin',
-      },
-      {
-        'image': 'assets/images/cover1.png',
-        'name': 'Sirup Buah',
-        'poin': '200 poin',
+        'image': 'assets/images/gift4.png',
+        'name': 'Sirup Buah Lezat dengan Botol Cantik',
+        'poin': '300 poin',
       },
     ];
 
     return Scaffold(
       body: AppBackground(
         child: Padding(
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.all(8),
           child: CustomScrollView(
             slivers: [
               const SliverToBoxAdapter(
@@ -69,27 +50,32 @@ class GiftScreen extends StatelessWidget {
                 ),
               ),
 
-              // Search bar
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: GiftSearchBar()
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: GiftSearchBar(),
                 ),
               ),
 
-              SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                    final item = products[index];
-                    return GiftCard(item: item);
-                  },
-                  childCount: products.length,
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: CustomText(
+                    "Temukan hadiah menarik",
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.8,
-                ),
+              ),
+
+              SliverMasonryGrid.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 5,
+                crossAxisSpacing: 2,
+                childCount: products.length,
+                itemBuilder: (context, index) {
+                  return GiftCard(item: products[index]);
+                },
               ),
             ],
           ),

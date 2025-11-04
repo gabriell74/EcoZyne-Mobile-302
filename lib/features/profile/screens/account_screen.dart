@@ -108,9 +108,9 @@ class AccountScreen extends StatelessWidget {
                       ElevatedButton.icon(
                         onPressed: () => navProvider.setIndex(2),
                         icon: const Icon(Icons.swap_horiz, size: 18),
-                        label: const Text(
+                        label: const CustomText(
                           'Tukar',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],

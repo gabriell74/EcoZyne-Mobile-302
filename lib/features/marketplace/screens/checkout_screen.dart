@@ -97,39 +97,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               const SizedBox(height: 24),
               ProductCheckoutDetail(),
               const SizedBox(height: 60),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: SafeArea(
-          top: false,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 6,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: _submitCheckout,
-                child: const CustomText(
-                  "Buat Order",
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+
+              SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _submitCheckout();
+                    },
+                    child: const CustomText(
+                      "Buat Order",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

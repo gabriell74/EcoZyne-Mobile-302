@@ -22,15 +22,10 @@ class GiftCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 120,
+            Image.asset(
+              item["image"]!,
+              fit: BoxFit.cover,
               width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(item["image"]!),
-                  fit: BoxFit.cover,
-                ),
-              ),
             ),
 
             const SizedBox(height: 8),
@@ -39,9 +34,9 @@ class GiftCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: CustomText(
                 item["name"]!,
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
-                maxLines: 2,
+                maxLines: 3,
                 textOverflow: TextOverflow.ellipsis,
               ),
             ),
@@ -61,7 +56,6 @@ class GiftCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   ElevatedButton(
                     onPressed: () {
                       showDialog(
@@ -82,16 +76,15 @@ class GiftCard extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF55C173),
                       foregroundColor: Colors.black,
-                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
+                        horizontal: 15,
                         vertical: 8,
                       ),
                     ),
-                    child: const Text('Tukar poin'),
+                    child: const CustomText(
+                      'Tukar poin',
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
