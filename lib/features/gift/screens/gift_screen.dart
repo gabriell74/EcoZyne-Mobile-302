@@ -1,5 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_card.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_search_bar.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +75,10 @@ class GiftScreen extends StatelessWidget {
                 crossAxisSpacing: 2,
                 childCount: products.length,
                 itemBuilder: (context, index) {
-                  return GiftCard(item: products[index]);
+                  return SlideFadeIn(
+                    delayMilliseconds: index * 100,
+                    child: GiftCard(item: products[index])
+                  );
                 },
               ),
             ],

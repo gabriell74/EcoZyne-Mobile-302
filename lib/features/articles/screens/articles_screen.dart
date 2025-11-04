@@ -1,6 +1,7 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 import 'package:ecozyne_mobile/features/articles/widgets/article_card.dart';
 import 'package:ecozyne_mobile/features/articles/widgets/search_article.dart';
@@ -168,7 +169,10 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                   final article = filtered[index];
                   return Padding(
                     padding: const EdgeInsets.all(13.0),
-                    child: ArticleCard(article: article),
+                    child: SlideFadeIn(
+                      delayMilliseconds: index * 100,
+                      child: ArticleCard(article: article)
+                    ),
                   );
                 }, childCount: filtered.length),
               );

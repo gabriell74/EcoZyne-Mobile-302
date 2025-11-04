@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_search.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
@@ -50,7 +51,10 @@ class WasteBankScreen extends StatelessWidget {
                   horizontal: 15.0,
                   vertical: 5.0,
                 ),
-                child: const WasteBankCard(),
+                child: SlideFadeIn(
+                  delayMilliseconds: index * 100,
+                  child: WasteBankCard()
+                ),
               );
             }, childCount: 10),
           ),
