@@ -33,15 +33,37 @@ class Validators {
   }
 
   static String? password(String? value) {
-    value = value?.trim();
-    if (value == null || value.isEmpty) return "Password wajib diisi";
-    if (value.length < 8) return "Minimal 8 karakter";
+  value = value?.trim();
+  if (value == null || value.isEmpty) return "Password wajib diisi";
+  if (value.length < 8) return "Minimal 8 karakter";
 
-    final validateField = validationError("password");
-    if (validateField != null) return validateField;
-
-    return null;
+  if (value.contains(' ')) {
+    return "Password tidak boleh mengandung spasi";
   }
+
+  // Validasi huruf kecil dan huruf besar
+  final hasUpperLower = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])');
+  if (!hasUpperLower.hasMatch(value)) {
+    return "Harus mengandung huruf besar dan huruf kecil";
+  }
+
+  // Validasi angka
+  final hasNumber = RegExp(r'(?=.*\d)');
+  if (!hasNumber.hasMatch(value)) {
+    return "Harus mengandung angka";
+  }
+
+  // Valdiasi simbol
+  final hasSymbol = RegExp(r'(?=.*[@$!%*?&._\-])');
+  if (!hasSymbol.hasMatch(value)) {
+    return "Harus mengandung simbol (cont. @, #, !, &)";
+  }
+
+  final validateField = validationError("password");
+  if (validateField != null) return validateField;
+
+  return null;
+}
 
   static String? username(String? value) {
     value = value?.trim();

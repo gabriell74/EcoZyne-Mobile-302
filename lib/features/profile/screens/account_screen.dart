@@ -38,7 +38,7 @@ class AccountScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  width: MediaQuery.of(context).size.width * 0.7,
+                  width: MediaQuery.sizeOf(context).width * 0.7,
                   child: Column(
                     children: [
                       CircleAvatar(
@@ -107,18 +107,6 @@ class AccountScreen extends StatelessWidget {
                       ),
                       ElevatedButton.icon(
                         onPressed: () => navProvider.setIndex(2),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF55C173),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 10,
-                          ),
-                        ),
                         icon: const Icon(Icons.swap_horiz, size: 18),
                         label: const Text(
                           'Tukar',

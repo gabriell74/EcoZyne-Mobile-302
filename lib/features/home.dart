@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
         actions: [
           CustomText("2000", color: Colors.amber[800]),
           SizedBox(width: 10,),
-          Icon(Icons.monetization_on_rounded, color: Colors.amber[800]),
+          Icon(Icons.stars_rounded, color: Colors.amber[800]),
           SizedBox(width: 20,),
         ],
         titleSpacing: 0,

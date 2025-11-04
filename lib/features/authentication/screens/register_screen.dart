@@ -3,6 +3,8 @@ import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/region.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/region_provider.dart';
@@ -297,29 +299,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         final message = authProvider.message;
 
                         if (authProvider.success == false) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: CustomText(message as String, color: Colors.red),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15)
-                              ),
-                              backgroundColor: Colors.white,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
+                          showErrorTopSnackBar(context, message as String);
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const CustomText(
-                                'Pendaftaran berhasil! Silakan login.',
-                                color: Colors.green,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15)),
-                              backgroundColor: Colors.white,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
+                          showSuccessTopSnackBar(context, 'Pendaftaran berhasil! Silakan login.');
 
                           if (!mounted) return;
                           Navigator.pop(context);
@@ -327,7 +309,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       }
                     },
                     child: authProvider.isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const LoadingWidget()
                         : const CustomText(
                       "Daftar Akun",
                       fontSize: 18,
