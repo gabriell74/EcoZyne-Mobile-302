@@ -5,89 +5,151 @@ import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AccountScreen extends StatefulWidget {
+class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
 
   @override
-  State<AccountScreen> createState() => _AccountScreenState();
-}
-
-class _AccountScreenState extends State<AccountScreen> {
-  @override
   Widget build(BuildContext context) {
-    NavigationProvider navProvider = context.read<NavigationProvider>();
+    final navProvider = context.read<NavigationProvider>();
+
     return Scaffold(
       body: AppBackground(
-        child: Container(
-          color: Colors.white,
-          child: Column(
-            children: [
-              // Profile Section
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.grey[300],
-                          child: Icon(
-                            Icons.person,
-                            size: 50,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
+        child: SafeArea(
+          child: Container(
+            color: Colors.grey[200],
+            width: double.infinity,
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
 
-                    CustomText(
-                      'Domi Imoet',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    SizedBox(height: 30),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomText(
-                          '2000 Poin',
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 25,
+                    horizontal: 30,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 45,
+                        backgroundColor: Colors.grey[100],
+                        child: const Icon(
+                          Icons.person,
+                          size: 50,
                           color: Color(0xFF55C173),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            navProvider.setIndex(2);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF55C173),
-                            foregroundColor: Colors.black,
-                            textStyle: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 8,
-                            ),
-                          ),
-                          child: const Text('Tukar poin'),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(height: 12),
+                      const CustomText(
+                        'Domi Imoet',
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(height: 8),
+                      CustomText(
+                        'Member Bank Sampah',
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              Divider(height: 1, color: Colors.grey[300]),
+                const SizedBox(height: 40),
 
-              const Expanded(child: ProfileMenuList()),
-            ],
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: const [
+                          Icon(
+                            Icons.stars_rounded,
+                            color: Color(0xFF55C173),
+                            size: 30,
+                          ),
+                          SizedBox(width: 8),
+                          CustomText(
+                            '2000',
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF55C173),
+                          ),
+                        ],
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () => navProvider.setIndex(2),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF55C173),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
+                          ),
+                        ),
+                        icon: const Icon(Icons.swap_horiz, size: 18),
+                        label: const Text(
+                          'Tukar',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const ProfileMenuList(),
+                ),
+
+                const Spacer(),
+              ],
+            ),
           ),
         ),
       ),

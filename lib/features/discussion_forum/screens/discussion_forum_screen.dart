@@ -31,10 +31,7 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText(
-          "Forum Diskusi",
-          color: Colors.black,
-        ),
+        title: const CustomText("Forum Diskusi", color: Colors.black),
         centerTitle: true,
       ),
       backgroundColor: Colors.grey[200],
@@ -46,7 +43,7 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
           onPressed: () {
             Navigator.pushNamed(context, '/question');
           },
-          child: const Icon(Icons.add, color: Colors.white),
+          child: const Icon(Icons.add, color: Colors.black),
         ),
       ),
       body: CustomScrollView(

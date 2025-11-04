@@ -6,16 +6,23 @@ class ComicScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> comics = [
+    final List<Map<String, dynamic>> comics = [
       {
         'title': 'Eco Buster',
         'image': 'assets/images/cover1.png',
-        'comicImage': 'assets/images/cover1.png',
+        'comicImages': [
+          'assets/images/cover1.png',
+          'assets/images/cover2.png',
+          'assets/images/cover3.png',
+        ],
       },
       {
         'title': 'Mico dan Lobak',
         'image': 'assets/images/cover1.png',
-        'comicImage': 'assets/images/cover1.png',
+        'comicImages': [
+          'assets/images/activity2.png',
+          'assets/images/activity.png',
+        ],
       },
     ];
 
@@ -24,7 +31,7 @@ class ComicScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Komik'),
         centerTitle: true,
-        backgroundColor: Color(0xFF55C173),
+        backgroundColor: const Color(0xFF55C173),
         foregroundColor: Colors.black,
         elevation: 0,
       ),
@@ -42,7 +49,9 @@ class ComicScreen extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (_) => ComicDetailScreen(
                     title: comic['title']!,
-                    imagePath: comic['comicImage']!,
+                    imagePaths: List<String>.from(
+                      comic['comicImages'] as List<dynamic>,
+                    ),
                   ),
                 ),
               );
@@ -56,27 +65,37 @@ class ComicScreen extends StatelessWidget {
 
 class ComicDetailScreen extends StatelessWidget {
   final String title;
-  final String imagePath;
+  final List<String> imagePaths;
 
   const ComicDetailScreen({
     super.key,
     required this.title,
-    required this.imagePath,
+    required this.imagePaths,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(title, style: const TextStyle(color: Colors.black)),
         centerTitle: true,
-        backgroundColor: Color(0xFF55C173),
+        backgroundColor: const Color(0xFF55C173),
         foregroundColor: Colors.black,
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: ClipRRect(child: Image.asset(imagePath, fit: BoxFit.contain)),
+        child: Column(
+          children: imagePaths
+              .map(
+                (path) => Image.asset(
+                  path,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }

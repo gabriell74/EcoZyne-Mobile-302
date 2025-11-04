@@ -25,12 +25,9 @@ class OrderScreenState extends State<OrderScreen>
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text(
-          'Pesanan',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: const Text('Pesanan', style: TextStyle(color: Colors.black)),
         centerTitle: true,
-        backgroundColor: const Color(0xFF55C173),
+        backgroundColor: Color(0xFF55C173),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -40,7 +37,7 @@ class OrderScreenState extends State<OrderScreen>
           controller: _tabController,
           indicatorColor: Colors.black,
           labelColor: Colors.black,
-          unselectedLabelColor: Colors.white,
+          unselectedLabelColor: Colors.grey[100],
           tabs: const [
             Tab(text: 'Saat Ini'),
             Tab(text: 'Terima'),
