@@ -12,135 +12,125 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final navProvider = context.read<NavigationProvider>();
 
-    return Scaffold(
-      body: AppBackground(
-        child: SafeArea(
-          child: Container(
-            color: Colors.grey[200],
-            width: double.infinity,
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
+    return Column(
+      children: [
+        const SizedBox(height: 40),
 
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 25,
-                    horizontal: 30,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  width: MediaQuery.sizeOf(context).width * 0.7,
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 45,
-                        backgroundColor: Colors.grey[100],
-                        child: const Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Color(0xFF55C173),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const CustomText(
-                        'Domi Imoet',
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(height: 8),
-                      CustomText(
-                        'Member Bank Sampah',
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
-                    ],
-                  ),
+        Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: 25,
+            horizontal: 30,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          width: MediaQuery.sizeOf(context).width * 0.7,
+          child: Column(
+            children: [
+              CircleAvatar(
+                radius: 45,
+                backgroundColor: Colors.grey[100],
+                child: const Icon(
+                  Icons.person,
+                  size: 50,
+                  color: Color(0xFF55C173),
                 ),
-
-                const SizedBox(height: 40),
-
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: const [
-                          Icon(
-                            Icons.stars_rounded,
-                            color: Color(0xFF55C173),
-                            size: 30,
-                          ),
-                          SizedBox(width: 8),
-                          CustomText(
-                            '2000',
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF55C173),
-                          ),
-                        ],
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () => navProvider.setIndex(2),
-                        icon: const Icon(Icons.swap_horiz, size: 18),
-                        label: const CustomText(
-                          'Tukar',
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const ProfileMenuList(),
-                ),
-
-                const Spacer(),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+              const CustomText(
+                'Domi Imoet',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              const SizedBox(height: 8),
+              CustomText(
+                'Member Bank Sampah',
+                fontSize: 14,
+                color: Colors.grey[700],
+              ),
+            ],
           ),
         ),
-      ),
+
+        const SizedBox(height: 40),
+
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 18,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: const [
+                  Icon(
+                    Icons.stars_rounded,
+                    color: Color(0xFF55C173),
+                    size: 30,
+                  ),
+                  SizedBox(width: 8),
+                  CustomText(
+                    '2000',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF55C173),
+                  ),
+                ],
+              ),
+              ElevatedButton.icon(
+                onPressed: () => navProvider.setIndex(2),
+                icon: const Icon(Icons.swap_horiz, size: 18),
+                label: const CustomText(
+                  'Tukar',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 25),
+
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const ProfileMenuList(),
+        ),
+
+        const Spacer(),
+      ],
     );
   }
 }

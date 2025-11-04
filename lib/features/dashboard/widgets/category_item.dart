@@ -20,24 +20,33 @@ class CategoryItem extends StatelessWidget {
     return Column(
       children: [
         Material(
-          color: color,
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.transparent,
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(12),
-            child: SizedBox(
+            child: Container(
               width: 55,
               height: 55,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Icon(
                 icon,
-                color: Colors.white,
+                color: color,
                 size: 28,
               ),
             ),
           ),
         ),
         const SizedBox(height: 4),
-        CustomText(label, fontSize: 12, textAlign: TextAlign.center,),
+        CustomText(
+          label,
+          fontSize: 12,
+          textAlign: TextAlign.center,
+          color: Colors.grey[800],
+        ),
       ],
     );
   }

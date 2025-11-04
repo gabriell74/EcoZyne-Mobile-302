@@ -14,6 +14,20 @@ class ProfileMenuList extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         ProfileMenuItem(
+          icon: Icons.recycling_outlined,
+          label: "Daftar Menjadi Bank Sampah",
+          onTap: () {}
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Divider(
+            color: Colors.grey.withValues(alpha: 0.2),
+            thickness: 1,
+            height: 1,
+          ),
+        ),
+        ProfileMenuItem(
+          iconColor: Colors.purpleAccent,
           icon: Icons.person_outline_rounded,
           label: "Edit Akun",
           onTap: () {},

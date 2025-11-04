@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class AppBackground extends StatelessWidget {
@@ -10,26 +9,21 @@ class AppBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors:  [
-                  Color(0xFFFFCDD2),
-                  Color(0xFFC8E6C9),
-                  Color(0xFFBBDEFB),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              )
+        SizedBox.expand(
+          child: Image.asset(
+            'assets/images/background2.jpg',
+            fit: BoxFit.cover,
           ),
         ),
 
-        BackdropFilter(filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
             color: Colors.white.withValues(alpha: 0.2),
           ),
         ),
-        child
+
+        child,
       ],
     );
   }
