@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_accepted_tab.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_current_tab.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_rejected_tab.dart';
@@ -46,13 +47,15 @@ class OrderScreenState extends State<PointOutScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          OrderCurrentTab(),
-          OrderAcceptedTab(),
-          OrderRejectedTab(),
-        ],
+      body: AppBackground(
+        child: TabBarView(
+          controller: _tabController,
+          children: const [
+            OrderCurrentTab(),
+            OrderAcceptedTab(),
+            OrderRejectedTab(),
+          ],
+        ),
       ),
     );
   }

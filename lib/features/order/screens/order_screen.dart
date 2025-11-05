@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:flutter/material.dart';
 import 'order_current_tab.dart';
 import 'order_accepted_tab.dart';
@@ -45,13 +46,15 @@ class OrderScreenState extends State<OrderScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          OrderCurrentTab(),
-          OrderAcceptedTab(),
-          OrderRejectedTab(),
-        ],
+      body: AppBackground(
+        child: TabBarView(
+          controller: _tabController,
+          children: const [
+            OrderCurrentTab(),
+            OrderAcceptedTab(),
+            OrderRejectedTab(),
+          ],
+        ),
       ),
     );
   }

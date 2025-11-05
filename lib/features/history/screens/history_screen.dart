@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/features/history/screens/order_history_screen.dart';
 import 'package:ecozyne_mobile/features/history/screens/point_in_screen.dart';
 import 'package:ecozyne_mobile/features/history/screens/point_out_screen.dart';
@@ -41,13 +42,15 @@ class _HistoryScreenState extends State<HistoryScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          PointInScreen(),
-          PointOutScreen(),
-          OrderHistoryScreen(),
-        ],
+      body: AppBackground(
+        child: TabBarView(
+          controller: _tabController,
+          children: const [
+            PointInScreen(),
+            PointOutScreen(),
+            OrderHistoryScreen(),
+          ],
+        ),
       ),
     );
   }

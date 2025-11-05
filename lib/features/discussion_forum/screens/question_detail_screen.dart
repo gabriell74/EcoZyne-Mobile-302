@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/models/question.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
@@ -57,104 +58,106 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
         centerTitle: true,
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10,),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const CircleAvatar(
-                  radius: 28,
-                  backgroundColor: Colors.deepPurple,
-                  child: Icon(Icons.chat_bubble_outline, color: Colors.white),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        widget.question.username,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                      SizedBox(height: 4),
-                      CustomText(
-                        widget.question.question,
-                        fontSize: 15,
-                        color: Colors.black87,
-                      ),
-                    ],
+      body: AppBackground(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CircleAvatar(
+                    radius: 28,
+                    backgroundColor: Colors.deepPurple,
+                    child: Icon(Icons.chat_bubble_outline, color: Colors.white),
                   ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            const Divider(),
-
-            const SizedBox(height: 16),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const CustomText(
-                  "Balasan",
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    questionProvider.toggleLike(widget.question.id);
-                  },
-                  child: Row(
-                    children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        transitionBuilder: (child, animation) => ScaleTransition(
-                          scale: animation,
-                          child: child,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          widget.question.username,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
                         ),
-                        child: Icon(
-                          widget.question.isLiked ? Icons.favorite : Icons.favorite_border,
-                          key: ValueKey(widget.question.isLiked),
-                          color: Colors.red,
-                          size: 28,
+                        SizedBox(height: 4),
+                        CustomText(
+                          widget.question.question,
+                          fontSize: 15,
+                          color: Colors.black87,
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      CustomText(
-                        widget.question.totalLike.toString(),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-            Container(height: 2, width: 60, color: Colors.blueAccent),
-            const SizedBox(height: 16),
-
-            Expanded(
-              child: ListView.builder(
-                itemCount: replies.length,
-                itemBuilder: (context, index) {
-                  final item = replies[index];
-                  return ReplyItem(
-                    username: item['username']!,
-                    reply: item['reply']!,
-                  );
-                },
+                ],
               ),
-            ),
-          ],
+        
+              const SizedBox(height: 20),
+        
+              const Divider(),
+        
+              const SizedBox(height: 16),
+        
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const CustomText(
+                    "Balasan",
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      questionProvider.toggleLike(widget.question.id);
+                    },
+                    child: Row(
+                      children: [
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) => ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          ),
+                          child: Icon(
+                            widget.question.isLiked ? Icons.favorite : Icons.favorite_border,
+                            key: ValueKey(widget.question.isLiked),
+                            color: Colors.red,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        CustomText(
+                          widget.question.totalLike.toString(),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+        
+              const SizedBox(height: 8),
+              Container(height: 2, width: 60, color: Colors.blueAccent),
+              const SizedBox(height: 16),
+        
+              Expanded(
+                child: ListView.builder(
+                  itemCount: replies.length,
+                  itemBuilder: (context, index) {
+                    final item = replies[index];
+                    return ReplyItem(
+                      username: item['username']!,
+                      reply: item['reply']!,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
 

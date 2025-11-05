@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -82,83 +83,85 @@ class _EcoEnzymeTrackingFormScreenState extends State<EcoEnzymeTrackingFormScree
         title: const CustomText("Pembuatan Eco Enzyme", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: "Nama Batch",
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                value == null || value.isEmpty ? "Nama wajib diisi" : null,
-              ),
-              const SizedBox(height: 16),
-
-              InkWell(
-                onTap: () => _selectDate(context, true),
-                child: InputDecorator(
+      body: AppBackground(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                TextFormField(
+                  controller: _nameController,
                   decoration: const InputDecoration(
-                    labelText: "Tanggal Mulai",
+                    labelText: "Nama Batch",
                     border: OutlineInputBorder(),
                   ),
-                  child: Text(
-                    _startDate != null
-                        ? _dateFormat.format(_startDate!)
-                        : "Pilih tanggal mulai",
-                    style: TextStyle(
-                      color: _startDate != null ? Colors.black : Colors.grey[600],
+                  validator: (value) =>
+                  value == null || value.isEmpty ? "Nama wajib diisi" : null,
+                ),
+                const SizedBox(height: 16),
+        
+                InkWell(
+                  onTap: () => _selectDate(context, true),
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: "Tanggal Mulai",
+                      border: OutlineInputBorder(),
+                    ),
+                    child: Text(
+                      _startDate != null
+                          ? _dateFormat.format(_startDate!)
+                          : "Pilih tanggal mulai",
+                      style: TextStyle(
+                        color: _startDate != null ? Colors.black : Colors.grey[600],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              InkWell(
-                onTap: () => _selectDate(context, false),
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: "Tanggal Selesai",
-                    border: OutlineInputBorder(),
-                  ),
-                  child: Text(
-                    _dueDate != null
-                        ? _dateFormat.format(_dueDate!)
-                        : "Pilih tanggal selesai",
-                    style: TextStyle(
-                      color: _dueDate != null ? Colors.black : Colors.grey[600],
+                const SizedBox(height: 16),
+        
+                InkWell(
+                  onTap: () => _selectDate(context, false),
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: "Tanggal Selesai",
+                      border: OutlineInputBorder(),
+                    ),
+                    child: Text(
+                      _dueDate != null
+                          ? _dateFormat.format(_dueDate!)
+                          : "Pilih tanggal selesai",
+                      style: TextStyle(
+                        color: _dueDate != null ? Colors.black : Colors.grey[600],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: "Catatan",
-                  border: OutlineInputBorder(),
+                const SizedBox(height: 16),
+        
+                TextFormField(
+                  controller: _notesController,
+                  decoration: const InputDecoration(
+                    labelText: "Catatan",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
                 ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 24),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _saveForm,
-                  icon: const Icon(Icons.save),
-                  label: const Text("Simpan"),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                const SizedBox(height: 24),
+        
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _saveForm,
+                    icon: const Icon(Icons.save),
+                    label: const Text("Simpan"),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

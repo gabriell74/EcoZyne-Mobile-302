@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +48,6 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
         title: const CustomText(
@@ -55,99 +55,101 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              clipBehavior: Clip.antiAlias,
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const CustomText(
-                "Masukkan kapasitas wadah Anda untuk menghitung takaran bahan pembuatan Eco Enzyme.",
-                textAlign: TextAlign.center,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 25),
-            CustomText(
-              "Kapasitas Wadah (Liter)",
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              textAlign: TextAlign.start,
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: _controller,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: "Masukkan kapasitas wadah",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onSubmitted: (_) => _hitungEcoEnzyme(),
-            ),
-            const SizedBox(height: 28),
-            Center(
-              child: ElevatedButton(
-                onPressed: _hitungEcoEnzyme,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF55C173),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 24,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+      body: AppBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                clipBehavior: Clip.antiAlias,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: const CustomText(
-                  "Hitung Takaran",
-                  color: Colors.white,
+                  "Masukkan kapasitas wadah Anda untuk menghitung takaran bahan pembuatan Eco Enzyme.",
+                  textAlign: TextAlign.center,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-            const SizedBox(height: 25),
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+              const SizedBox(height: 25),
+              CustomText(
+                "Kapasitas Wadah (Liter)",
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.start,
               ),
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    const CustomText(
-                      "Hasil Perhitungan",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17,
+              const SizedBox(height: 15),
+              TextField(
+                controller: _controller,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: "Masukkan kapasitas wadah",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onSubmitted: (_) => _hitungEcoEnzyme(),
+              ),
+              const SizedBox(height: 28),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _hitungEcoEnzyme,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF55C173),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 24,
                     ),
-                    const Divider(),
-                    _buildResultRow(
-                      "Kapasitas Wadah",
-                      "$_kapasitasWadah Liter",
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    _buildResultRow(
-                      "Molase / Gula Merah",
-                      "${_molaseGulaMerah.toStringAsFixed(1)} gram",
-                    ),
-                    _buildResultRow(
-                      "Bahan Organik",
-                      "${_bahanOrganik.toStringAsFixed(1)} gram",
-                    ),
-                    _buildResultRow("Air", "${_air.toStringAsFixed(1)} Liter"),
-                  ],
+                  ),
+                  child: const CustomText(
+                    "Hitung Takaran",
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 25),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      const CustomText(
+                        "Hasil Perhitungan",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
+                      const Divider(),
+                      _buildResultRow(
+                        "Kapasitas Wadah",
+                        "$_kapasitasWadah Liter",
+                      ),
+                      _buildResultRow(
+                        "Molase / Gula Merah",
+                        "${_molaseGulaMerah.toStringAsFixed(1)} gram",
+                      ),
+                      _buildResultRow(
+                        "Bahan Organik",
+                        "${_bahanOrganik.toStringAsFixed(1)} gram",
+                      ),
+                      _buildResultRow("Air", "${_air.toStringAsFixed(1)} Liter"),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

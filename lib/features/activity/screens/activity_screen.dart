@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/features/activity/widget/activity_card.dart';
@@ -78,52 +79,54 @@ class ActivityScreen extends StatelessWidget {
         title: CustomText("Kegiatan"),
         centerTitle: true,
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(13.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SearchActivity(),
-                  const SizedBox(height: 30),
-                  ActivityHeader(),
-                  const SizedBox(height: 25),
-                  const CustomText(
-                    "Kegiatan Unggulan",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                  const SizedBox(height: 11),
-                  FavoriteActivity(activity: _activities[1]),
-                  const SizedBox(height: 30),
-                  const CustomText(
-                    "Jelajahi Kegiatan",
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  const SizedBox(height: 11),
-                  FilterActivity(),
-                  const SizedBox(height: 8),
-                ],
+      body: AppBackground(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(13.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SearchActivity(),
+                    const SizedBox(height: 30),
+                    ActivityHeader(),
+                    const SizedBox(height: 25),
+                    const CustomText(
+                      "Kegiatan Unggulan",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                    const SizedBox(height: 11),
+                    FavoriteActivity(activity: _activities[1]),
+                    const SizedBox(height: 30),
+                    const CustomText(
+                      "Jelajahi Kegiatan",
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 11),
+                    FilterActivity(),
+                    const SizedBox(height: 8),
+                  ],
+                ),
               ),
             ),
-          ),
-
-          SliverMasonryGrid.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 5,
-            crossAxisSpacing: 2,
-            childCount: _activities.length,
-            itemBuilder: (context, index) {
-              final activity = _activities[index];
-              return SlideFadeIn(
-                delayMilliseconds: index * 100,
-                child: ActivityCard(activity: activity));
-            },
-          ),
-        ],
+        
+            SliverMasonryGrid.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 2,
+              childCount: _activities.length,
+              itemBuilder: (context, index) {
+                final activity = _activities[index];
+                return SlideFadeIn(
+                  delayMilliseconds: index * 100,
+                  child: ActivityCard(activity: activity));
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

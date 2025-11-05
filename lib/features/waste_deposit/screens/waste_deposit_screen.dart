@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/widgets/accepted_waste_delivery_tab.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/widgets/waste_delivery_tab.dart';
@@ -107,12 +108,14 @@ class _WasteDepositScreenState extends State<WasteDepositScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          WasteDeliveryTab(wasteDeposit: widget._wasteDeposit),
-          AcceptedWasteDeliveryTab(acceptedWaste: widget._acceptedWaste),
-        ],
+      body: AppBackground(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            WasteDeliveryTab(wasteDeposit: widget._wasteDeposit),
+            AcceptedWasteDeliveryTab(acceptedWaste: widget._acceptedWaste),
+          ],
+        ),
       ),
     );
   }

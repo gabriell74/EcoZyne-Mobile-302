@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_search.dart';
 import 'package:flutter/material.dart';
@@ -16,49 +17,51 @@ class WasteBankScreen extends StatelessWidget {
         title: const CustomText("Bank Sampah"),
         centerTitle: true,
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const SearchWasteBank(),
-
-                  const SizedBox(height: 30),
-
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFB9F5C6),
+      body: AppBackground(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const SearchWasteBank(),
+        
+                    const SizedBox(height: 30),
+        
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFB9F5C6),
+                      ),
+                      child: const CustomText(
+                        "Daftar sebagai bank sampah",
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    child: const CustomText(
-                      "Daftar sebagai bank sampah",
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 1),
-                ],
+                    const SizedBox(height: 1),
+                  ],
+                ),
               ),
             ),
-          ),
-
-          SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15.0,
-                  vertical: 5.0,
-                ),
-                child: SlideFadeIn(
-                  delayMilliseconds: index * 100,
-                  child: WasteBankCard()
-                ),
-              );
-            }, childCount: 10),
-          ),
-        ],
+        
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                    vertical: 5.0,
+                  ),
+                  child: SlideFadeIn(
+                    delayMilliseconds: index * 100,
+                    child: WasteBankCard()
+                  ),
+                );
+              }, childCount: 10),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/features/comic/widgets/comic_card.dart';
 import 'package:flutter/material.dart';
 
@@ -35,29 +36,31 @@ class ComicScreen extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: comics.length,
-        itemBuilder: (context, index) {
-          final comic = comics[index];
-          return ComicCard(
-            title: comic['title']!,
-            imagePath: comic['image']!,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ComicDetailScreen(
-                    title: comic['title']!,
-                    imagePaths: List<String>.from(
-                      comic['comicImages'] as List<dynamic>,
+      body: AppBackground(
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: comics.length,
+          itemBuilder: (context, index) {
+            final comic = comics[index];
+            return ComicCard(
+              title: comic['title']!,
+              imagePath: comic['image']!,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ComicDetailScreen(
+                      title: comic['title']!,
+                      imagePaths: List<String>.from(
+                        comic['comicImages'] as List<dynamic>,
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
