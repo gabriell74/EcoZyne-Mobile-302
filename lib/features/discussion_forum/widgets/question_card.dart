@@ -1,6 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/models/question.dart';
-import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/edit_question_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_detail_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
+    final authProvider = context.watch<UserProvider>();
     final currentUserId = authProvider.user?.id;
 
     return Material(

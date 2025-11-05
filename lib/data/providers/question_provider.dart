@@ -60,7 +60,6 @@ class QuestionProvider with ChangeNotifier {
       _message = result["message"];
     }
 
-    print(result);
     _isLoading = false;
     notifyListeners();
     return success;

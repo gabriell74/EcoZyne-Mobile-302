@@ -3,11 +3,11 @@ class User {
   final String username;
   final String email;
   final String role;
-  final String? name;
-  final String? phoneNumber;
-  final String? address;
-  final String? postalCode;
-  final String? kelurahan;
+  final String name;
+  final String phoneNumber;
+  final String address;
+  final String postalCode;
+  final int? kelurahan;
 
   User({
     required this.id,

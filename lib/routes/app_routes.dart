@@ -16,6 +16,7 @@ import 'package:ecozyne_mobile/features/manage_product/screens/manage_product_sc
 import 'package:ecozyne_mobile/features/marketplace/screens/checkout_screen.dart';
 import 'package:ecozyne_mobile/features/marketplace/screens/marketplace_screen.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_screen.dart';
+import 'package:ecozyne_mobile/features/splash_screen.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_screen.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_deposit_screen.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_detail.dart';
@@ -24,7 +25,8 @@ import 'package:ecozyne_mobile/features/home.dart';
 import 'package:flutter/material.dart';
 
 class AppRoutes {
-  static const String getStarted = '/';
+  static const String splashScreen = '/';
+  static const String getStarted = '/get_started';
   static const String home = '/home';
   static const String login = '/login';
   static const String register = '/register';
@@ -71,6 +73,7 @@ class AppRoutes {
     checkout: (context) => CheckoutScreen(),
     marketplace: (context) => MarketplaceScreen(),
     history: (context) => HistoryScreen(),
+    splashScreen: (context) => SplashScreen(),
     // discussionComen: (context) => DiscussionComen(),
   };
 }

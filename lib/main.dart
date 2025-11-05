@@ -3,6 +3,7 @@ import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/data/providers/region_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -20,6 +21,7 @@ void main() async{
         ChangeNotifierProvider(create: (_) => ArticleProvider()),
         ChangeNotifierProvider(create: (_) => RegionProvider()),
         ChangeNotifierProvider(create: (_) => QuestionProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: EcoApp(),
     ),
@@ -35,7 +37,7 @@ class EcoApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'EcoZyne',
       theme: AppTheme.lightTheme,
-      initialRoute: AppRoutes.getStarted,
+      initialRoute: AppRoutes.splashScreen,
       routes: AppRoutes.routes,
     );
   }
