@@ -51,4 +51,13 @@ class UserProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  Future<void> logout() async {
+    await SecureStorageService.deleteToken();
+    _user = null;
+    _isGuest = true;
+    _success = false;
+    _message = "Guest mode aktif";
+    notifyListeners();
+  }
 }

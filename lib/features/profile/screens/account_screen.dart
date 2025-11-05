@@ -1,4 +1,3 @@
-import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
@@ -6,15 +5,30 @@ import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
+
+  @override
+  State<AccountScreen> createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProvider>().fetchCurrentUser();
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final navProvider = context.read<NavigationProvider>();
-    final user = context.read<UserProvider>().user;
-    final String userName = user?.username ?? "Guest";
-    final bool isGuest = user == null;
+    final userProvider = context.watch<UserProvider>();
+    final String userName = userProvider.user?.username ?? "Guest";
+    final bool isGuest = userProvider.isGuest;
 
     return Column(
       children: [
@@ -27,7 +41,7 @@ class AccountScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -72,7 +86,7 @@ class AccountScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -119,7 +133,7 @@ class AccountScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -150,6 +164,24 @@ class AccountScreen extends StatelessWidget {
                     Navigator.pushNamed(context, '/register');
                   },
                   child: const Text("Buat Akun"),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomText(
+                      "Sudah Punya Akun? ",
+                      color: Colors.grey.shade500,
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/login'),
+                      child: const CustomText(
+                        "Login",
+                        color: Color(0xFF55C173),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

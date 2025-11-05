@@ -66,9 +66,9 @@ class GreetingCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/register');
+                      Navigator.pushNamed(context, '/login');
                     },
-                    child: const Text("Buat Akun"),
+                    child: const Text("Masuk Akun"),
                   ),
                 ],
               ],

@@ -6,6 +6,8 @@ import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
+import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,21 +42,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<bool> handleLogin(BuildContext context) async {
     final authProvider = context.read<AuthProvider>();
+    final userProvider = context.read<UserProvider>();
 
-    await authProvider.login(
+    // 1️⃣ Login
+    final loginSuccess = await authProvider.login(
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
 
     if (!context.mounted) return false;
 
-    if (authProvider.user != null) {
+    if (loginSuccess) {
+      await userProvider.fetchCurrentUser();
+
       Navigator.pushReplacementNamed(context, AppRoutes.home);
 
       Future.delayed(const Duration(milliseconds: 300), () {
         showSuccessTopSnackBar(
           context,
-          "Selamat datang, ${authProvider.user!.username}!",
+          "Selamat datang, ${userProvider.user?.username ?? "Guest"}!",
           icon: const Icon(Icons.waving_hand),
         );
       });
@@ -73,6 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
     final authProvider = context.watch<AuthProvider>();
+    final navProvider = context.read<NavigationProvider>();
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.white.withValues(alpha: 0.1)),
@@ -149,6 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (_formKey.currentState!.validate()) {
                             await handleLogin(context);
                           }
+                          navProvider.setIndex(0);
                         },
                     child: authProvider.isLoading
                       ? const LoadingWidget()

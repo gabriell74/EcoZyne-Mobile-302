@@ -17,7 +17,6 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _fadeAnimation;
 
   @override
-  @override
   void initState() {
     super.initState();
 

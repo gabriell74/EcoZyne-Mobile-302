@@ -1,6 +1,7 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -52,7 +53,7 @@ class ProfileMenuList extends StatelessWidget {
   }
 
   void _showConfirmDialog(BuildContext context) {
-    final authProvider = context.read<AuthProvider>();
+    final userProvider = context.read<UserProvider>();
     final navProvider = context.read<NavigationProvider>();
 
     showDialog(
@@ -61,7 +62,7 @@ class ProfileMenuList extends StatelessWidget {
         "Apakah Anda yakin ingin keluar dari akun?",
         onTap: () async {
           Navigator.of(context).pop();
-          await authProvider.logout();
+          await userProvider.logout();
           navProvider.setIndex(0);
           Navigator.pushNamedAndRemoveUntil(
             context,

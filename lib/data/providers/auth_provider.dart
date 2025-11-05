@@ -21,7 +21,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(String email, String password) async {
+  Future<bool> login(String email, String password) async {
     _isLoading = true;
     _success = false;
     _message = null;
@@ -34,13 +34,16 @@ class AuthProvider with ChangeNotifier {
       _user = result["user"];
       _success = true;
       _message = result["message"] ?? "Login berhasil";
+      _isLoading = false;
+      notifyListeners();
+      return true;
     } else {
       _success = false;
       _message = result["message"] ?? "Login gagal";
+      _isLoading = false;
+      notifyListeners();
+      return false;
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   Future<void> register({
