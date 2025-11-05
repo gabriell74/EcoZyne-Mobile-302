@@ -147,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? null
                       : () async {
                           if (_formKey.currentState!.validate()) {
-                            handleLogin(context);
+                            await handleLogin(context);
                           }
                         },
                     child: authProvider.isLoading

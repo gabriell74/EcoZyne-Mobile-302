@@ -3,22 +3,12 @@ class User {
   final String username;
   final String email;
   final String role;
-  final String name;
-  final String phoneNumber;
-  final String address;
-  final String postalCode;
-  final int? kelurahan;
 
   User({
     required this.id,
     required this.username,
     required this.email,
     required this.role,
-    required this.name,
-    required this.phoneNumber,
-    required this.address,
-    required this.postalCode,
-    required this.kelurahan,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -27,25 +17,27 @@ class User {
       username: json['username'],
       email: json['email'],
       role: json['role'] ?? '',
-      name: json['name'],
-      phoneNumber: json['phone_number'],
-      address: json['address'],
-      postalCode: json['postal_code'],
-      kelurahan: json['kelurahan'],
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({
+    required String name,
+    required String phoneNumber,
+    required String address,
+    required String postalCode,
+    required int kelurahanId,
+    required String password,
+  }) {
     return {
-      'id': id,
       'username': username,
       'email': email,
+      'password': password,
       'role': role,
       'name': name,
       'phone_number': phoneNumber,
       'address': address,
       'postal_code': postalCode,
-      'kelurahan': kelurahan,
+      'kelurahan': kelurahanId,
     };
   }
 }

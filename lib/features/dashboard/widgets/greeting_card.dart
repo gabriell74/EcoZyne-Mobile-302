@@ -1,12 +1,17 @@
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GreetingCard extends StatelessWidget {
-  final String username;
 
-  const GreetingCard({super.key, this.username = "User"});
+  const GreetingCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<UserProvider>().user;
+    final String userName = user?.username ?? "Guest";
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       padding: const EdgeInsets.all(16),
@@ -42,23 +47,30 @@ class GreetingCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Halo, $username!",
-                  style: const TextStyle(
+                CustomText(
+                  "Halo, $userName!",
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF2E7D32),
-                  ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  "Selamat datang kembali! Yuk lanjutkan kontribusimu hari ini",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                    height: 1.3,
-                  ),
+                CustomText(
+                  user == null
+                      ? "Selamat datang di Ecozyne! Buat akunmu sekarang untuk menikmati semua fitur kami 🌱"
+                      : "Selamat datang kembali, $userName! Yuk lanjutkan kontribusimu hari ini",
+                  fontSize: 14,
+                  color: Colors.black87,
+                  height: 1.3,
                 ),
+                if (user == null) ...[
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: const Text("Buat Akun"),
+                  ),
+                ],
               ],
             ),
           ),

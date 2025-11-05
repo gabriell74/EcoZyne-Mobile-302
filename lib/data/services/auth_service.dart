@@ -46,7 +46,8 @@ class AuthService {
           "message": "Tidak ada koneksi",
         };
       }
-    } catch (_) {
+    } catch (error) {
+      print("ERRORRRR: $error");
       return {
         "success": false,
         "message": "Terjadi kesalahan tak terduga",
@@ -55,28 +56,25 @@ class AuthService {
   }
 
   Future<Map<String, dynamic>> register({
-    required String username,
+    required User user,
     required String name,
-    required String email,
     required String password,
     required String phoneNumber,
     required String address,
     required String postalCode,
-    required int kecamatanId,
     required int kelurahanId,
   }) async {
     try {
-      final response = await _dio.post('/register', data: {
-        'username': username,
-        'name': name,
-        'email': email,
-        'password': password,
-        'phone_number': phoneNumber,
-        'address': address,
-        'postal_code': postalCode,
-        'kecamatan': kecamatanId,
-        'kelurahan': kelurahanId,
-      });
+      final data = user.toJson(
+        name: name,
+        password: password,
+        phoneNumber: phoneNumber,
+        address: address,
+        postalCode: postalCode,
+        kelurahanId: kelurahanId,
+      );
+
+      final response = await _dio.post('/register', data: data);
 
       if (response.statusCode == 201 || response.data["success"] == true) {
         return {

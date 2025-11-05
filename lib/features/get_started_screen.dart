@@ -8,18 +8,6 @@ import 'package:flutter/material.dart';
 class GetStartedScreen extends StatelessWidget {
   const GetStartedScreen({super.key});
 
-  Future<void> _handleStart(BuildContext context) async {
-    final token = await SecureStorageService.getToken();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (token != null && token.isNotEmpty) {
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        Navigator.pushReplacementNamed(context, '/login');
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,14 +33,13 @@ class GetStartedScreen extends StatelessWidget {
               ),
               const SizedBox(height: 80),
               ElevatedButton(
-                onPressed: () => _handleStart(context),
+                onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
                   shape: const StadiumBorder(),
                   shadowColor: Colors.black45,
-                  elevation: 5,
                 ),
                 child: const CustomText(
                   "Mulai Sekarang",

@@ -1,10 +1,13 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/models/user.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/dashboard/widgets/article_list.dart';
 import 'package:ecozyne_mobile/features/dashboard/widgets/greeting_card.dart';
 import 'package:ecozyne_mobile/features/dashboard/widgets/carousel_video.dart';
 import 'package:ecozyne_mobile/features/dashboard/widgets/category_menu.dart';
 import 'package:ecozyne_mobile/features/dashboard/widgets/latest_activity.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatelessWidget {
   final Map<String, dynamic> _activities =
@@ -23,8 +26,6 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // String authName = context.read<AuthProvider>().user!.username;
-
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -32,7 +33,7 @@ class DashboardScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 5),
 
-            GreetingCard(username: "Vio"),
+            GreetingCard(),
 
             const CarouselVideo(),
 

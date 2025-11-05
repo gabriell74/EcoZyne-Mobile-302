@@ -65,7 +65,7 @@ class ProfileMenuList extends StatelessWidget {
           navProvider.setIndex(0);
           Navigator.pushNamedAndRemoveUntil(
             context,
-            '/login',
+            '/get_started',
             (route) => false,
           );
         },

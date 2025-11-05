@@ -44,9 +44,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> register({
-    required String username,
+    required User user,
     required String name,
-    required String email,
     required String password,
     required String phoneNumber,
     required String address,
@@ -60,14 +59,12 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     final result = await _authService.register(
-      username: username,
+      user: user,
       name: name,
-      email: email,
       password: password,
       phoneNumber: phoneNumber,
       address: address,
       postalCode: postalCode,
-      kecamatanId: kecamatanId,
       kelurahanId: kelurahanId,
     );
 
