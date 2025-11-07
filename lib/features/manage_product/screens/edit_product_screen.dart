@@ -90,7 +90,7 @@ class _EditProdukScreenState extends State<EditProductScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: namaCtrl,
-              decoration: const InputDecoration(labelText: 'Nama Bank Sampah'),
+              decoration: const InputDecoration(labelText: 'Nama Produk'),
             ),
             TextField(
               controller: hargaCtrl,

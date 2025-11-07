@@ -1,62 +1,37 @@
-import 'package:ecozyne_mobile/core/widgets/app_background.dart';
-import 'package:ecozyne_mobile/features/order/screens/order_accepted_tab.dart';
-import 'package:ecozyne_mobile/features/order/screens/order_current_tab.dart';
-import 'package:ecozyne_mobile/features/order/screens/order_rejected_tab.dart';
 import 'package:flutter/material.dart';
+import '../widgets/history_item.dart';
 
-class PointOutScreen extends StatefulWidget {
+class PointOutScreen extends StatelessWidget {
   const PointOutScreen({super.key});
 
   @override
-  State<PointOutScreen> createState() => OrderScreenState();
-}
-
-class OrderScreenState extends State<PointOutScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(110),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              color: Colors.white,
-              child: TabBar(
-                controller: _tabController,
-                indicatorColor: Colors.green,
-                labelColor: Colors.green,
-                unselectedLabelColor: Colors.black,
-                tabs: const [
-                  Tab(text: 'Saat Ini'),
-                  Tab(text: 'Terima'),
-                  Tab(text: 'Tolak'),
-                ],
-              ),
-            ),
-          ],
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: const [
+        Text(
+          "HARI INI",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
         ),
-      ),
-      body: AppBackground(
-        child: TabBarView(
-          controller: _tabController,
-          children: const [
-            OrderCurrentTab(),
-            OrderAcceptedTab(),
-            OrderRejectedTab(),
-          ],
+        HistoryItem(
+          icon: Icons.check_circle_outline,
+          color: Color.fromARGB(255, 54, 175, 255),
+          title: "Penukaran Poin Berhasil",
+          subtitle: "-1000 Poin",
+          time: "3j",
         ),
-      ),
+        SizedBox(height: 16),
+        Text(
+          "KEMARIN",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+        ),
+        HistoryItem(
+          icon: Icons.check_circle_outline,
+          color: Color.fromARGB(255, 54, 175, 255  ),
+          title: "Penukaran Poin Berhasil",
+          subtitle: "-2000 Poin",
+        ),
+      ],
     );
   }
 }

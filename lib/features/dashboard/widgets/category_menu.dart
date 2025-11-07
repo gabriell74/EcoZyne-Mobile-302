@@ -8,7 +8,7 @@ class CategoryMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> categories = [
       {
-        'color': Color(0xFF81C784),
+        'color': Color.fromARGB(255, 86, 178, 91),
         'label': "Eco Bank",
         'icon': Icons.recycling_outlined,
         'onTap': () {
@@ -16,7 +16,7 @@ class CategoryMenu extends StatelessWidget {
         },
       },
       {
-        'color': Color(0xFFFFB74D),
+        'color': Color.fromARGB(255, 230, 89, 73),
         'label': "Kegiatan",
         'icon': Icons.volunteer_activism_outlined,
         'onTap': () {
@@ -40,7 +40,7 @@ class CategoryMenu extends StatelessWidget {
         },
       },
       {
-        'color': Color(0xFF4DB6AC),
+        'color': Color.fromARGB(255, 109, 77, 182),
         'label': "Setoran",
         'icon': Icons.upload,
         'onTap': () {
@@ -80,9 +80,9 @@ class CategoryMenu extends StatelessWidget {
         },
       },
       {
-        'color': Color(0xFF9E9E9E),
+        'color': Color(0xFF9B9B9B),
         'label': "Riwayat",
-        'icon': Icons.history,
+        'icon': Icons.history, 
         'onTap': () {
           Navigator.pushNamed(context, '/history');
         },

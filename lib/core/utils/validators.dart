@@ -33,37 +33,37 @@ class Validators {
   }
 
   static String? password(String? value) {
-  value = value?.trim();
-  if (value == null || value.isEmpty) return "Password wajib diisi";
-  if (value.length < 8) return "Minimal 8 karakter";
+    value = value?.trim();
+    if (value == null || value.isEmpty) return "Password wajib diisi";
+    if (value.length < 8) return "Minimal 8 karakter";
 
-  if (value.contains(' ')) {
-    return "Password tidak boleh mengandung spasi";
+    if (value.contains(' ')) {
+      return "Password tidak boleh mengandung spasi";
+    }
+
+    // Validasi huruf kecil dan huruf besar
+    final hasUpperLower = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])');
+    if (!hasUpperLower.hasMatch(value)) {
+      return "Harus mengandung huruf besar dan huruf kecil";
+    }
+
+    // Validasi angka
+    final hasNumber = RegExp(r'(?=.*\d)');
+    if (!hasNumber.hasMatch(value)) {
+      return "Harus mengandung angka";
+    }
+
+    // Valdiasi simbol
+    final hasSymbol = RegExp(r'(?=.*[@$!%*?&._\-])');
+    if (!hasSymbol.hasMatch(value)) {
+      return "Harus mengandung simbol (cont. @, #, !, &)";
+    }
+
+    final validateField = validationError("password");
+    if (validateField != null) return validateField;
+
+    return null;
   }
-
-  // Validasi huruf kecil dan huruf besar
-  final hasUpperLower = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])');
-  if (!hasUpperLower.hasMatch(value)) {
-    return "Harus mengandung huruf besar dan huruf kecil";
-  }
-
-  // Validasi angka
-  final hasNumber = RegExp(r'(?=.*\d)');
-  if (!hasNumber.hasMatch(value)) {
-    return "Harus mengandung angka";
-  }
-
-  // Valdiasi simbol
-  final hasSymbol = RegExp(r'(?=.*[@$!%*?&._\-])');
-  if (!hasSymbol.hasMatch(value)) {
-    return "Harus mengandung simbol (cont. @, #, !, &)";
-  }
-
-  final validateField = validationError("password");
-  if (validateField != null) return validateField;
-
-  return null;
-}
 
   static String? username(String? value) {
     value = value?.trim();
@@ -113,6 +113,40 @@ class Validators {
     if (value == null || value.isEmpty) return "Alamat wajib diisi";
 
     final validateField = validationError("address");
+    if (validateField != null) return validateField;
+
+    return null;
+  }
+
+  static String? bankName(String? value) {
+    value = value?.trim();
+    if (value == null || value.isEmpty) return "Nama bank sampah wajib diisi";
+
+    final validateField = validationError("bank_name");
+    if (validateField != null) return validateField;
+
+    return null;
+  }
+
+  static String? documentFile(String? value) {
+    if (value == null || value.isEmpty) {
+      return "File persetujuan wajib diunggah (format PDF)";
+    }
+    if (!value.toLowerCase().endsWith(".pdf")) {
+      return "File harus berformat PDF";
+    }
+
+    final validateField = validationError("document_file");
+    if (validateField != null) return validateField;
+
+    return null;
+  }
+
+  static String? description(String? value) {
+    value = value?.trim();
+    if (value == null || value.isEmpty) return "Deskripsi wajib diisi";
+
+    final validateField = validationError("description");
     if (validateField != null) return validateField;
 
     return null;
