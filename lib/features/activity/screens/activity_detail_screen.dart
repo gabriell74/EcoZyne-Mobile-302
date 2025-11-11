@@ -6,10 +6,7 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 class ActivityDetailScreen extends StatelessWidget {
   final Map<String, dynamic> activity;
 
-  const ActivityDetailScreen({
-    super.key,
-    required this.activity,
-  });
+  const ActivityDetailScreen({super.key, required this.activity});
 
   void _showConfirmDialog(BuildContext context) {
     showDialog(
@@ -19,9 +16,9 @@ class ActivityDetailScreen extends StatelessWidget {
         onTap: () {
           showSuccessTopSnackBar(
             context,
-            "Berhasil Mendaftar di kegiatan ${activity["title"]}",
+            "Berhasil Mendaftar Kegiatan",
             icon: const Icon(Icons.volunteer_activism_outlined),
-            size: 50,
+            size: 65,
           );
           Navigator.pop(context);
           Navigator.pop(context);
@@ -84,7 +81,11 @@ class ActivityDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        const Icon(Icons.location_on, size: 16, color: Colors.black54),
+                        const Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: Colors.black54,
+                        ),
                         const SizedBox(width: 4),
                         CustomText(activity['location'], color: Colors.black54),
                       ],
@@ -95,7 +96,11 @@ class ActivityDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        const Icon(Icons.calendar_today, size: 16, color: Colors.black54),
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 16,
+                          color: Colors.black54,
+                        ),
                         const SizedBox(width: 4),
                         CustomText(
                           '${activity['startDate']} - ${activity['dueDate']}',

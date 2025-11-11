@@ -1,6 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
-import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_register_screen';
+import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_register_screen.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_search.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
