@@ -89,13 +89,4 @@ class AuthProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
-
-  Future<void> logout() async {
-    _user = null;
-    _success = false;
-    _message = null;
-    notifyListeners();
-
-    await _authService.logout();
-  }
 }

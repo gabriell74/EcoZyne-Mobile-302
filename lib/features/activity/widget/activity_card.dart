@@ -1,6 +1,9 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/activity/screens/activity_detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ActivityCard extends StatelessWidget {
   final Map<String,dynamic> activity;
@@ -74,12 +77,21 @@ class ActivityCard extends StatelessWidget {
                       textStyle: const TextStyle(fontSize: 12),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ActivityDetailScreen(activity: activity),
-                          )
-                      );
+                      final userProvider = context.read<UserProvider>();
+
+                      if (userProvider.isGuest || userProvider.user == null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const LoginRequiredDialog(),
+                        );
+                      } else {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ActivityDetailScreen(activity: activity),
+                            )
+                        );
+                      }
                     },
                     child: const Text("Daftar"),
                   ),

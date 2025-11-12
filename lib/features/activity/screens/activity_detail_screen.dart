@@ -1,7 +1,10 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:provider/provider.dart';
 
 class ActivityDetailScreen extends StatelessWidget {
   final Map<String, dynamic> activity;
@@ -132,7 +135,18 @@ class ActivityDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () => _showConfirmDialog(context),
+                  onPressed: () {
+                    final userProvider = context.read<UserProvider>();
+
+                    if (userProvider.isGuest || userProvider.user == null) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const LoginRequiredDialog(),
+                      );
+                    } else {
+                      _showConfirmDialog(context);
+                    }
+                  },
                   child: const CustomText(
                     "Daftar Kegiatan",
                     fontSize: 16,

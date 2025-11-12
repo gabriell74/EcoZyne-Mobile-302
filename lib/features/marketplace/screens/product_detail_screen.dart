@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   const ProductDetailScreen({super.key});
@@ -140,7 +143,16 @@ class ProductDetailScreen extends StatelessWidget {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/checkout');
+                    final userProvider = context.read<UserProvider>();
+
+                    if (userProvider.isGuest || userProvider.user == null) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const LoginRequiredDialog(),
+                      );
+                    } else {
+                      Navigator.pushNamed(context, '/checkout');
+                    }
                   },
                   child: const CustomText(
                     "Beli Sekarang",

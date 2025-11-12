@@ -24,7 +24,7 @@ class ActivityScreen extends StatelessWidget {
     },
     {
       "image": "assets/images/activity2.png",
-      "title": "Beach-bersih Pantai Ocarina",
+      "title": "Bersih-bersih Pantai Ocarina",
       "currentQuota": 100,
       "maxQuota": 100,
       "location": "Nongsa",

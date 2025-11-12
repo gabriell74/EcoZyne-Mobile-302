@@ -1,12 +1,32 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GiftCard extends StatelessWidget {
   final Map<String, String> item;
 
   const GiftCard({super.key, required this.item});
+
+  void _showConfirmDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        "Apakah anda yakin menukar produk ini?",
+        onTap: () {
+          Navigator.pop(context);
+          showSuccessTopSnackBar(
+            context,
+            "Penukaran Sedang Diproses",
+            icon: const Icon(Icons.shopping_bag),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,20 +78,17 @@ class GiftCard extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ConfirmationDialog(
-                          "Apakah anda yakin menukar produk ini?",
-                          onTap: () {
-                            Navigator.pop(context);
-                            showSuccessTopSnackBar(
-                              context,
-                              "Penukaran Sedang Diproses",
-                              icon: const Icon(Icons.shopping_bag),
-                            );
-                          },
-                        ),
-                      );
+                      final userProvider = context.read<UserProvider>();
+
+                      if (userProvider.isGuest || userProvider.user == null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const LoginRequiredDialog(),
+                        );
+                      } else {
+                        _showConfirmDialog(context);
+                      }
+
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF55C173),

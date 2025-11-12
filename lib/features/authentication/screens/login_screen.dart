@@ -44,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = context.read<AuthProvider>();
     final userProvider = context.read<UserProvider>();
 
-    // 1️⃣ Login
     final loginSuccess = await authProvider.login(
       _emailController.text.trim(),
       _passwordController.text.trim(),

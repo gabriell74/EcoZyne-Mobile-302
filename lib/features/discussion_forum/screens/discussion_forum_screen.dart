@@ -2,7 +2,9 @@ import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/widgets/question_card.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/widgets/search_discussion.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +43,16 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
         child: FloatingActionButton(
           backgroundColor: const Color(0xFF55C173),
           onPressed: () {
-            Navigator.pushNamed(context, '/question');
+            final userProvider = context.read<UserProvider>();
+
+            if (userProvider.isGuest || userProvider.user == null) {
+              showDialog(
+                context: context,
+                builder: (context) => const LoginRequiredDialog(),
+              );
+            } else {
+              Navigator.pushNamed(context, '/question');
+            }
           },
           child: const Icon(Icons.add, color: Colors.black),
         ),
