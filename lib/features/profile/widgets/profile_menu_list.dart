@@ -2,6 +2,7 @@ import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
+import 'package:ecozyne_mobile/features/profile/screens/edit_account_screen.dart';
 import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_item.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_register_screen.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,12 @@ class ProfileMenuList extends StatelessWidget {
           iconColor: Colors.purpleAccent,
           icon: Icons.person_outline_rounded,
           label: "Edit Akun",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const EditAccountScreen()),
+            );
+          },
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
