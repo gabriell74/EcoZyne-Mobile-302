@@ -1,5 +1,8 @@
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/question.dart';
+import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/edit_question_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/screens/question_detail_screen.dart';
@@ -11,6 +14,33 @@ class QuestionCard extends StatelessWidget {
   final VoidCallback? onEdit;
 
   const QuestionCard({super.key, required this.question, this.onEdit});
+
+  void _showConfirmDeleteDialog(BuildContext context, int questionId) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        "Apakah kamu yakin ingin menghapus pertanyaan ini?",
+        onTap: () async {
+          final success = await context.read<QuestionProvider>().deleteQuestion(questionId);
+
+          Navigator.pop(context);
+
+          if (success) {
+            showSuccessTopSnackBar(
+              context,
+              "Berhasil menghapus pertanyaan",
+              icon: const Icon(Icons.check_circle),
+            );
+          } else {
+            showErrorTopSnackBar(
+              context,
+              context.read<QuestionProvider>().message,
+            );
+          }
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +105,20 @@ class QuestionCard extends StatelessWidget {
                           ],
                         ),
                       ),
+                      PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Row(
+                          children: const [
+                            Icon(Icons.delete_outline, size: 20, color: Colors.white),
+                            SizedBox(width: 8),
+                            CustomText(
+                              "Hapus Pertanyaan",
+                              fontSize: 14,
+                              color: Colors.white,
+                            )
+                          ],
+                        ),
+                      ),
                     ],
                     color: Colors.black.withValues(alpha: 0.8),
                     onSelected: (value) {
@@ -85,6 +129,8 @@ class QuestionCard extends StatelessWidget {
                             builder: (_) => EditQuestionScreen(question: question),
                           ),
                         );
+                      } else if (value == 'delete') {
+                          _showConfirmDeleteDialog(context, question.id);
                       }
                     },
                   )

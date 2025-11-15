@@ -9,24 +9,26 @@ class QuestionService {
     try {
       final response = await _dio.get("/questions");
 
-      if (response.statusCode == 200) {
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
         final List data = response.data["data"] ?? [];
         final questions = data.map((json) => Question.fromJson(json)).toList();
 
         return {
-          "success": response.data["success"],
+          "success": true,
           "message": response.data["message"],
           "connected": true,
           "data": questions,
         };
-      } else {
-        return {
-          "success": false,
-          "message": "Gagal memuat pertanyaan",
-          "connected": true,
-          "data": <Question>[],
-        };
       }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal memuat pertanyaan",
+        "connected": true,
+        "data": <Question>[],
+      };
     } on DioException catch (e) {
       if (e.response != null) {
         return {
@@ -35,14 +37,14 @@ class QuestionService {
           "connected": true,
           "data": <Question>[],
         };
-      } else {
-        return {
-          "success": false,
-          "message": "Tidak ada koneksi",
-          "connected": false,
-          "data": <Question>[],
-        };
       }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+        "data": <Question>[],
+      };
     }
   }
 
@@ -53,36 +55,38 @@ class QuestionService {
         data: {"question": question},
       );
 
-      if (response.statusCode == 201) {
-        final data = response.data["data"];
-        final newQuestion = Question.fromJson(data);
+      final success = response.data["success"] == true;
+
+      if ((response.statusCode == 201 || response.statusCode == 200) && success) {
+        final newQuestion = Question.fromJson(response.data["data"]);
+
         return {
-          "success": response.data["success"],
+          "success": true,
           "message": response.data["message"],
           "connected": true,
           "data": newQuestion,
         };
-      } else {
-        return {
-          "success": false,
-          "message": "Gagal membuat pertanyaan",
-          "connected": true,
-        };
       }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal membuat pertanyaan",
+        "connected": true,
+      };
     } on DioException catch (e) {
       if (e.response != null) {
         return {
           "success": false,
-          "message": "Gagal membuat pertanyaan",
+          "message": e.response?.data["message"] ?? "Gagal membuat pertanyaan",
           "connected": true,
         };
-      } else {
-        return {
-          "success": false,
-          "message": "Tidak ada koneksi",
-          "connected": false,
-        };
       }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
     }
   }
 
@@ -93,20 +97,22 @@ class QuestionService {
         data: {"question": question},
       );
 
-      if (response.statusCode == 200) {
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
         return {
-          "success": response.data["success"],
+          "success": true,
           "message": response.data["message"],
           "data": response.data["data"],
           "connected": true,
         };
-      } else {
-        return {
-          "success": false,
-          "message": "Gagal memperbarui pertanyaan",
-          "connected": true,
-        };
       }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal memperbarui pertanyaan",
+        "connected": true,
+      };
     } on DioException catch (e) {
       if (e.response != null) {
         return {
@@ -114,13 +120,13 @@ class QuestionService {
           "message": e.response?.data["message"] ?? "Gagal memperbarui pertanyaan",
           "connected": true,
         };
-      } else {
-        return {
-          "success": false,
-          "message": "Tidak ada koneksi",
-          "connected": false,
-        };
       }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
     }
   }
 
@@ -128,7 +134,9 @@ class QuestionService {
     try {
       final response = await _dio.patch("/question/$questionId/like");
 
-      if (response.statusCode == 200) {
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
         return {
           "success": true,
           "message": response.data["message"],
@@ -136,13 +144,13 @@ class QuestionService {
           "total_like": response.data["total_like"],
           "is_liked": response.data["is_liked"],
         };
-      } else {
-        return {
-          "success": false,
-          "message": "Gagal memperbarui like",
-          "connected": true,
-        };
       }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal memperbarui like",
+        "connected": true,
+      };
     } on DioException catch (e) {
       if (e.response != null) {
         return {
@@ -150,13 +158,49 @@ class QuestionService {
           "message": e.response?.data["message"] ?? "Gagal memperbarui like",
           "connected": true,
         };
-      } else {
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteQuestion(int questionId) async {
+    try {
+      final response = await _dio.delete("/question/delete/$questionId");
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
         return {
-          "success": false,
-          "message": "Tidak ada koneksi",
-          "connected": false,
+          "success": true,
+          "message": response.data["message"],
+          "connected": true,
         };
       }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal menghapus pertanyaan",
+        "connected": true,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal menghapus pertanyaan",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
     }
   }
 }

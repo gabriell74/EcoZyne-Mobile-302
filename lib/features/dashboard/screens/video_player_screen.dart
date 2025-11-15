@@ -93,7 +93,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: Text(widget.title, style: const TextStyle(color: Colors.white)),
+        title: Text(widget.title),
+        centerTitle: true,
       ),
       body: _isInitialized
           ? SingleChildScrollView(

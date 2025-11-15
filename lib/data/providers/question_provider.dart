@@ -118,4 +118,28 @@ class QuestionProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> deleteQuestion(int questionId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await _questionService.deleteQuestion(questionId);
+
+    _connected = result["connected"] ?? false;
+
+    bool success = false;
+
+    if (result["success"] == true) {
+      _questions.removeWhere((q) => q.id == questionId);
+      _message = result["message"] ?? "Berhasil menghapus pertanyaan";
+      success = true;
+    } else {
+      _message = result["message"] ?? "Gagal menghapus pertanyaan";
+    }
+
+    _isLoading = false;
+    notifyListeners();
+
+    return success;
+  }
 }

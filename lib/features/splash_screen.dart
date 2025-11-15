@@ -27,8 +27,9 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
 
-    final userProvider = context.read<UserProvider>();
-    userProvider.fetchCurrentUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProvider>().fetchCurrentUser();
+    });
 
     Timer(const Duration(seconds: 5), () {
       Navigator.pushReplacementNamed(context, '/get_started');
