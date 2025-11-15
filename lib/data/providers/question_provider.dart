@@ -65,7 +65,7 @@ class QuestionProvider with ChangeNotifier {
     return success;
   }
 
-  Future<void> updateQuestion(int questionId, String newQuestionText) async {
+  Future<bool> updateQuestion(int questionId, String newQuestionText) async {
     _isLoading = true;
     notifyListeners();
 
@@ -73,7 +73,7 @@ class QuestionProvider with ChangeNotifier {
     if (index == -1) {
       _isLoading = false;
       notifyListeners();
-      return;
+      return false;
     }
 
     final oldQuestion = _questions[index].question;
@@ -86,13 +86,17 @@ class QuestionProvider with ChangeNotifier {
     if (!result["success"]) {
       _questions[index].question = oldQuestion;
       _message = result["message"];
-    } else {
-      _questions[index] = Question.fromJson(result["data"]);
-      _message = result["message"];
+      _isLoading = false;
+      notifyListeners();
+      return false;
     }
+
+    _questions[index] = Question.fromJson(result["data"]);
+    _message = result["message"];
 
     _isLoading = false;
     notifyListeners();
+    return true;
   }
 
   Future<void> toggleLike(int questionId) async {

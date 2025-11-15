@@ -1,10 +1,13 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
+import 'package:ecozyne_mobile/features/discussion_forum/screens/edit_question_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/widgets/question_card.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/widgets/search_discussion.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +29,35 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<QuestionProvider>().getQuestions();
     });
+  }
+
+  void _showConfirmDeleteDialog(int questionId) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        "Apakah kamu yakin ingin menghapus pertanyaan ini?",
+        onTap: () async {
+          final success = await context.read<QuestionProvider>().deleteQuestion(questionId);
+
+          if (!mounted) return;
+
+          Navigator.pop(context);
+
+          if (success) {
+            showSuccessTopSnackBar(
+              context,
+              "Berhasil menghapus pertanyaan",
+              icon: const Icon(Icons.check_circle),
+            );
+          } else {
+            showErrorTopSnackBar(
+              context,
+              context.read<QuestionProvider>().message,
+            );
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -59,11 +91,9 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
       ),
       body: AppBackground(
         child: RefreshIndicator(
-          onRefresh: () {
-            return context.read<QuestionProvider>().getQuestions();
-          },
+          onRefresh: () => context.read<QuestionProvider>().getQuestions(),
           color: Colors.black,
-          backgroundColor: Color(0xFF55C173),
+          backgroundColor: const Color(0xFF55C173),
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
@@ -78,7 +108,6 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   ),
                 ),
               ),
-
               const SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 8),
@@ -89,7 +118,6 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   ),
                 ),
               ),
-
               Consumer<QuestionProvider>(
                 builder: (context, provider, child) {
                   final questions = provider.questions;
@@ -97,12 +125,10 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   final filtered = _query.isEmpty
                       ? questions
                       : questions
-                            .where(
-                              (q) => q.question.toLowerCase().contains(
-                                _query.toLowerCase(),
-                              ),
-                            )
-                            .toList();
+                      .where(
+                        (q) => q.question.toLowerCase().contains(_query.toLowerCase()),
+                  )
+                      .toList();
 
                   if (provider.isLoading) {
                     return const SliverFillRemaining(
@@ -136,16 +162,27 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   }
 
                   return SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final question = filtered[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 13.0,
-                          vertical: 6.0,
-                        ),
-                        child: QuestionCard(question: question),
-                      );
-                    }, childCount: filtered.length),
+                    delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                        final question = filtered[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 6.0),
+                          child: QuestionCard(
+                            question: question,
+                            onEdit: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => EditQuestionScreen(question: question),)
+                              );
+                            },
+                            onDelete: (id) {
+                              _showConfirmDeleteDialog(id);
+                            },
+                          ),
+                        );
+                      },
+                      childCount: filtered.length,
+                    ),
                   );
                 },
               ),

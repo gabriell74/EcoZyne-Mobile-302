@@ -1,51 +1,58 @@
+import 'package:ecozyne_mobile/data/models/answer.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
-import 'package:ecozyne_mobile/data/providers/question_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:ecozyne_mobile/data/providers/answer_provider.dart';
 
-class QuestionScreen extends StatefulWidget {
-  const QuestionScreen({super.key});
+class EditAnswerScreen extends StatefulWidget {
+  final Answer answer;
+
+  const EditAnswerScreen({super.key, required this.answer});
 
   @override
-  State<QuestionScreen> createState() => _QuestionScreenState();
+  State<EditAnswerScreen> createState() => _EditAnswerScreenState();
 }
 
-class _QuestionScreenState extends State<QuestionScreen> {
-  final TextEditingController _questionController = TextEditingController();
+class _EditAnswerScreenState extends State<EditAnswerScreen> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.answer.answer);
+  }
 
   @override
   void dispose() {
-    _questionController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final questionProvider = context.watch<QuestionProvider>();
+    final provider = context.watch<AnswerProvider>();
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
+        title: const CustomText("Edit Jawaban", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
-
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const CustomText(
-                  "Tulis Pertanyaan",
+                  "Jawaban",
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
                 ),
                 const SizedBox(height: 10),
-
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -53,42 +60,41 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     border: Border.all(color: Colors.black, width: 1),
                   ),
                   child: TextField(
-                    controller: _questionController,
+                    controller: _controller,
                     maxLines: 5,
                     decoration: const InputDecoration(
-                      hintText: "Ketik pertanyaanmu di sini...",
                       border: InputBorder.none,
-                      contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
                     onPressed: () async {
                       FocusScope.of(context).unfocus();
 
-                      final text = _questionController.text.trim();
-                      if (text.isEmpty) return;
+                      final newText = _controller.text.trim();
+                      if (newText.isEmpty) return;
 
-                      final success =
-                      await questionProvider.addQuestion(text);
+                      final success = await provider.editAnswer(widget.answer.id, newText);
 
                       if (!mounted) return;
 
                       if (success) {
                         showSuccessTopSnackBar(
-                            context, "Pertanyaanmu berhasil dibuat!");
-                        _questionController.clear();
-                        Navigator.pop(context);
+                            context, "Jawaban diperbarui!");
+                        _controller.clear();
                       } else {
                         showErrorTopSnackBar(
-                            context, "Gagal membuat pertanyaan. Coba lagi!");
+                            context, "Gagal memperbarui jawaban. Coba lagi!");
                       }
+
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -102,7 +108,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       ),
                     ),
                     child: const CustomText(
-                      "Buat Pertanyaan",
+                      "Simpan Perubahan",
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
@@ -112,10 +118,12 @@ class _QuestionScreenState extends State<QuestionScreen> {
             ),
           ),
 
-          if (questionProvider.isLoading)
+          if (provider.isLoading)
             Container(
               color: Colors.black.withValues(alpha: 0.4),
-              child: const Center(child: LoadingWidget()),
+              child: const Center(
+                child: LoadingWidget(),
+              ),
             ),
         ],
       ),

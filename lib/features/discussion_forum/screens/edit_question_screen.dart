@@ -40,70 +40,93 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
         title: const CustomText("Edit Pertanyaan", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: provider.isLoading
-            ? const LoadingWidget()
-            : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CustomText(
-              "Pertanyaan",
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CustomText(
+                  "Pertanyaan",
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black, width: 1),
+                  ),
+                  child: TextField(
+                    controller: _controller,
+                    maxLines: 5,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      FocusScope.of(context).unfocus();
+
+                      final newText = _controller.text.trim();
+                      if (newText.isEmpty) return;
+
+                      final success = await provider.updateQuestion(widget.question.id, newText);
+
+                      if (!mounted) return;
+
+                      if (success) {
+                        showSuccessTopSnackBar(
+                          context, "Pertanyaan diperbarui!");
+                        _controller.clear();
+                        Navigator.pop(context);
+                      } else {
+                        showErrorTopSnackBar(
+                          context, "Gagal memperbarui pertanyaan. Coba lagi!");
+                      }
+
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: const BorderSide(color: Colors.black),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 28,
+                        vertical: 10,
+                      ),
+                    ),
+                    child: const CustomText(
+                      "Simpan Perubahan",
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
+          ),
+
+          if (provider.isLoading)
             Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.black, width: 1),
-              ),
-              child: TextField(
-                controller: _controller,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
+              color: Colors.black.withValues(alpha: 0.4),
+              child: const Center(
+                child: LoadingWidget(),
               ),
             ),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final newText = _controller.text.trim();
-                  if (newText.isEmpty) return;
-
-                  await provider.updateQuestion(widget.question.id, newText);
-
-                  if (!mounted) return;
-
-                  showSuccessTopSnackBar(context, "Pertanyaan diperbarui!");
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: const BorderSide(color: Colors.black),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 28,
-                    vertical: 10,
-                  ),
-                ),
-                child: const CustomText(
-                  "Simpan Perubahan",
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

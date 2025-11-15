@@ -1,7 +1,15 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/question.dart';
+import 'package:ecozyne_mobile/data/providers/answer_provider.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
+import 'package:ecozyne_mobile/features/discussion_forum/screens/edit_answer_screen.dart';
 import 'package:ecozyne_mobile/features/discussion_forum/widgets/reply_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,28 +26,13 @@ class QuestionDetailScreen extends StatefulWidget {
 class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   final TextEditingController _replyController = TextEditingController();
 
-  final List<Map<String, String>> replies = [
-    {
-      "username": "AAA",
-      "reply": "eco enzyme adalah cairan alami hasil fermentasi sampah organik seperti kulit buah."
-    },
-    {
-      "username": "BBB",
-      "reply": "eco enzyme bisa digunakan untuk pupuk tanaman dan pembersih alami."
-    },
-    {
-      "username": "CCC",
-      "reply": "proses pembuatannya sekitar 3 bulan, dengan bahan air, gula merah, dan limbah organik."
-    },
-    {
-      "username": "DDD",
-      "reply": "aku sudah coba bikin sendiri, hasilnya lumayan bagus untuk tanaman."
-    },
-    {
-      "username": "EEE",
-      "reply": "eco enzyme juga bisa bantu kurangi sampah rumah tangga, loh!"
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<AnswerProvider>().fetchAnswers(widget.question.id);
+    });
+  }
 
   @override
   void dispose() {
@@ -49,7 +42,37 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    QuestionProvider questionProvider = context.watch<QuestionProvider>();
+    final questionProvider = context.watch<QuestionProvider>();
+    final answerProvider = context.watch<AnswerProvider>();
+
+    void _showConfirmDeleteDialog(int answerId) {
+      showDialog(
+        context: context,
+        builder: (context) => ConfirmationDialog(
+          "Apakah kamu yakin ingin menghapus jawaban ini?",
+          onTap: () async {
+            final success = await context.read<AnswerProvider>().deleteAnswer(answerId);
+
+            if (!mounted) return;
+
+            Navigator.pop(context);
+
+            if (success) {
+              showSuccessTopSnackBar(
+                context,
+                "Berhasil menghapus jawaban",
+                icon: const Icon(Icons.check_circle),
+              );
+            } else {
+              showErrorTopSnackBar(
+                context,
+                context.read<QuestionProvider>().message,
+              );
+            }
+          },
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -57,14 +80,13 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
         title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
-
       body: AppBackground(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10,),
+              const SizedBox(height: 10),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -81,12 +103,12 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                         CustomText(
                           widget.question.username,
                           fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                          fontSize: 20,
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         CustomText(
                           widget.question.question,
-                          fontSize: 15,
+                          fontSize: 18,
                           color: Colors.black87,
                         ),
                       ],
@@ -94,13 +116,9 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                   ),
                 ],
               ),
-        
               const SizedBox(height: 20),
-        
               const Divider(),
-        
               const SizedBox(height: 16),
-        
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -117,12 +135,12 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                       children: [
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 300),
-                          transitionBuilder: (child, animation) => ScaleTransition(
-                            scale: animation,
-                            child: child,
-                          ),
+                          transitionBuilder: (child, animation) =>
+                              ScaleTransition(scale: animation, child: child),
                           child: Icon(
-                            widget.question.isLiked ? Icons.favorite : Icons.favorite_border,
+                            widget.question.isLiked
+                                ? Icons.favorite
+                                : Icons.favorite_border,
                             key: ValueKey(widget.question.isLiked),
                             color: Colors.red,
                             size: 28,
@@ -131,27 +149,39 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                         const SizedBox(width: 4),
                         CustomText(
                           widget.question.totalLike.toString(),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
-        
               const SizedBox(height: 8),
               Container(height: 2, width: 60, color: Colors.blueAccent),
               const SizedBox(height: 16),
-        
               Expanded(
-                child: ListView.builder(
-                  itemCount: replies.length,
+                child: answerProvider.isLoading
+                    ? const Center(child: LoadingWidget(height: 80,))
+                    : answerProvider.answers.isEmpty
+                    ? Center(
+                  child: EmptyState(connected: answerProvider.connected, message: answerProvider.message)
+                )
+                    : ListView.builder(
+                  itemCount: answerProvider.answers.length,
                   itemBuilder: (context, index) {
-                    final item = replies[index];
+                    final answer = answerProvider.answers[index];
                     return ReplyItem(
-                      username: item['username']!,
-                      reply: item['reply']!,
+                      answer: answer,
+                      onEdit: () {
+                        Navigator.push(
+                          context, 
+                          MaterialPageRoute(builder: (context) => EditAnswerScreen(answer: answer),)
+                        );
+                      },
+                      onDelete: (id) {
+                        _showConfirmDeleteDialog(answer.id);
+                      },
                     );
                   },
                 ),
@@ -160,15 +190,12 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
           ),
         ),
       ),
-
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
           decoration: BoxDecoration(
             color: Colors.white,
-            border: Border(top: BorderSide(
-                color: Colors.grey.shade300)
-            ),
+            border: Border(top: BorderSide(color: Colors.grey.shade300)),
           ),
           child: Row(
             children: [
@@ -177,8 +204,8 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                   controller: _replyController,
                   decoration: InputDecoration(
                     hintText: "Tulis balasan...",
-                    contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     filled: true,
                     fillColor: Colors.grey.shade100,
                     border: OutlineInputBorder(
@@ -191,18 +218,57 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
               const SizedBox(width: 8),
               IconButton(
                 icon: const Icon(Icons.send, color: Color(0xFF55C173)),
-                onPressed: () {
-                  final text = _replyController.text.trim();
-                  if (text.isEmpty) return;
+                onPressed: () async {
+                  final userProvider = context.read<UserProvider>();
 
-                  setState(() {
-                    replies.add({
-                      "username": "Kamu",
-                      "reply": text,
-                    });
-                  });
+                  if (userProvider.isGuest || userProvider.user == null) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const LoginRequiredDialog(),
+                    );
+                  } else {
+                    final text = _replyController.text.trim();
+                    if (text.isEmpty) return;
 
-                  _replyController.clear();
+                    bool success = await context
+                        .read<AnswerProvider>()
+                        .createAnswer(widget.question.id, text);
+
+                    if (success) {
+                      if (!mounted) return;
+                      _replyController.clear();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: CustomText(
+                            "Mengirim jawaban...",
+                            color: Colors.black,
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                              BorderRadius.all(Radius.circular(10))),
+                          backgroundColor: Colors.white,
+                          elevation: 5,
+                        ),
+                      );
+                    } else {
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: CustomText(
+                            context.read<AnswerProvider>().message,
+                            color: Colors.white,
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                              BorderRadius.all(Radius.circular(10))),
+                          backgroundColor: Colors.redAccent,
+                          elevation: 5,
+                        ),
+                      );
+                    }
+                  }
                 },
               ),
             ],
