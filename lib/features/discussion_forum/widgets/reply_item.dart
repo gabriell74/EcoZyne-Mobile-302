@@ -31,7 +31,6 @@ class _ReplyItemState extends State<ReplyItem> {
 
   void _showPopupMenu(BuildContext context) {
     final isOwner = UserHelper.currentUserId(context) == widget.answer.userId;
-    if (!isOwner) return;
 
     HapticFeedback.heavyImpact();
 
@@ -137,7 +136,7 @@ class _ReplyItemState extends State<ReplyItem> {
                     elevation: 8,
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
-                      width: 140,
+                      width: 150,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.grey.shade300),
@@ -145,56 +144,60 @@ class _ReplyItemState extends State<ReplyItem> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (isOwner)
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(dialogContext);
+                                widget.onEdit?.call();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                child: Row(
+                                  children: const [
+                                    Icon(Icons.edit, size: 20),
+                                    SizedBox(width: 12),
+                                    Text("Edit", style: TextStyle(fontSize: 14)),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                          if (isOwner)
+                            Divider(height: 1, color: Colors.grey.shade300),
+
+                          if (isOwner)
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(dialogContext);
+                                widget.onDelete?.call(widget.answer.id);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                child: Row(
+                                  children: const [
+                                    Icon(Icons.delete, size: 20, color: Colors.red),
+                                    SizedBox(width: 12),
+                                    Text("Hapus", style: TextStyle(fontSize: 14, color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                          if (isOwner)
+                            Divider(height: 1, color: Colors.grey.shade300),
+
                           InkWell(
                             onTap: () {
+                              Clipboard.setData(ClipboardData(text: widget.answer.answer));
                               Navigator.pop(dialogContext);
-                              widget.onEdit?.call();
                             },
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(12),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               child: Row(
                                 children: const [
-                                  Icon(Icons.edit, size: 20),
+                                  Icon(Icons.copy, size: 20),
                                   SizedBox(width: 12),
-                                  Text(
-                                    "Edit",
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Divider(height: 1, color: Colors.grey.shade300),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(dialogContext);
-                              widget.onDelete?.call(widget.answer.id);
-                            },
-                            borderRadius: const BorderRadius.vertical(
-                              bottom: Radius.circular(12),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.delete, size: 20, color: Colors.red),
-                                  SizedBox(width: 12),
-                                  Text(
-                                    "Hapus",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.red,
-                                    ),
-                                  ),
+                                  Text("Salin", style: TextStyle(fontSize: 14)),
                                 ],
                               ),
                             ),
