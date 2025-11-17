@@ -1,5 +1,4 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
-import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/profile/screens/edit_account_screen.dart';

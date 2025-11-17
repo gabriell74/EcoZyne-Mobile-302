@@ -2,7 +2,6 @@ import 'package:ecozyne_mobile/core/widgets/animated_gradient_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/floating_logo.dart';
-import 'package:ecozyne_mobile/data/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 
 class GetStartedScreen extends StatelessWidget {
