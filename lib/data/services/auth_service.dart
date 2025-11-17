@@ -47,7 +47,6 @@ class AuthService {
         };
       }
     } catch (error) {
-      print("ERRORRRR: $error");
       return {
         "success": false,
         "message": "Terjadi kesalahan tak terduga",

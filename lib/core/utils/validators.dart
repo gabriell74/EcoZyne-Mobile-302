@@ -20,6 +20,15 @@ class Validators {
     return errorList.first;
   }
 
+  static String? emailLogin(String? value) {
+    value = value?.trim();
+    if (value == null || value.isEmpty) return "Email wajib diisi";
+    final regex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+    if (!regex.hasMatch(value)) return "Format email tidak valid";
+
+    return null;
+  }
+
   static String? email(String? value) {
     value = value?.trim();
     if (value == null || value.isEmpty) return "Email wajib diisi";

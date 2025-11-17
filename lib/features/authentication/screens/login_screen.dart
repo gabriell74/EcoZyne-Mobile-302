@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Email
                 TextFormField(
                   controller: _emailController,
-                  validator: Validators.email,
+                  validator: Validators.emailLogin,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email_outlined),
