@@ -1,17 +1,22 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
+import 'package:ecozyne_mobile/data/models/activity.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/activity/screens/activity_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ActivityCard extends StatelessWidget {
-  final Map<String,dynamic> activity;
+  final Activity activity;
 
   const ActivityCard({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context) {
+    final bool isCompleted = DateTime.now().isAfter(DateTime.parse(activity.dueDate));
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -19,12 +24,29 @@ class ActivityCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Hero(
-            tag: "activity-image-${activity["title"]}",
-            child:  Image.asset(
-              activity["image"]!,
-              fit: BoxFit.cover,
-              width: double.infinity,
+
+          SizedBox(
+            height: 130,
+            width: double.infinity,
+            child: Hero(
+              tag: 'activity-photo-tag-${activity.id}',
+              child: CachedNetworkImage(
+                imageUrl: activity.photo,
+                fit: BoxFit.cover,
+                fadeInDuration: const Duration(milliseconds: 400),
+                placeholder: (context, url) => Container(
+                  color: Colors.grey.shade200,
+                  child: const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey.shade100,
+                  child: const Center(
+                    child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                  ),
+                ),
+              ),
             ),
           ),
 
@@ -34,7 +56,7 @@ class ActivityCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomText(
-                  activity["title"],
+                  activity.title,
                   fontSize: 14,
                   maxLines: 2,
                   textOverflow: TextOverflow.ellipsis,
@@ -47,7 +69,7 @@ class ActivityCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Expanded(
                       child: CustomText(
-                        activity["location"],
+                        activity.location,
                         color: Colors.grey,
                         fontSize: 12,
                         maxLines: 1,
@@ -58,7 +80,7 @@ class ActivityCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 CustomText(
-                  activity["startDate"],
+                  DateFormatter.formatDate(activity.startDate),
                   color: Colors.grey,
                   fontSize: 12,
                 ),
@@ -93,7 +115,7 @@ class ActivityCard extends StatelessWidget {
                         );
                       }
                     },
-                    child: const Text("Daftar"),
+                    child: Text(isCompleted ? "Lihat Kegiatan" : "Daftar"),
                   ),
                 ),
               ],

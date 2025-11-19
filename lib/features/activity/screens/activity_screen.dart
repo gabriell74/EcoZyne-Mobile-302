@@ -1,13 +1,17 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
+import 'package:ecozyne_mobile/data/providers/activity_provider.dart';
 import 'package:ecozyne_mobile/features/activity/widget/activity_card.dart';
 import 'package:ecozyne_mobile/features/activity/widget/activity_header.dart';
+import 'package:ecozyne_mobile/features/activity/widget/empty_favorite_activity.dart';
 import 'package:ecozyne_mobile/features/activity/widget/favorite_activity.dart';
-import 'package:ecozyne_mobile/features/activity/widget/filter_activity.dart';
 import 'package:ecozyne_mobile/features/activity/widget/search_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 
 class ActivityScreen extends StatefulWidget {
   @override
@@ -15,63 +19,15 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  final List<Map<String, dynamic>> _activities = [
-    {
-      "image": "assets/images/activity.png",
-      "title": "Tanam Pohon Bersama",
-      "currentQuota": 50,
-      "maxQuota": 200,
-      "location": "Batu Aji",
-      "startDate": "12 Agustus 2025, 08.00",
-      "dueDate": "12 Agustus 2025, 12.00",
-      "description":
-      "Ikut serta dalam kegiatan menanam pohon untuk menghijaukan lingkungan dan mengurangi polusi udara.",
-    },
-    {
-      "image": "assets/images/activity2.png",
-      "title": "Bersih-bersih Pantai Ocarina",
-      "currentQuota": 100,
-      "maxQuota": 100,
-      "location": "Nongsa",
-      "startDate": "18 Agustus 2025, 09.00",
-      "dueDate": "18 Agustus 2025, 12.00",
-      "description":
-      "Aksi bersih pantai bersama komunitas untuk menjaga kebersihan laut dan pantai dari sampah plastik.",
-    },
-    {
-      "image": "assets/images/activity3.png",
-      "title": "Workshop Eco Enzyme",
-      "currentQuota": 10,
-      "maxQuota": 100,
-      "location": "Tembesi",
-      "startDate": "20 Agustus 2025, 13.00",
-      "dueDate": "20 Agustus 2025, 16.00",
-      "description":
-      "Pelajari cara membuat Eco Enzyme dari limbah organik rumah tangga untuk solusi ramah lingkungan.",
-    },
-    {
-      "image": "assets/images/activity4.png",
-      "title": "Kampanye Pengurangan Plastik",
-      "currentQuota": 67,
-      "maxQuota": 70,
-      "location": "Politeknik Batam",
-      "startDate": "25 Agustus 2025, 10.00",
-      "dueDate": "25 Agustus 2025, 14.00",
-      "description":
-      "Kampanye edukatif untuk mengurangi penggunaan plastik sekali pakai di lingkungan kampus dan sekitarnya.",
-    },
-    {
-      "image": "assets/images/activity5.png",
-      "title": "Donasi Bibit Pohon Untuk KOnservasi Alam",
-      "currentQuota": 30,
-      "maxQuota": 80,
-      "location": "Mata Kucing",
-      "startDate": "30 Agustus 2025, 08.30",
-      "dueDate": "30 Agustus 2025, 12.30",
-      "description":
-      "Berpartisipasi dalam program donasi bibit pohon untuk penghijauan area sekitar dan konservasi alam.",
-    },
-  ];
+  bool selectedFilter = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ActivityProvider>().getActivity();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,58 +35,125 @@ class _ActivityScreenState extends State<ActivityScreen> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: CustomText("Kegiatan"),
+        title: const CustomText("Kegiatan"),
         centerTitle: true,
       ),
       body: AppBackground(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(13.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SearchActivity(),
-                    const SizedBox(height: 30),
-                    ActivityHeader(),
-                    const SizedBox(height: 25),
-                    const CustomText(
-                      "Kegiatan Unggulan",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                    const SizedBox(height: 11),
-                    FavoriteActivity(activity: _activities[1]),
-                    const SizedBox(height: 30),
-                    const CustomText(
-                      "Jelajahi Kegiatan",
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    const SizedBox(height: 11),
-                    FilterActivity(),
-                    const SizedBox(height: 8),
-                  ],
+        child: RefreshIndicator(
+          onRefresh: () async => context.read<ActivityProvider>().getActivity(),
+          color: Colors.black,
+          backgroundColor: const Color(0xFF55C173),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(13.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SearchActivity(),
+                      const SizedBox(height: 30),
+                      const ActivityHeader(),
+                      const SizedBox(height: 25),
+                      const CustomText(
+                        "Kegiatan Unggulan",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                      const SizedBox(height: 11),
+
+                      Consumer<ActivityProvider>(
+                        builder: (context, provider, child) {
+                          final featured = provider.getFeaturedActivity();
+                          if (provider.isLoading) {
+                            return const Center(child: LoadingWidget(height: 80,));
+                          }
+                          if (provider.activities.isEmpty || featured == null) {
+                            return const EmptyFavoriteActivity();
+                          }
+                          return FavoriteActivity(activity: featured);
+                        },
+                      ),
+
+                      const SizedBox(height: 30),
+                      const CustomText(
+                        "Jelajahi Kegiatan",
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      const SizedBox(height: 11),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedFilter = true;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: selectedFilter ? const Color(0xFF55C173) : Colors.white,
+                              foregroundColor: Colors.black
+                            ),
+                            child: const Text("Kegiatan Sosial"),
+                          ),
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedFilter = false;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: !selectedFilter ? const Color(0xFF55C173) : Colors.white,
+                              foregroundColor: Colors.black
+                            ),
+                            child: const Text("Riwayat Kegiatan Sosial"),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            SliverMasonryGrid.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 5,
-              crossAxisSpacing: 2,
-              childCount: _activities.length,
-              itemBuilder: (context, index) {
-                final activity = _activities[index];
-                return SlideFadeIn(
-                  delayMilliseconds: index * 100,
-                  child: ActivityCard(activity: activity));
-              },
-            ),
-          ],
+              Consumer<ActivityProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const SliverToBoxAdapter(
+                      child: Center(child: LoadingWidget()),
+                    );
+                  }
+                  if (provider.activities.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Center(child: EmptyState(connected: provider.connected, message: provider.message)),
+                          const SizedBox(height: 50),
+                        ],
+                      ));
+                  }
+
+                  return SliverMasonryGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 2,
+                    childCount: provider.activities.length,
+                    itemBuilder: (context, index) {
+                      final activity = provider.activities[index];
+                      return SlideFadeIn(
+                        delayMilliseconds: index + 200,
+                        child: ActivityCard(activity: activity),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+

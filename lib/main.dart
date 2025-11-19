@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/data/providers/activity_provider.dart';
 import 'package:ecozyne_mobile/data/providers/answer_provider.dart';
 import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
@@ -24,6 +25,7 @@ void main() async{
         ChangeNotifierProvider(create: (_) => QuestionProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => AnswerProvider()),
+        ChangeNotifierProvider(create: (_) => ActivityProvider()),
       ],
       child: EcoApp(),
     ),

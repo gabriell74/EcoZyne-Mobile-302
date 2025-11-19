@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/models/activity.dart';
 import 'package:ecozyne_mobile/features/activity/screens/activity_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteActivity extends StatelessWidget {
-  final Map<String,dynamic> activity;
+  final Activity? activity;
 
   const FavoriteActivity({super.key, required this.activity});
 
@@ -17,12 +19,15 @@ class FavoriteActivity extends StatelessWidget {
         height: 130,
         child: InkWell(
           onTap: () {
-            Navigator.push(
-              context, 
-              MaterialPageRoute(
-                builder: (context) => ActivityDetailScreen(activity: activity),
-              )
-            );
+            if (activity != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ActivityDetailScreen(activity: activity!),
+                )
+              );
+            }
           },
           child: Row(
             children: [
@@ -30,8 +35,23 @@ class FavoriteActivity extends StatelessWidget {
                 width: 120,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(activity["image"]),
+                    image: CachedNetworkImageProvider(activity?.photo ?? ''),
                     fit: BoxFit.cover,
+                    onError: (exception, stackTrace) => const Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 50,
+                    ),
+                  ),
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: activity?.photo ?? '',
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2.0),
+                      ),
+                  errorWidget: (context, url, error) => const Center(
+                    child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
                   ),
                 ),
               ),
@@ -49,7 +69,7 @@ class FavoriteActivity extends StatelessWidget {
                           const SizedBox(),
 
                           CustomText(
-                            '${activity['currentQuota']}/${activity['maxQuota']}',
+                            '${activity?.currentQuota ?? 0}/${activity?.quota ?? 0}',
                             fontWeight: FontWeight.bold,
                           ),
                         ],
@@ -61,7 +81,7 @@ class FavoriteActivity extends StatelessWidget {
                           const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                           const SizedBox(width: 4),
                           CustomText(
-                            activity["startDate"],
+                            activity?.startDate ?? '',
                             fontSize: 12,
                             color: Colors.grey,
                           ),
@@ -70,7 +90,7 @@ class FavoriteActivity extends StatelessWidget {
                       const SizedBox(height: 8),
           
                       CustomText(
-                        activity["title"],
+                        activity?.title ?? 'No Title',
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                         maxLines: 2,
@@ -83,7 +103,7 @@ class FavoriteActivity extends StatelessWidget {
                           const Icon(Icons.location_on, size: 14, color: Colors.green),
                           const SizedBox(width: 4),
                           CustomText(
-                            activity["location"],
+                            activity?.location ?? 'No Location',
                             fontSize: 12,
                             color: Colors.grey,
                           ),

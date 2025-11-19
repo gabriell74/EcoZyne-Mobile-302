@@ -1,13 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/models/activity.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
 
 class ActivityDetailScreen extends StatelessWidget {
-  final Map<String, dynamic> activity;
+  final Activity activity;
 
   const ActivityDetailScreen({super.key, required this.activity});
 
@@ -32,6 +35,9 @@ class ActivityDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isCompleted = DateTime.now().isAfter(DateTime.parse(activity.dueDate));
+    final bool isFull = activity.currentQuota == activity.quota;
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -50,13 +56,28 @@ class ActivityDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Hero(
-                    tag: "activity-image-${activity["title"]}",
-                    child: Image.asset(
-                      activity['image'],
-                      width: double.infinity,
-                      height: 300,
-                      fit: BoxFit.cover,
+                  SizedBox(
+                    height: 300,
+                    width: double.infinity,
+                    child: Hero(
+                      tag: 'activity-photo-tag-${activity.id}',
+                      child: CachedNetworkImage(
+                        imageUrl: activity.photo,
+                        fit: BoxFit.cover,
+                        fadeInDuration: const Duration(milliseconds: 400),
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: Colors.grey.shade100,
+                          child: const Center(
+                            child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -67,13 +88,13 @@ class ActivityDetailScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: CustomText(
-                            activity['title'],
+                            activity.title,
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
                           ),
                         ),
                         CustomText(
-                          '${activity['currentQuota']}/${activity['maxQuota']}',
+                          '${activity.currentQuota}/${activity.quota}',
                           color: Colors.black54,
                         ),
                       ],
@@ -87,11 +108,19 @@ class ActivityDetailScreen extends StatelessWidget {
                         const Icon(
                           Icons.location_on,
                           size: 16,
-                          color: Colors.black54,
+                          color: Colors.green,
                         ),
                         const SizedBox(width: 4),
-                        CustomText(activity['location'], color: Colors.black54),
+                        CustomText(activity.location, color: Colors.black54),
                       ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: CustomText(
+                      "Tanggal Pendaftaran",
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -102,11 +131,37 @@ class ActivityDetailScreen extends StatelessWidget {
                         const Icon(
                           Icons.calendar_today,
                           size: 16,
-                          color: Colors.black54,
+                          color: Colors.green,
                         ),
                         const SizedBox(width: 4),
                         CustomText(
-                          '${activity['startDate']} - ${activity['dueDate']}',
+                          '${DateFormatter.formatDate(activity.startDate)} - ${DateFormatter.formatDate(activity.dueDate)}',
+                          color: Colors.black54,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: CustomText(
+                      "Tanggal Kegiatan Berlangsung",
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 16,
+                          color: Colors.green,
+                        ),
+                        const SizedBox(width: 4),
+                        CustomText(
+                          '${DateFormatter.formatDate(activity.startDate)} - ${DateFormatter.formatDate(activity.dueDate)}',
                           color: Colors.black54,
                         ),
                       ],
@@ -116,7 +171,7 @@ class ActivityDetailScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: CustomText(
-                      activity['description'],
+                      activity.description,
                       fontSize: 14,
                       color: Colors.black87,
                     ),
@@ -135,7 +190,11 @@ class ActivityDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: isCompleted
+                      ? null
+                      : isFull
+                      ? null
+                      : () {
                     final userProvider = context.read<UserProvider>();
 
                     if (userProvider.isGuest || userProvider.user == null) {
@@ -147,15 +206,19 @@ class ActivityDetailScreen extends StatelessWidget {
                       _showConfirmDialog(context);
                     }
                   },
-                  child: const CustomText(
-                    "Daftar Kegiatan",
+                  child: CustomText(
+                    isCompleted
+                        ? "Kegiatan Sudah Selesai"
+                        : isFull
+                        ? "Kuota Penuh"
+                        : "Daftar Kegiatan",
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );

@@ -91,7 +91,7 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
       ),
       body: AppBackground(
         child: RefreshIndicator(
-          onRefresh: () => context.read<QuestionProvider>().getQuestions(),
+          onRefresh: () async => await context.read<QuestionProvider>().getQuestions(),
           color: Colors.black,
           backgroundColor: const Color(0xFF55C173),
           child: CustomScrollView(
