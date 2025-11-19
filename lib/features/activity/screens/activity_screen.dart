@@ -9,7 +9,12 @@ import 'package:ecozyne_mobile/features/activity/widget/search_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class ActivityScreen extends StatelessWidget {
+class ActivityScreen extends StatefulWidget {
+  @override
+  State<ActivityScreen> createState() => _ActivityScreenState();
+}
+
+class _ActivityScreenState extends State<ActivityScreen> {
   final List<Map<String, dynamic>> _activities = [
     {
       "image": "assets/images/activity.png",
@@ -68,8 +73,6 @@ class ActivityScreen extends StatelessWidget {
     },
   ];
 
-  ActivityScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,7 +115,7 @@ class ActivityScreen extends StatelessWidget {
                 ),
               ),
             ),
-        
+
             SliverMasonryGrid.count(
               crossAxisCount: 2,
               mainAxisSpacing: 5,
