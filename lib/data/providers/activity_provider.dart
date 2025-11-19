@@ -6,14 +6,18 @@ class ActivityProvider with ChangeNotifier {
   final ActivityService _activityService = ActivityService();
 
   List<Activity> _activities = [];
+  List<Activity> _completedActivities = [];
   bool _isLoading = false;
+  bool _isCompletedLoading = false;
   String _message = "";
   bool _connected = true;
 
   Activity? _latestActivity;
 
   List<Activity> get activities => _activities;
+  List<Activity> get completedActivities => _completedActivities;
   bool get isLoading => _isLoading;
+  bool get isCompletedLoading => _isCompletedLoading;
   String get message => _message;
   bool get connected => _connected;
   Activity? get latestActivity => _latestActivity;
@@ -56,17 +60,42 @@ class ActivityProvider with ChangeNotifier {
       final data = result["data"] as Activity?;
       if (data != null) {
         _latestActivity = data;
-        _message = result["message"] ?? "Berhasil mengambil aktivitas terbaru";
+        _message = result["message"] ?? "Berhasil mengambil kegiatan terbaru";
       } else {
         _latestActivity = null;
-        _message = "Belum ada aktivitas terbaru";
+        _message = "Belum ada kegiatan terbaru";
       }
     } else {
       _latestActivity = null;
-      _message = result["message"] ?? "Gagal memuat aktivitas terbaru";
+      _message = result["message"] ?? "Gagal memuat kegiatan terbaru";
     }
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> getCompletedActivity() async {
+    _isCompletedLoading = true;
+    notifyListeners();
+
+    final result = await _activityService.fetchCompletedActivity();
+    _connected = result["connected"] ?? false;
+
+    if (result["success"]) {
+      final data = result["data"];
+      if (data != null && data.isNotEmpty) {
+        _completedActivities = data;
+        _message = result["message"] ?? "Berhasil mengambil kegiatan yang sudah selesai";
+      } else {
+        _completedActivities = [];
+        _message = "Belum ada kegiatan yang selesai";
+      }
+    } else {
+      _completedActivities = [];
+      _message = result["message"] ?? "Gagal memuat kegiatan yang sudah selesai";
+    }
+
+    _isCompletedLoading = false;
     notifyListeners();
   }
 

@@ -40,7 +40,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
       ),
       body: AppBackground(
         child: RefreshIndicator(
-          onRefresh: () async => context.read<ActivityProvider>().getActivity(),
+          onRefresh: () async {
+            if (selectedFilter) {
+              return await context.read<ActivityProvider>().getActivity();
+            } else {
+              return await context.read<ActivityProvider>().getCompletedActivity();
+            }
+          },
           color: Colors.black,
           backgroundColor: const Color(0xFF55C173),
           child: CustomScrollView(
@@ -98,10 +104,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
                           ),
                           const SizedBox(width: 10),
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              final provider = context.read<ActivityProvider>();
                               setState(() {
                                 selectedFilter = false;
                               });
+                              if (provider.completedActivities.isEmpty) {
+                                await provider.getCompletedActivity();
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: !selectedFilter ? const Color(0xFF55C173) : Colors.white,
@@ -119,12 +129,18 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
               Consumer<ActivityProvider>(
                 builder: (context, provider, child) {
-                  if (provider.isLoading) {
+                  final bool shouldShowLoading = selectedFilter
+                      ? provider.isLoading
+                      : provider.isCompletedLoading;
+                  final bool showEmptyState = selectedFilter
+                      ? provider.activities.isEmpty
+                      : provider.completedActivities.isEmpty;
+                  if (shouldShowLoading) {
                     return const SliverToBoxAdapter(
                       child: Center(child: LoadingWidget()),
                     );
                   }
-                  if (provider.activities.isEmpty) {
+                  if (showEmptyState) {
                     return SliverToBoxAdapter(
                       child: Column(
                         children: [
@@ -138,12 +154,21 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 5,
                     crossAxisSpacing: 2,
-                    childCount: provider.activities.length,
+                    childCount: selectedFilter
+                        ? provider.activities.length
+                        : provider.completedActivities.length,
                     itemBuilder: (context, index) {
-                      final activity = provider.activities[index];
-                      return SlideFadeIn(
-                        delayMilliseconds: index + 200,
-                        child: ActivityCard(activity: activity),
+                      final activity = selectedFilter
+                          ? provider.activities[index]
+                          : provider.completedActivities[index];
+                      return Column(
+                        children: [
+                          SlideFadeIn(
+                            delayMilliseconds: index + 200,
+                            child: ActivityCard(activity: activity),
+                          ),
+                          const SizedBox(height: 15),
+                        ],
                       );
                     },
                   );

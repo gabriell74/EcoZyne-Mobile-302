@@ -17,7 +17,7 @@ class ActivityService {
 
         return {
           "success": success,
-          "message": response.data["message"] ?? "Berhasil mengambil data aktivitas",
+          "message": response.data["message"] ?? "Berhasil mengambil data kegiatan",
           "connected": true,
           "data": activities,
         };
@@ -25,7 +25,7 @@ class ActivityService {
 
       return {
         "success": false,
-        "message": response.data["message"] ?? "Gagal memuat aktivitas",
+        "message": response.data["message"] ?? "Gagal memuat kegiatan",
         "connected": true,
         "data": <Activity>[],
       };
@@ -33,7 +33,50 @@ class ActivityService {
       if (e.response != null) {
         return {
           "success": false,
-          "message": e.response?.data["message"] ?? "Gagal memuat aktivitas",
+          "message": e.response?.data["message"] ?? "Gagal memuat kegiatan",
+          "connected": true,
+          "data": <Activity>[],
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+        "data": <Activity>[],
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchCompletedActivity() async {
+    try {
+      final response = await _dio.get('/activities/completed');
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        final List data = response.data["data"] ?? [];
+        final activities = data.map((json) => Activity.fromJson(json)).toList();
+
+        return {
+          "success": success,
+          "message": response.data["message"] ?? "Berhasil mengambil data kegiatan selesai",
+          "connected": true,
+          "data": activities,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal memuat kegiatan yang sudah selesai",
+        "connected": true,
+        "data": <Activity>[],
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal memuat kegiatan yang sudah selesai",
           "connected": true,
           "data": <Activity>[],
         };
@@ -64,7 +107,7 @@ class ActivityService {
 
       return {
         "success": success,
-        "message": response.data["message"] ?? "Berhasil mengambil aktivitas terbaru",
+        "message": response.data["message"] ?? "Berhasil mengambil kegiatan terbaru",
         "connected": true,
         "data": activity,
       };
@@ -72,7 +115,7 @@ class ActivityService {
       if (e.response != null) {
         return {
           "success": false,
-          "message": e.response?.data["message"] ?? "Gagal memuat aktivitas terbaru",
+          "message": e.response?.data["message"] ?? "Gagal memuat kegiatan terbaru",
           "connected": true,
           "data": null,
         };
