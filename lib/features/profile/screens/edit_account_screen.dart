@@ -1,7 +1,7 @@
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
-import 'package:ecozyne_mobile/core/utils/validators.dart'; // ⬅️ manggil file validator
+import 'package:ecozyne_mobile/core/utils/validators.dart'; 
 
 class EditAccountScreen extends StatefulWidget {
   const EditAccountScreen({super.key});
@@ -64,7 +64,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
             ),
             const SizedBox(height: 10),
             const CustomText(
-              'Keisha Cantik',
+              'vio',
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black,

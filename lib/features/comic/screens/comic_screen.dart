@@ -10,7 +10,7 @@ class ComicScreen extends StatelessWidget {
     final List<Map<String, dynamic>> comics = [
       {
         'title': 'Eco Buster',
-        'image': 'assets/images/cover1.png',
+        'image': 'assets/images/comic_cover2.png',
         'comicImages': [
           'assets/images/cover1.png',
           'assets/images/cover2.png',
@@ -19,10 +19,22 @@ class ComicScreen extends StatelessWidget {
       },
       {
         'title': 'Mico dan Lobak',
-        'image': 'assets/images/cover1.png',
+        'image': 'assets/images/comic_cover1.jpg',
         'comicImages': [
-          'assets/images/activity2.png',
-          'assets/images/activity.png',
+          'assets/comics/mico_dan_lobak/page1.png',
+          'assets/comics/mico_dan_lobak/page2.png',
+          'assets/comics/mico_dan_lobak/page3.png',
+          'assets/comics/mico_dan_lobak/page4.png',
+          'assets/comics/mico_dan_lobak/page5.png',
+          'assets/comics/mico_dan_lobak/page6.png',
+          'assets/comics/mico_dan_lobak/page7.png',
+          'assets/comics/mico_dan_lobak/page8.png',
+          'assets/comics/mico_dan_lobak/page9.png',
+          'assets/comics/mico_dan_lobak/page10.png',
+          'assets/comics/mico_dan_lobak/page11.png',
+          'assets/comics/mico_dan_lobak/page12.png',
+          'assets/comics/mico_dan_lobak/page13.png',
+          'assets/comics/mico_dan_lobak/page14.png',
         ],
       },
     ];

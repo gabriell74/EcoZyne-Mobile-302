@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,12 +9,12 @@ import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/core/utils/validators.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class WasteBankRegisterScreen extends StatefulWidget {
   const WasteBankRegisterScreen({super.key});
 
   @override
-  State<WasteBankRegisterScreen> createState() => _WasteBankRegisterScreenState();
+  State<WasteBankRegisterScreen> createState() =>
+      _WasteBankRegisterScreenState();
 }
 
 class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
@@ -37,7 +38,9 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
               leading: const Icon(Icons.photo_library),
               title: const Text('Pilih dari Galeri'),
               onTap: () async {
-                final file = await _picker.pickImage(source: ImageSource.gallery);
+                final file = await _picker.pickImage(
+                  source: ImageSource.gallery,
+                );
                 Navigator.pop(context, file);
               },
             ),
@@ -45,11 +48,12 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
               leading: const Icon(Icons.camera_alt),
               title: const Text('Ambil Foto'),
               onTap: () async {
-                final file = await _picker.pickImage(source: ImageSource.camera);
+                final file = await _picker.pickImage(
+                  source: ImageSource.camera,
+                );
                 Navigator.pop(context, file);
               },
             ),
-            
           ],
         ),
       ),
@@ -76,9 +80,9 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Periksa kembali inputan')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Periksa kembali inputan')));
       return;
     }
 
@@ -95,9 +99,14 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Pendaftaran berhasil dikirim')),
-    );
+     if (_formKey.currentState!.validate()) {
+      showSuccessTopSnackBar(
+        context,
+        "Pendaftaran diproses. Menunggu persetujuan admin.",
+        icon: const Icon(Icons.pending_actions, size: 10),
+      );
+      Navigator.pop(context);
+    }
   }
 
   Widget _buildUploadBox({
@@ -126,7 +135,9 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
               children: [
                 Expanded(
                   child: CustomText(
-                    filePath != null ? File(filePath).path.split('/').last : placeholder,
+                    filePath != null
+                        ? File(filePath).path.split('/').last
+                        : placeholder,
                     color: Colors.black87,
                   ),
                 ),
@@ -172,7 +183,11 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                       ),
                       child: _selectedImagePath == null
                           ? const Center(
-                              child: Icon(Icons.image_outlined, size: 50, color: Colors.black45),
+                              child: Icon(
+                                Icons.image_outlined,
+                                size: 50,
+                                color: Colors.black45,
+                              ),
                             )
                           : Stack(
                               fit: StackFit.expand,
@@ -189,14 +204,20 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                                   top: 8,
                                   right: 8,
                                   child: GestureDetector(
-                                    onTap: () => setState(() => _selectedImagePath = null),
+                                    onTap: () => setState(
+                                      () => _selectedImagePath = null,
+                                    ),
                                     child: Container(
                                       padding: const EdgeInsets.all(4),
                                       decoration: const BoxDecoration(
                                         color: Colors.black54,
                                         shape: BoxShape.circle,
                                       ),
-                                      child: const Icon(Icons.close, size: 16, color: Colors.white),
+                                      child: const Icon(
+                                        Icons.close,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -242,18 +263,30 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                       labelText: "Deskripsi",
                       hintText: "Jenis sampah, dsb",
                       border: OutlineInputBorder(),
+                      alignLabelWithHint: true, 
                     ),
                     validator: Validators.description,
+                    minLines: 4, 
+                    maxLines: 8, 
                   ),
+
                   const SizedBox(height: 20),
 
-                  const CustomText("Surat Pernyataan", fontWeight: FontWeight.w500),
+                  const CustomText(
+                    "Surat Pernyataan",
+                    fontWeight: FontWeight.w500,
+                  ),
                   const SizedBox(height: 4),
                   GestureDetector(
                     onTap: () async {
-                      final url = Uri.parse('https://example.com/surat_pernyataan.pdf'); // URL PDF
+                      final url = Uri.parse(
+                        'https://example.com/surat_pernyataan.pdf',
+                      ); // URL PDF
                       if (await canLaunchUrl(url)) {
-                        await launchUrl(url, mode: LaunchMode.externalApplication);
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
                       }
                     },
                     child: const Text(
@@ -266,16 +299,16 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                     ),
                   ),
 
-                 Transform.translate(
-                  offset: Offset(0, -15), 
-                  child: _buildUploadBox(
-                    label: "",
-                    placeholder: "Unggah file PDF",
-                    icon: Icons.upload_file,
-                    onTap: _pickPDF,
-                    filePath: _selectedPdfPath,
+                  Transform.translate(
+                    offset: Offset(0, -15),
+                    child: _buildUploadBox(
+                      label: "",
+                      placeholder: "Unggah file PDF",
+                      icon: Icons.upload_file,
+                      onTap: _pickPDF,
+                      filePath: _selectedPdfPath,
+                    ),
                   ),
-                ),
                   const SizedBox(height: 25),
 
                   Center(
@@ -283,7 +316,10 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                       onPressed: _submitForm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF55C173),
-                        padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 60,
+                          vertical: 14,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
