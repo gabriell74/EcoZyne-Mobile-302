@@ -48,6 +48,43 @@ class ActivityService {
     }
   }
 
+  Future<Map<String, dynamic>> activityRegister(int activityId) async {
+    try {
+      final response = await _dio.post("/activities/$activityId/register");
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        return {
+          "success": success,
+          "message": response.data["message"] ?? "Berhasil mendaftar kegiatan",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal mendaftar kegiatan",
+        "connected": true,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message":
+              e.response?.data["message"] ?? "Gagal mendaftar kegiatan",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> fetchCompletedActivity() async {
     try {
       final response = await _dio.get('/activities/completed');

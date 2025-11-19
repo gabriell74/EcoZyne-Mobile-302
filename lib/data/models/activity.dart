@@ -4,7 +4,7 @@ class Activity {
   final String description;
   final String photo;
   final String location;
-  final int currentQuota;
+  int currentQuota;
   final int quota;
   final String regisStartDate;
   final String regisDueDate;

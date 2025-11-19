@@ -49,6 +49,37 @@ class ActivityProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> activityRegister(int activityId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final activityIndex = _activities.indexWhere((act) => act.id == activityId);
+    int? originalQuota;
+
+    final result = await _activityService.activityRegister(activityId);
+
+    if (activityIndex != -1) {
+      originalQuota = _activities[activityIndex].currentQuota;
+      _activities[activityIndex].currentQuota++;
+      notifyListeners();
+    }
+
+    _connected = result["connected"] ?? false;
+
+    _message = result["message"] ?? "Terjadi kesalahan";
+    final bool success = result["success"];
+
+    if (!success) {
+      if (activityIndex != -1 && originalQuota != null) {
+        _activities[activityIndex].currentQuota = originalQuota;
+      }
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
+
   Future<void> getLatestActivity() async {
     _isLoading = true;
     notifyListeners();

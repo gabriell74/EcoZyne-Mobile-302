@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/providers/activity_provider.dart';
 import 'package:ecozyne_mobile/data/models/activity.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -14,24 +16,41 @@ class ActivityDetailScreen extends StatelessWidget {
 
   const ActivityDetailScreen({super.key, required this.activity});
 
-  void _showConfirmDialog(BuildContext context) {
+  void _showConfirmDialog(BuildContext context) async {
+    final activityProvider = context.read<ActivityProvider>();
     showDialog(
       context: context,
-      builder: (context) => ConfirmationDialog(
+      builder: (confirmDialogContext) => ConfirmationDialog(
         "Anda yakin daftar kegiatan ini?",
-        onTap: () {
-          showSuccessTopSnackBar(
-            context,
-            "Berhasil Mendaftar Kegiatan",
-            icon: const Icon(Icons.volunteer_activism_outlined),
-            size: 65,
+        onTap: () async {
+          Navigator.pop(confirmDialogContext);
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (loadingContext) => const LoadingWidget(height: 100,),
           );
+
+          final bool isSuccess =
+              await activityProvider.activityRegister(activity.id);
+
+          if (!context.mounted) return;
           Navigator.pop(context);
-          Navigator.pop(context);
+
+          if (isSuccess) {
+            showSuccessTopSnackBar(
+              context,
+              "Berhasil Mendaftar Kegiatan",
+              icon: const Icon(Icons.volunteer_activism_outlined),
+              size: 65,
+            );
+          } else {
+            showErrorTopSnackBar(context, activityProvider.message);
+          }
         },
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,101 +100,91 @@ class ActivityDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Consumer<ActivityProvider>(builder: (context, provider, child) {
+                    // Find the latest version of the activity from the provider's list
+                    final currentActivity = provider.activities.firstWhere(
+                          (act) => act.id == activity.id,
+                      orElse: () => activity, // Fallback to initial activity if not found
+                    );
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: CustomText(
-                            activity.title,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: CustomText(
+                                  currentActivity.title,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              CustomText(
+                                '${currentActivity.currentQuota}/${currentActivity.quota}',
+                                color: Colors.black54,
+                              ),
+                            ],
                           ),
                         ),
-                        CustomText(
-                          '${activity.currentQuota}/${activity.quota}',
-                          color: Colors.black54,
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.location_on, size: 16, color: Colors.green),
+                              const SizedBox(width: 4),
+                              CustomText(currentActivity.location, color: Colors.black54),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: CustomText("Tanggal Pendaftaran", fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today, size: 16, color: Colors.green),
+                              const SizedBox(width: 4),
+                              CustomText(
+                                '${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}',
+                                color: Colors.black54,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: CustomText("Tanggal Kegiatan Berlangsung", fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today, size: 16, color: Colors.green),
+                              const SizedBox(width: 4),
+                              CustomText(
+                                '${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}',
+                                color: Colors.black54,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: CustomText(currentActivity.description, fontSize: 14, color: Colors.black87),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on,
-                          size: 16,
-                          color: Colors.green,
-                        ),
-                        const SizedBox(width: 4),
-                        CustomText(activity.location, color: Colors.black54),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: CustomText(
-                      "Tanggal Pendaftaran",
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.calendar_today,
-                          size: 16,
-                          color: Colors.green,
-                        ),
-                        const SizedBox(width: 4),
-                        CustomText(
-                          '${DateFormatter.formatDate(activity.startDate)} - ${DateFormatter.formatDate(activity.dueDate)}',
-                          color: Colors.black54,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: CustomText(
-                      "Tanggal Kegiatan Berlangsung",
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.calendar_today,
-                          size: 16,
-                          color: Colors.green,
-                        ),
-                        const SizedBox(width: 4),
-                        CustomText(
-                          '${DateFormatter.formatDate(activity.startDate)} - ${DateFormatter.formatDate(activity.dueDate)}',
-                          color: Colors.black54,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: CustomText(
-                      activity.description,
-                      fontSize: 14,
-                      color: Colors.black87,
-                    ),
-                  ),
+                    );
+                  }),
                   const SizedBox(height: 80),
                 ],
               ),
