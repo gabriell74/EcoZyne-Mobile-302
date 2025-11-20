@@ -28,8 +28,11 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserProvider>().fetchCurrentUser();
+      Future.microtask(() {
+        context.read<UserProvider>().fetchCurrentUser();
+      });
     });
+
 
     Timer(const Duration(seconds: 5), () {
       Navigator.pushReplacementNamed(context, '/get_started');
