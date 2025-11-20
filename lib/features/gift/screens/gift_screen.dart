@@ -1,39 +1,31 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
+import 'package:ecozyne_mobile/data/providers/reward_provider.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_card.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 
-class GiftScreen extends StatelessWidget {
+class GiftScreen extends StatefulWidget {
   const GiftScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> products = [
-      {
-        'image': 'assets/images/gift.png',
-        'name': 'Beras Premium',
-        'poin': '200 poin',
-      },
-      {
-        'image': 'assets/images/gift2.png',
-        'name': 'Gula Pasir Pantai Putih Seputih Kertas Panjang Sekali',
-        'poin': '250 poin',
-      },
-      {
-        'image': 'assets/images/gift3.png',
-        'name': 'Minyak Goreng',
-        'poin': '150 poin',
-      },
-      {
-        'image': 'assets/images/gift4.png',
-        'name': 'Sirup Buah Lezat dengan Botol Cantik',
-        'poin': '300 poin',
-      },
-    ];
+  State<GiftScreen> createState() => _GiftScreenState();
+}
 
+class _GiftScreenState extends State<GiftScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RewardProvider>().getRewards();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: AppBackground(
         child: Padding(
@@ -69,18 +61,60 @@ class GiftScreen extends StatelessWidget {
                 ),
               ),
 
-              SliverMasonryGrid.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 2,
-                childCount: products.length,
-                itemBuilder: (context, index) {
-                  return SlideFadeIn(
-                    delayMilliseconds: index * 100,
-                    child: GiftCard(item: products[index])
-                  );
-                },
-              ),
+              SliverToBoxAdapter(
+  child: Consumer<RewardProvider>(
+    builder: (context, provider, _) {
+      if (provider.isLoading) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+
+      if (!provider.connected) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: CustomText(
+              "Tidak ada koneksi",
+              fontSize: 16,
+            ),
+          ),
+        );
+      }
+
+      if (provider.rewards.isEmpty) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: CustomText(
+              "Belum ada reward tersedia",
+              fontSize: 16,
+            ),
+          ),
+        );
+      }
+
+      return SliverMasonryGrid.count(
+        crossAxisCount: 2,
+        mainAxisSpacing: 5,
+        crossAxisSpacing: 2,
+        childCount: provider.rewards.length,
+        itemBuilder: (context, index) {
+          final rewards = provider.rewards[index];
+
+          return SlideFadeIn(
+            delayMilliseconds: index * 100,
+            child: GiftCard(reward: rewards),
+          );
+        },
+      );
+    },
+  ),
+),
+
             ],
           ),
         ),

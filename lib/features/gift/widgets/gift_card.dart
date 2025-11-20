@@ -2,14 +2,15 @@ import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/models/reward.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class GiftCard extends StatelessWidget {
-  final Map<String, String> item;
+  final Reward reward;
 
-  const GiftCard({super.key, required this.item});
+  const GiftCard({super.key, required this.reward});
 
   void _showConfirmDialog(BuildContext context) {
     showDialog(
@@ -33,9 +34,7 @@ class GiftCard extends StatelessWidget {
     return Card(
       elevation: 6,
       shadowColor: Colors.black.withValues(alpha: 0.5),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {},
@@ -43,7 +42,7 @@ class GiftCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset(
-              item["image"]!,
+              reward.photo,
               fit: BoxFit.cover,
               width: double.infinity,
             ),
@@ -53,7 +52,7 @@ class GiftCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: CustomText(
-                item["name"]!,
+                reward.rewardName,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 maxLines: 3,
@@ -70,7 +69,7 @@ class GiftCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CustomText(
-                      item["poin"]!,
+                      reward.unitPoint.toString(),
                       fontSize: 16,
                       color: const Color(0xFF55C173),
                       fontWeight: FontWeight.bold,
@@ -88,7 +87,6 @@ class GiftCard extends StatelessWidget {
                       } else {
                         _showConfirmDialog(context);
                       }
-
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF55C173),
