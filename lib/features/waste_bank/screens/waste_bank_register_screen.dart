@@ -8,6 +8,7 @@ import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/core/utils/validators.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
 
 class WasteBankRegisterScreen extends StatefulWidget {
   const WasteBankRegisterScreen({super.key});
@@ -19,9 +20,11 @@ class WasteBankRegisterScreen extends StatefulWidget {
 
 class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _bankNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -60,9 +63,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     );
 
     if (picked != null && picked.path.isNotEmpty) {
-      setState(() {
-        _selectedImagePath = picked.path;
-      });
+      setState(() => _selectedImagePath = picked.path);
     }
   }
 
@@ -72,9 +73,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
       allowedExtensions: ['pdf'],
     );
     if (result != null && result.files.single.path != null) {
-      setState(() {
-        _selectedPdfPath = result.files.single.path!;
-      });
+      setState(() => _selectedPdfPath = result.files.single.path!);
     }
   }
 
@@ -88,25 +87,40 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
 
     if (_selectedImagePath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Harap unggah foto terlebih dahulu')),
-      );
-      return;
-    }
-    if (_selectedPdfPath == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Harap unggah file PDF persetujuan')),
+        SnackBar(
+          content: const CustomText(
+            'Unggah foto terlebih dahulu',
+            color: Colors.white,
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
       );
       return;
     }
 
-     if (_formKey.currentState!.validate()) {
-      showSuccessTopSnackBar(
-        context,
-        "Pendaftaran diproses. Menunggu persetujuan admin.",
-        icon: const Icon(Icons.pending_actions, size: 10),
+    if (_selectedPdfPath == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const CustomText(
+            'Harap unggah file persetujuan',
+            color: Colors.white,
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
       );
-      Navigator.pop(context);
+      return;
     }
+
+    showSuccessTopSnackBar(
+      context,
+      "Pendaftaran diproses. Menunggu persetujuan admin.",
+      icon: const Icon(Icons.pending_actions, size: 10),
+    );
+    Navigator.pop(context);
   }
 
   Widget _buildUploadBox({
@@ -127,7 +141,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: const Color(0xFFB9F5C6),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.grey.shade400),
             ),
             child: Row(
@@ -169,8 +183,9 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CustomText("Unggah Foto", fontWeight: FontWeight.w500),
+                  const CustomText("Unggah Foto", fontWeight: FontWeight.bold),
                   const SizedBox(height: 8),
+
                   GestureDetector(
                     onTap: _pickImage,
                     child: Container(
@@ -178,7 +193,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                       height: 150,
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.grey.shade400),
                       ),
                       child: _selectedImagePath == null
@@ -193,7 +208,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                               fit: StackFit.expand,
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(8),
                                   child: Image.file(
                                     File(_selectedImagePath!),
                                     fit: BoxFit.cover,
@@ -225,63 +240,51 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                             ),
                     ),
                   ),
+
                   const SizedBox(height: 20),
 
-                  TextFormField(
+                  BuildFormField(
+                    label: "Nama Bank Sampah",
                     controller: _bankNameController,
-                    decoration: const InputDecoration(
-                      labelText: "Nama Bank Sampah",
-                      border: OutlineInputBorder(),
-                    ),
                     validator: Validators.bankName,
+                    prefixIcon: Icons.recycling,
                   ),
-                  const SizedBox(height: 16),
 
-                  TextFormField(
+                  BuildFormField(
+                    label: "Alamat",
                     controller: _addressController,
-                    decoration: const InputDecoration(
-                      labelText: "Alamat",
-                      border: OutlineInputBorder(),
-                    ),
                     validator: Validators.address,
+                    prefixIcon: Icons.location_on,
                   ),
-                  const SizedBox(height: 16),
 
-                  TextFormField(
+                  BuildFormField(
+                    label: "Nomor WhatsApp",
                     controller: _whatsappController,
-                    decoration: const InputDecoration(
-                      labelText: "Nomor WhatsApp",
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.phone,
                     validator: Validators.whatsapp,
+                    keyboardType: TextInputType.phone,
+                    prefixIcon: Icons.phone,
                   ),
-                  const SizedBox(height: 20),
 
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: "Deskripsi",
-                      hintText: "Jenis sampah, dsb",
-                      border: OutlineInputBorder(),
-                      alignLabelWithHint: true, 
-                    ),
+                  BuildFormField(
+                    label: "Deskripsi",
+                    controller: _descriptionController,
                     validator: Validators.description,
-                    minLines: 4, 
-                    maxLines: 8, 
+                    hintText: "Jenis sampah, dsb",
+                    maxLines: 4,
                   ),
 
-                  const SizedBox(height: 20),
-
+                  const SizedBox(height: 4),
                   const CustomText(
                     "Surat Pernyataan",
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.bold,
                   ),
                   const SizedBox(height: 4),
+
                   GestureDetector(
                     onTap: () async {
                       final url = Uri.parse(
                         'https://example.com/surat_pernyataan.pdf',
-                      ); // URL PDF
+                      );
                       if (await canLaunchUrl(url)) {
                         await launchUrl(
                           url,
@@ -300,7 +303,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                   ),
 
                   Transform.translate(
-                    offset: Offset(0, -15),
+                    offset: const Offset(0, -15),
                     child: _buildUploadBox(
                       label: "",
                       placeholder: "Unggah file PDF",
@@ -309,7 +312,8 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                       filePath: _selectedPdfPath,
                     ),
                   ),
-                  const SizedBox(height: 25),
+
+                  const SizedBox(height: 18),
 
                   Center(
                     child: ElevatedButton(
@@ -331,6 +335,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 50),
                 ],
               ),
             ),

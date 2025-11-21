@@ -26,11 +26,7 @@ class BuildFormField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomText(
-          label,
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-        ),
+        CustomText(label, fontSize: 14, fontWeight: FontWeight.bold),
         const SizedBox(height: 6),
         TextFormField(
           controller: controller,
@@ -39,7 +35,7 @@ class BuildFormField extends StatelessWidget {
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
-            border: const OutlineInputBorder(),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
           ),
         ),

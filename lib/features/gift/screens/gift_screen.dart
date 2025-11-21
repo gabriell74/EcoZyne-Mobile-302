@@ -62,59 +62,55 @@ class _GiftScreenState extends State<GiftScreen> {
               ),
 
               SliverToBoxAdapter(
-  child: Consumer<RewardProvider>(
-    builder: (context, provider, _) {
-      if (provider.isLoading) {
-        return const Center(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: CircularProgressIndicator(),
-          ),
-        );
-      }
+                child: Consumer<RewardProvider>(
+                  builder: (context, provider, _) {
+                    if (provider.isLoading) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
 
-      if (!provider.connected) {
-        return const Center(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: CustomText(
-              "Tidak ada koneksi",
-              fontSize: 16,
-            ),
-          ),
-        );
-      }
+                    if (!provider.connected) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: CustomText("Tidak ada koneksi", fontSize: 16),
+                        ),
+                      );
+                    }
 
-      if (provider.rewards.isEmpty) {
-        return const Center(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: CustomText(
-              "Belum ada reward tersedia",
-              fontSize: 16,
-            ),
-          ),
-        );
-      }
+                    if (provider.rewards.isEmpty) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: CustomText(
+                            "Belum ada reward tersedia",
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    }
 
-      return SliverMasonryGrid.count(
-        crossAxisCount: 2,
-        mainAxisSpacing: 5,
-        crossAxisSpacing: 2,
-        childCount: provider.rewards.length,
-        itemBuilder: (context, index) {
-          final rewards = provider.rewards[index];
+                    return SliverMasonryGrid.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 5,
+                      crossAxisSpacing: 2,
+                      childCount: provider.rewards.length,
+                      itemBuilder: (context, index) {
+                        final rewards = provider.rewards[index];
 
-          return SlideFadeIn(
-            delayMilliseconds: index * 100,
-            child: GiftCard(reward: rewards),
-          );
-        },
-      );
-    },
-  ),
-),
-
+                        return SlideFadeIn(
+                          delayMilliseconds: index * 100,
+                          child: GiftCard(reward: rewards),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
