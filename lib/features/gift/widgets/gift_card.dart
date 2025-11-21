@@ -1,7 +1,6 @@
-import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
-import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/reward.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,42 +8,53 @@ import 'package:provider/provider.dart';
 
 class GiftCard extends StatelessWidget {
   final Reward reward;
+  final VoidCallback onPressed;
 
-  const GiftCard({super.key, required this.reward});
-
-  void _showConfirmDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => ConfirmationDialog(
-        "Apakah anda yakin menukar produk ini?",
-        onTap: () {
-          Navigator.pop(context);
-          showSuccessTopSnackBar(
-            context,
-            "Penukaran Sedang Diproses",
-            icon: const Icon(Icons.shopping_bag),
-          );
-        },
-      ),
-    );
-  }
+  const GiftCard({
+    super.key,
+    required this.reward,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 6,
       shadowColor: Colors.black.withValues(alpha: 0.5),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {},
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              reward.photo,
-              fit: BoxFit.cover,
+            SizedBox(
               width: double.infinity,
+              child: CachedNetworkImage(
+                imageUrl: reward.photo,
+                fit: BoxFit.cover,
+                fadeInDuration: const Duration(milliseconds: 400),
+                placeholder: (context, url) => Container(
+                  height: 150,
+                  color: Colors.grey.shade200,
+                  child: const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  height: 150,
+                  color: Colors.grey.shade100,
+                  child: const Center(
+                    child: Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 50,
+                    ),
+                  ),
+                ),
+              ),
             ),
 
             const SizedBox(height: 8),
@@ -69,12 +79,13 @@ class GiftCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CustomText(
-                      reward.unitPoint.toString(),
+                      "${reward.unitPoint} Poin",
                       fontSize: 16,
                       color: const Color(0xFF55C173),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+
                   ElevatedButton(
                     onPressed: () {
                       final userProvider = context.read<UserProvider>();
@@ -85,7 +96,7 @@ class GiftCard extends StatelessWidget {
                           builder: (context) => const LoginRequiredDialog(),
                         );
                       } else {
-                        _showConfirmDialog(context);
+                        onPressed();
                       }
                     },
                     style: ElevatedButton.styleFrom(

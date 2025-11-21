@@ -48,4 +48,41 @@ class RewardService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> fetchRewardById(int rewardId) async {
+    try {
+      final response = await _dio.get("/rewards/$rewardId");
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        final data = response.data["data"];
+        final reward = Reward.fromJson(data);
+
+        return {
+          "success": success,
+          "message": response.data["message"] ?? "Berhasil mengambil detail hadiah",
+          "connected": true,
+          "data": reward,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal memuat detail hadiah",
+        "connected": true,
+        "data": null,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal memuat detail hadiah",
+          "connected": true,
+          "data": null,
+        };
+      }
+      return {"success": false, "message": "Tidak ada koneksi", "connected": false, "data": null};
+    }
+  }
 }
