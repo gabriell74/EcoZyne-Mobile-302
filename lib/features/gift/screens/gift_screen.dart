@@ -1,7 +1,12 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/reward_provider.dart';
+import 'package:ecozyne_mobile/features/gift/screens/gift_exchange_screen.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_card.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_search_bar.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +21,25 @@ class GiftScreen extends StatefulWidget {
 }
 
 class _GiftScreenState extends State<GiftScreen> {
+  String _query = "";
+
+  void _showConfirmDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        "Apakah anda yakin menukar produk ini?",
+        onTap: () {
+          Navigator.pop(context);
+          showSuccessTopSnackBar(
+            context,
+            "Penukaran Sedang Diproses",
+            icon: const Icon(Icons.shopping_bag),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -43,10 +67,16 @@ class _GiftScreenState extends State<GiftScreen> {
                 ),
               ),
 
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: GiftSearchBar(),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: GiftSearchBar(
+                    onSearch: (query) {
+                      setState(() {
+                        _query = query;
+                      });
+                    },
+                  ),
                 ),
               ),
 
@@ -61,55 +91,79 @@ class _GiftScreenState extends State<GiftScreen> {
                 ),
               ),
 
-              SliverToBoxAdapter(
-                child: Consumer<RewardProvider>(
-                  builder: (context, provider, _) {
-                    if (provider.isLoading) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
+              Consumer<RewardProvider>(
+                builder: (context, provider, _) {
+                  final rewards = provider.rewards;
 
-                    if (!provider.connected) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: CustomText("Tidak ada koneksi", fontSize: 16),
-                        ),
-                      );
-                    }
+                  final filtered = _query.isEmpty
+                      ? rewards
+                      : rewards
+                            .where(
+                              (q) => q.rewardName.toLowerCase().contains(
+                                _query.toLowerCase(),
+                              ),
+                            )
+                            .toList();
 
-                    if (provider.rewards.isEmpty) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: CustomText(
-                            "Belum ada reward tersedia",
-                            fontSize: 16,
-                          ),
-                        ),
-                      );
-                    }
-
-                    return SliverMasonryGrid.count(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 2,
-                      childCount: provider.rewards.length,
-                      itemBuilder: (context, index) {
-                        final rewards = provider.rewards[index];
-
-                        return SlideFadeIn(
-                          delayMilliseconds: index * 100,
-                          child: GiftCard(reward: rewards),
-                        );
-                      },
+                  if (provider.isLoading) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: LoadingWidget()),
                     );
-                  },
-                ),
+                  }
+
+                  if (provider.rewards.isEmpty) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: EmptyState(
+                          connected: provider.connected,
+                          message: provider.message,
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (filtered.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: EmptyState(
+                          connected: true,
+                          message: "Hadiah tidak ditemukan.",
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SliverMasonryGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 2,
+                    childCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      final reward = filtered[index];
+
+                      return SlideFadeIn(
+                        delayMilliseconds: index * 100,
+                        child: GiftCard(
+                          reward: reward,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GiftExchangeScreen(
+                                  rewardId: reward.id,
+                                  onPressed: () => _showConfirmDialog(context),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),
