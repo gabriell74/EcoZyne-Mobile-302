@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:ecozyne_mobile/data/api_client.dart';
 import 'package:ecozyne_mobile/data/models/reward.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/data/services/reward_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RewardProvider with ChangeNotifier {
   final RewardService _rewardService = RewardService();
@@ -58,6 +60,37 @@ class RewardProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<bool> rewardExchange(
+      int amount,
+      int rewardId,
+      int totalPoint,
+      UserProvider userProvider,
+      ) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final originalPoint = userProvider.user?.communityPoint ?? 0;
+    userProvider.updateCommunityPoint(originalPoint - totalPoint);
+
+    final result = await _rewardService.rewardExchangeTransaction(
+      amount,
+      rewardId,
+      totalPoint,
+    );
+
+    _connected = result["connected"] ?? false;
+    _message = result["message"] ?? "Terjadi kesalahan";
+    final bool success = result["success"] ?? false;
+
+    if (!success) {
+      userProvider.updateCommunityPoint(originalPoint);
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return success;
   }
 
   Future<void> updateRewardStock(int rewardId) async {

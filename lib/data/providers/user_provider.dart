@@ -45,6 +45,13 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateCommunityPoint(int newPoint) {
+    if (_user != null) {
+      _user!.community.updatePoint(newPoint);
+      notifyListeners();
+    }
+  }
+
   Future<void> logout() async {
     await SecureStorageService.deleteToken();
     _setGuestMode("Guest mode aktif");

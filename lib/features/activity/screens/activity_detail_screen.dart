@@ -16,41 +16,41 @@ class ActivityDetailScreen extends StatelessWidget {
 
   const ActivityDetailScreen({super.key, required this.activity});
 
-  void _showConfirmDialog(BuildContext context) async {
-    final activityProvider = context.read<ActivityProvider>();
-    showDialog(
+  Future<void> _showConfirmDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (confirmDialogContext) => ConfirmationDialog(
         "Anda yakin daftar kegiatan ini?",
-        onTap: () async {
-          Navigator.pop(confirmDialogContext);
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (loadingContext) => const LoadingWidget(height: 100,),
-          );
-
-          final bool isSuccess =
-              await activityProvider.activityRegister(activity.id);
-
-          if (!context.mounted) return;
-          Navigator.pop(context);
-
-          if (isSuccess) {
-            showSuccessTopSnackBar(
-              context,
-              "Berhasil Mendaftar Kegiatan",
-              icon: const Icon(Icons.volunteer_activism_outlined),
-              size: 65,
-            );
-          } else {
-            showErrorTopSnackBar(context, activityProvider.message);
-          }
+        onTap: () {
+          Navigator.pop(confirmDialogContext, true);
         },
       ),
     );
-  }
 
+    if (confirmed != true) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const LoadingWidget(height: 100),
+    );
+
+    final activityProvider = context.read<ActivityProvider>();
+    final bool isSuccess = await activityProvider.activityRegister(activity.id);
+
+    if (context.mounted) Navigator.pop(context);
+
+    if (isSuccess) {
+      showSuccessTopSnackBar(
+        context,
+        "Berhasil Mendaftar Kegiatan",
+        icon: const Icon(Icons.volunteer_activism_outlined),
+        size: 65,
+      );
+    } else {
+      showErrorTopSnackBar(context, activityProvider.message);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,91 +100,100 @@ class ActivityDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Consumer<ActivityProvider>(builder: (context, provider, child) {
-                    // Find the latest version of the activity from the provider's list
-                    final currentActivity = provider.activities.firstWhere(
-                          (act) => act.id == activity.id,
-                      orElse: () => activity, // Fallback to initial activity if not found
-                    );
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: CustomText(
-                                  currentActivity.title,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                  Consumer<ActivityProvider>(
+                    builder: (context, provider, _) {
+                      final currentActivity = provider.activities.firstWhere(
+                            (act) => act.id == activity.id,
+                        orElse: () => activity,
+                      );
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: CustomText(
+                                    currentActivity.title,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
-                              CustomText(
-                                '${currentActivity.currentQuota}/${currentActivity.quota}',
-                                color: Colors.black54,
-                              ),
-                            ],
+                                CustomText(
+                                  '${currentActivity.currentQuota}/${currentActivity.quota}',
+                                  color: Colors.black54,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.location_on, size: 16, color: Colors.green),
-                              const SizedBox(width: 4),
-                              CustomText(currentActivity.location, color: Colors.black54),
-                            ],
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.location_on, size: 16, color: Colors.green),
+                                const SizedBox(width: 4),
+                                CustomText(currentActivity.location, color: Colors.black54),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          child: CustomText("Tanggal Pendaftaran", fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.calendar_today, size: 16, color: Colors.green),
-                              const SizedBox(width: 4),
-                              CustomText(
-                                '${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}',
-                                color: Colors.black54,
-                              ),
-                            ],
+                          const SizedBox(height: 8),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: CustomText("Tanggal Pendaftaran", fontWeight: FontWeight.bold),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          child: CustomText("Tanggal Kegiatan Berlangsung", fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.calendar_today, size: 16, color: Colors.green),
-                              const SizedBox(width: 4),
-                              CustomText(
-                                '${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}',
-                                color: Colors.black54,
-                              ),
-                            ],
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.calendar_today, size: 16, color: Colors.green),
+                                const SizedBox(width: 4),
+                                CustomText(
+                                  '${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}',
+                                  color: Colors.black54,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: CustomText(currentActivity.description, fontSize: 14, color: Colors.black87),
-                        ),
-                      ],
-                    );
-                  }),
+                          const SizedBox(height: 8),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: CustomText(
+                              "Tanggal Kegiatan Berlangsung",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.calendar_today, size: 16, color: Colors.green),
+                                const SizedBox(width: 4),
+                                CustomText(
+                                  '${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}',
+                                  color: Colors.black54,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: CustomText(
+                              currentActivity.description,
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                   const SizedBox(height: 80),
                 ],
               ),
@@ -199,9 +208,7 @@ class ActivityDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: isCompleted
-                      ? null
-                      : isFull
+                  onPressed: isCompleted || isFull
                       ? null
                       : () {
                     final userProvider = context.read<UserProvider>();
@@ -227,7 +234,7 @@ class ActivityDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

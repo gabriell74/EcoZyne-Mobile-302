@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/utils/user_helper.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
@@ -26,7 +27,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final navProvider = context.read<NavigationProvider>();
     final userProvider = context.watch<UserProvider>();
     final String userName = userProvider.user?.username ?? "Guest";
-    final bool isGuest = userProvider.isGuest;
+    final bool isGuest = !UserHelper.isLoggedIn(context);
 
     return SingleChildScrollView(
       child: Column(
@@ -103,7 +104,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                     const SizedBox(width: 8),
                     CustomText(
-                      isGuest ? '-' : '2000',
+                      isGuest ? '-' : userProvider.user!.communityPoint.toString(),
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF55C173),

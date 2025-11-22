@@ -5,7 +5,6 @@ import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/data/providers/region_provider.dart';
-import 'package:ecozyne_mobile/data/providers/reward_detail_provider.dart';
 import 'package:ecozyne_mobile/data/providers/reward_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/routes/app_routes.dart';
@@ -29,7 +28,6 @@ void main() async{
         ChangeNotifierProvider(create: (_) => AnswerProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
         ChangeNotifierProvider(create: (_) => RewardProvider()),
-        ChangeNotifierProvider(create: (_) => RewardDetailProvider()),
       ],
       child: EcoApp(),
     ),

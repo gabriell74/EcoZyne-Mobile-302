@@ -31,33 +31,33 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
     });
   }
 
-  void _showConfirmDeleteDialog(int questionId) {
-    showDialog(
+  Future<void> _showConfirmDeleteDialog(BuildContext context, int questionId) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => ConfirmationDialog(
+      builder: (confirmDialogContext) => ConfirmationDialog(
         "Apakah kamu yakin ingin menghapus pertanyaan ini?",
-        onTap: () async {
-          final success = await context.read<QuestionProvider>().deleteQuestion(questionId);
-
-          if (!mounted) return;
-
-          Navigator.pop(context);
-
-          if (success) {
-            showSuccessTopSnackBar(
-              context,
-              "Berhasil menghapus pertanyaan",
-              icon: const Icon(Icons.check_circle),
-            );
-          } else {
-            showErrorTopSnackBar(
-              context,
-              context.read<QuestionProvider>().message,
-            );
-          }
+        onTap: () {
+          Navigator.pop(confirmDialogContext, true);
         },
       ),
     );
+
+    if (confirmed != true) return;
+
+    final questionProvider = context.read<QuestionProvider>();
+    final success = await questionProvider.deleteQuestion(questionId);
+
+    if (!context.mounted) return;
+
+    if (success) {
+      showSuccessTopSnackBar(
+        context,
+        "Berhasil menghapus pertanyaan",
+        icon: const Icon(Icons.check_circle),
+      );
+    } else {
+      showErrorTopSnackBar(context, questionProvider.message);
+    }
   }
 
   @override
@@ -76,7 +76,6 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
           backgroundColor: const Color(0xFF55C173),
           onPressed: () {
             final userProvider = context.read<UserProvider>();
-
             if (userProvider.isGuest || userProvider.user == null) {
               showDialog(
                 context: context,
@@ -101,9 +100,7 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   padding: const EdgeInsets.all(13.0),
                   child: SearchDiscussion(
                     onSearch: (query) {
-                      setState(() {
-                        _query = query;
-                      });
+                      setState(() => _query = query);
                     },
                   ),
                 ),
@@ -119,15 +116,12 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                 ),
               ),
               Consumer<QuestionProvider>(
-                builder: (context, provider, child) {
+                builder: (context, provider, _) {
                   final questions = provider.questions;
-
                   final filtered = _query.isEmpty
                       ? questions
                       : questions
-                      .where(
-                        (q) => q.question.toLowerCase().contains(_query.toLowerCase()),
-                  )
+                      .where((q) => q.question.toLowerCase().contains(_query.toLowerCase()))
                       .toList();
 
                   if (provider.isLoading) {
@@ -172,12 +166,12 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                             onEdit: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => EditQuestionScreen(question: question),)
+                                MaterialPageRoute(
+                                  builder: (context) => EditQuestionScreen(question: question),
+                                ),
                               );
                             },
-                            onDelete: (id) {
-                              _showConfirmDeleteDialog(id);
-                            },
+                            onDelete: (id) => _showConfirmDeleteDialog(context, id),
                           ),
                         );
                       },

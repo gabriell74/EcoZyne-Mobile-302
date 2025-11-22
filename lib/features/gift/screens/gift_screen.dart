@@ -5,7 +5,9 @@ import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/models/reward.dart';
 import 'package:ecozyne_mobile/data/providers/reward_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_exchange_screen.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_card.dart';
 import 'package:ecozyne_mobile/features/gift/widgets/gift_search_bar.dart';
@@ -23,21 +25,55 @@ class GiftScreen extends StatefulWidget {
 class _GiftScreenState extends State<GiftScreen> {
   String _query = "";
 
-  void _showConfirmDialog(BuildContext context) {
-    showDialog(
+  Future<void> _showConfirmDialog(
+      BuildContext context,
+      int quantity,
+      Reward reward,
+      ) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => ConfirmationDialog(
+      builder: (confirmDialogContext) => ConfirmationDialog(
         "Apakah anda yakin menukar produk ini?",
         onTap: () {
-          Navigator.pop(context);
-          showSuccessTopSnackBar(
-            context,
-            "Penukaran Sedang Diproses",
-            icon: const Icon(Icons.shopping_bag),
-          );
+          Navigator.pop(confirmDialogContext, true);
         },
       ),
     );
+
+    if (confirmed != true) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (loadingContext) => const LoadingWidget(height: 100),
+    );
+
+    final userProvider = context.read<UserProvider>();
+    final rewardProvider = context.read<RewardProvider>();
+    final success = await rewardProvider.rewardExchange(
+      quantity,
+      reward.id,
+      reward.unitPoint * quantity,
+      userProvider,
+    );
+
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+
+    if (success) {
+      showSuccessTopSnackBar(
+        context,
+        "Penukaran Sedang Diproses",
+        icon: const Icon(Icons.shopping_bag),
+      );
+      Navigator.pop(context);
+    } else {
+      showErrorTopSnackBar(
+        context,
+        rewardProvider.message,
+      );
+    }
   }
 
   @override
@@ -161,7 +197,7 @@ class _GiftScreenState extends State<GiftScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => GiftExchangeScreen(
                                     reward: reward,
-                                    onPressed: () => _showConfirmDialog(context),
+                                    onPressed: (quantity) => _showConfirmDialog(context, quantity, reward),
                                   ),
                                 ),
                               );

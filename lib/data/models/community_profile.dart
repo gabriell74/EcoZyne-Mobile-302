@@ -34,7 +34,7 @@ class CommunityProfile {
   final String name;
   final String phoneNumber;
   final String photo;
-  final int point;
+  int point;
   final String expiredPoint;
   final Address address;
 
@@ -46,6 +46,10 @@ class CommunityProfile {
     required this.expiredPoint,
     required this.address,
   });
+
+  void updatePoint(int newPoint) {
+    point = newPoint;
+  }
 
   factory CommunityProfile.fromJson(Map<String, dynamic> json) {
     return CommunityProfile(

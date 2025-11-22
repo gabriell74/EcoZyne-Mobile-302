@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class GiftExchangeScreen extends StatefulWidget {
   final Reward reward;
-  final VoidCallback onPressed;
+  final Future<void> Function(int quantity) onPressed;
 
   const GiftExchangeScreen({
     super.key,
@@ -304,13 +304,12 @@ class _GiftExchangeScreenState extends State<GiftExchangeScreen> {
                           builder: (context) => const LoginRequiredDialog(),
                         );
                       } else {
-                        widget.onPressed();
+                        widget.onPressed(_quantity);
                       }
-                    } : null,
+                    }
+                        : null,
                     child: CustomText(
-                      stock > 0 ?
-                      "Tukar Hadiah"
-                      : "Stok Habis",
+                      stock > 0 ? "Tukar Hadiah" : "Stok Habis",
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -319,7 +318,6 @@ class _GiftExchangeScreenState extends State<GiftExchangeScreen> {
               ),
             ),
           ),
-
         ],
       ),
     );

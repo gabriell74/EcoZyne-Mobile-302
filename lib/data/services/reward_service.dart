@@ -49,40 +49,46 @@ class RewardService {
     }
   }
 
-  Future<Map<String, dynamic>> fetchRewardById(int rewardId) async {
+  Future<Map<String, dynamic>> rewardExchangeTransaction(int amount, int rewardId, int totalPoint) async {
     try {
-      final response = await _dio.get("/rewards/$rewardId");
+      final response = await _dio.post(
+        "/reward/exchange/$rewardId",
+        data: {
+          "amount": amount,
+          "total_unit_point": totalPoint,
+        }
+      );
 
       final success = response.data["success"] == true;
 
       if (response.statusCode == 200 && success) {
-        final data = response.data["data"];
-        final reward = Reward.fromJson(data);
-
         return {
           "success": success,
-          "message": response.data["message"] ?? "Berhasil mengambil detail hadiah",
+          "message": response.data["message"] ?? "Penukaran sedang diproses",
           "connected": true,
-          "data": reward,
         };
       }
 
       return {
         "success": false,
-        "message": response.data["message"] ?? "Gagal memuat detail hadiah",
+        "message": response.data["message"] ?? "Gagal menukar hadiah",
         "connected": true,
-        "data": null,
       };
     } on DioException catch (e) {
       if (e.response != null) {
         return {
           "success": false,
-          "message": e.response?.data["message"] ?? "Gagal memuat detail hadiah",
+          "message":
+          e.response?.data["message"] ?? "Gagal hadiah",
           "connected": true,
-          "data": null,
         };
       }
-      return {"success": false, "message": "Tidak ada koneksi", "connected": false, "data": null};
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
     }
   }
 }

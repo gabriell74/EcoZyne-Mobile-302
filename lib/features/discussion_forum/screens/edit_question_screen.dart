@@ -86,17 +86,13 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
                       if (!mounted) return;
 
                       if (success) {
-                        showSuccessTopSnackBar(
-                          context, "Pertanyaan diperbarui!");
-                        _controller.clear();
+                        showSuccessTopSnackBar(context, "Pertanyaan diperbarui!");
                         Navigator.pop(context);
                       } else {
-                        showErrorTopSnackBar(
-                          context, "Gagal memperbarui pertanyaan. Coba lagi!");
+                        showErrorTopSnackBar(context, "Gagal memperbarui pertanyaan. Coba lagi!");
                       }
-
-                      Navigator.pop(context);
                     },
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
