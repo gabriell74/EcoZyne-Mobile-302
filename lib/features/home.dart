@@ -32,7 +32,7 @@ class HomeScreen extends StatelessWidget {
         elevation: 1,
         shadowColor: Colors.grey.withValues(alpha: 0.5),
         actions: [
-          CustomText(UserHelper.isLoggedIn(context) ? userProvider.user!.username : "0", color: Colors.amber[800]),
+          CustomText(UserHelper.isLoggedIn(context) ? userProvider.user!.communityPoint.toString() : "0", color: Colors.amber[800]),
           SizedBox(width: 10,),
           Icon(Icons.stars_rounded, color: Colors.amber[800]),
           SizedBox(width: 20,),

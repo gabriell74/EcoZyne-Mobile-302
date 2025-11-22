@@ -25,39 +25,40 @@ class UserProvider with ChangeNotifier {
     final token = await SecureStorageService.getToken();
 
     if (token == null) {
-      _user = null;
-      _isGuest = true;
-      _success = false;
-      _message = "Guest mode aktif";
-      _isLoading = false;
-      notifyListeners();
+      _setGuestMode("Guest mode aktif");
       return;
     }
 
     final result = await _userService.getUserFromToken(token);
 
     if (result["success"] == true && result["user"] != null) {
-      _user = result["user"];
+      final fetchedUser = result["user"] as User;
+      _user = fetchedUser;
       _isGuest = false;
       _success = true;
       _message = null;
     } else {
-      _user = null;
-      _isGuest = true;
-      _success = false;
-      _message = result["message"] ?? "Guest mode aktif";
+      _setGuestMode(result["message"] ?? "Guest mode aktif");
     }
 
+    print("STATUS GUEST: $_isGuest");
     _isLoading = false;
     notifyListeners();
   }
 
   Future<void> logout() async {
     await SecureStorageService.deleteToken();
+    _setGuestMode("Guest mode aktif");
+  }
+
+  /// Helper untuk set state guest mode
+  void _setGuestMode(String msg) {
     _user = null;
     _isGuest = true;
     _success = false;
-    _message = "Guest mode aktif";
+    _message = msg;
+    _isLoading = false;
     notifyListeners();
   }
 }
+

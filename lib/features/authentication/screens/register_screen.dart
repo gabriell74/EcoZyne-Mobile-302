@@ -290,17 +290,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return;
                             }
 
-                            final newUser = User(
-                              id: 0,
+                            await authProvider.register(
                               username: _usernameController.text.trim(),
                               email: _emailController.text.trim(),
-                              role: 'community',
-                            );
-
-                            await authProvider.register(
-                              user: newUser,
-                              name: _nameController.text.trim(),
                               password: _passwordController.text.trim(),
+                              role: 'community',
+                              name: _nameController.text.trim(),
                               phoneNumber: _whatsappNumController.text.trim(),
                               address: _addressController.text.trim(),
                               postalCode: _postalCodeController.text.trim(),

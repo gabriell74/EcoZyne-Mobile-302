@@ -1,5 +1,4 @@
 import 'package:ecozyne_mobile/core/utils/validators.dart';
-import 'package:ecozyne_mobile/data/models/user.dart';
 import 'package:ecozyne_mobile/data/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
@@ -9,12 +8,10 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   bool _success = false;
   String? _message;
-  User? _user;
 
   bool get isLoading => _isLoading;
   bool get success => _success;
   String? get message => _message;
-  User? get user => _user;
 
   void clearErrorMessage() {
     _message = null;
@@ -25,13 +22,11 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     _success = false;
     _message = null;
-    _user = null;
     notifyListeners();
 
     final result = await _authService.login(email, password);
 
-    if (result["success"] == true && result["user"] != null) {
-      _user = result["user"];
+    if (result["success"] == true) {
       _success = true;
       _message = result["message"] ?? "Login berhasil";
       _isLoading = false;
@@ -47,9 +42,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> register({
-    required User user,
-    required String name,
+    required String username,
+    required String email,
     required String password,
+    required String role,
+    required String name,
     required String phoneNumber,
     required String address,
     required String postalCode,
@@ -62,12 +59,15 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     final result = await _authService.register(
-      user: user,
-      name: name,
+      username: username,
+      email: email,
       password: password,
+      role: role,
+      name: name,
       phoneNumber: phoneNumber,
       address: address,
       postalCode: postalCode,
+      kecamatanId: kecamatanId,
       kelurahanId: kelurahanId,
     );
 

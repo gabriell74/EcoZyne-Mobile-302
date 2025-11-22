@@ -3,8 +3,11 @@ import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/models/community_profile.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/marketplace/widgets/product_checkout_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -43,6 +46,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userProvider = context.read<UserProvider>();
+
+      if (userProvider.user != null) {
+        final community = userProvider.user!.community;
+
+        _nameController.text = community.name;
+        _phoneController.text = community.phoneNumber;
+        _addressController.text =
+        "${community.address.address}, "
+            "Kel. ${community.address.kelurahan}, "
+            "Kec. ${community.address.kecamatan}, "
+            "${community.address.postalCode}";
+      }
+    });
+  }
+
 
   @override
   void dispose() {

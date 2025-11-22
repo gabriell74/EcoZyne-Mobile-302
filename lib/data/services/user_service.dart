@@ -14,6 +14,7 @@ class UserService {
 
       if (response.statusCode == 200 && response.data["success"] == true) {
         final user = User.fromJson(response.data["user"]);
+
         return {
           "success": true,
           "user": user,

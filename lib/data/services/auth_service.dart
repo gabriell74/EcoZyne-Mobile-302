@@ -14,7 +14,6 @@ class AuthService {
       );
 
       if (response.statusCode == 200 && response.data["success"] == true) {
-        final user = User.fromJson(response.data["user"]);
         final token = response.data["token"];
 
         if (token != null) {
@@ -24,7 +23,6 @@ class AuthService {
         return {
           "success": true,
           "message": response.data["message"] ?? "Login berhasil",
-          "user": user,
         };
       } else {
         return {
@@ -46,7 +44,7 @@ class AuthService {
           "message": "Tidak ada koneksi",
         };
       }
-    } catch (error) {
+    } catch (_) {
       return {
         "success": false,
         "message": "Terjadi kesalahan tak terduga",
@@ -54,24 +52,32 @@ class AuthService {
     }
   }
 
+
   Future<Map<String, dynamic>> register({
-    required User user,
-    required String name,
+    required String username,
+    required String email,
     required String password,
+    required String role,
+    required String name,
     required String phoneNumber,
     required String address,
     required String postalCode,
+    required int kecamatanId,
     required int kelurahanId,
   }) async {
     try {
-      final data = user.toJson(
-        name: name,
-        password: password,
-        phoneNumber: phoneNumber,
-        address: address,
-        postalCode: postalCode,
-        kelurahanId: kelurahanId,
-      );
+      final data = {
+        'username': username,
+        'email': email,
+        'password': password,
+        'role': role,
+        'name': name,
+        'phone_number': phoneNumber,
+        'address': address,
+        'postal_code': postalCode,
+        'kecamatan_id': kecamatanId,
+        'kelurahan_id': kelurahanId,
+      };
 
       final response = await _dio.post('/register', data: data);
 
