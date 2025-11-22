@@ -41,7 +41,6 @@ class UserProvider with ChangeNotifier {
       _setGuestMode(result["message"] ?? "Guest mode aktif");
     }
 
-    print("STATUS GUEST: $_isGuest");
     _isLoading = false;
     notifyListeners();
   }
@@ -51,7 +50,6 @@ class UserProvider with ChangeNotifier {
     _setGuestMode("Guest mode aktif");
   }
 
-  /// Helper untuk set state guest mode
   void _setGuestMode(String msg) {
     _user = null;
     _isGuest = true;

@@ -55,15 +55,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final userProvider = context.read<UserProvider>();
 
       if (userProvider.user != null) {
-        final community = userProvider.user!.community;
+        final community = userProvider.user!;
 
-        _nameController.text = community.name;
-        _phoneController.text = community.phoneNumber;
+        _nameController.text = community.communityName;
+        _phoneController.text = community.communityPhone;
         _addressController.text =
-        "${community.address.address}, "
-            "Kel. ${community.address.kelurahan}, "
-            "Kec. ${community.address.kecamatan}, "
-            "${community.address.postalCode}";
+        "${community.communityAddress}, "
+            "Kel. ${community.communityKelurahan}, "
+            "Kec. ${community.communityKecamatan}, "
+            "${community.communityPostalCode}";
       }
     });
   }
