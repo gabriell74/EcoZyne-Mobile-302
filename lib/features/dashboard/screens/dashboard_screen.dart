@@ -40,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final latestActivity = activityProvider.latestActivity;
     final latestArticles = articleProvider.latestArticles;
 
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: () async {
         await Future.wait([
           activityProvider.getLatestActivity(),

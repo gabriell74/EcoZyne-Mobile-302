@@ -18,10 +18,13 @@ class SlideFadeIn extends StatefulWidget {
   State<SlideFadeIn> createState() => _SlideFadeInState();
 }
 
-class _SlideFadeInState extends State<SlideFadeIn> with SingleTickerProviderStateMixin {
+class _SlideFadeInState extends State<SlideFadeIn>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _slideAnimation;
   late Animation<double> _fadeAnimation;
+
+  bool _played = false;
 
   @override
   void initState() {
@@ -40,11 +43,16 @@ class _SlideFadeInState extends State<SlideFadeIn> with SingleTickerProviderStat
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
-    Future.delayed(Duration(milliseconds: widget.delayMilliseconds), () {
-      if (mounted) {
-        _controller.forward();
-      }
-    });
+    if (!_played) {
+      Future.delayed(Duration(milliseconds: widget.delayMilliseconds), () {
+        if (mounted) {
+          _controller.forward();
+          _played = true;
+        }
+      });
+    } else {
+      _controller.value = 1;
+    }
   }
 
   @override

@@ -39,7 +39,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
         centerTitle: true,
       ),
       body: AppBackground(
-        child: RefreshIndicator(
+        child: RefreshIndicator.adaptive(
           onRefresh: () async {
             if (selectedFilter) {
               return await context.read<ActivityProvider>().getActivity();

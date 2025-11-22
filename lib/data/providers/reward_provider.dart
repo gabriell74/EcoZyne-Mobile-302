@@ -1,9 +1,12 @@
+import 'package:dio/dio.dart';
+import 'package:ecozyne_mobile/data/api_client.dart';
 import 'package:ecozyne_mobile/data/models/reward.dart';
 import 'package:ecozyne_mobile/data/services/reward_service.dart';
 import 'package:flutter/material.dart';
 
 class RewardProvider with ChangeNotifier {
   final RewardService _rewardService = RewardService();
+  final Dio _dio = ApiClient.dio;
 
   List<Reward> _rewards = [];
   Reward? _rewardDetail;
@@ -12,19 +15,30 @@ class RewardProvider with ChangeNotifier {
   String _message = "";
   bool _connected = true;
 
+  DateTime? _lastFetchedRewards;
+  final Duration _cacheDuration = const Duration(minutes: 5);
+
+  final Duration _stockCacheDuration = const Duration(seconds: 30);
+  final Map<int, DateTime> _stockCacheTime = {};
+
   List<Reward> get rewards => _rewards;
   Reward? get rewardDetail => _rewardDetail;
-
   bool get isLoading => _isLoading;
   String get message => _message;
   bool get connected => _connected;
 
-  Future<void> getRewards() async {
+  Future<void> getRewards({bool forceRefresh = false}) async {
+    if (!forceRefresh &&
+        _rewards.isNotEmpty &&
+        _lastFetchedRewards != null &&
+        DateTime.now().difference(_lastFetchedRewards!) < _cacheDuration) {
+      return;
+    }
+
     _isLoading = true;
     notifyListeners();
 
     final result = await _rewardService.fetchRewards();
-
     _connected = result["connected"] ?? false;
 
     if (result["success"]) {
@@ -32,6 +46,7 @@ class RewardProvider with ChangeNotifier {
       if (data != null && data.isNotEmpty) {
         _rewards = data;
         _message = result["message"];
+        _lastFetchedRewards = DateTime.now();
       } else {
         _rewards = [];
         _message = "Hadiah belum tersedia";
@@ -45,31 +60,34 @@ class RewardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getRewardById(int rewardId) async {
-    _isLoading = true;
-    notifyListeners();
-
-    final result = await _rewardService.fetchRewardById(rewardId);
-
-    _connected = result["connected"] ?? false;
-
-    if (result["success"]) {
-      final data = result["data"];
-
-      if (data != null) {
-        _rewardDetail = data;
-        _message = result["message"] ?? "Berhasil mendapatkan data hadiah";
-      } else {
-        _rewardDetail = null;
-        _message = "Hadiah tidak ditemukan";
-      }
-    } else {
-      _rewardDetail = null;
-      _message = result["message"] ?? "Gagal memuat hadiah";
+  Future<void> updateRewardStock(int rewardId) async {
+    final lastTime = _stockCacheTime[rewardId];
+    if (lastTime != null && DateTime.now().difference(lastTime) < _stockCacheDuration) {
+      return;
     }
 
-    _isLoading = false;
-    notifyListeners();
-  }
+    try {
+      final response = await _dio.get("/rewards/$rewardId");
+      _connected = true;
 
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        final data = response.data["data"];
+        if (data != null) {
+          final index = _rewards.indexWhere((r) => r.id == rewardId);
+          if (index != -1) {
+            _rewards[index].stock = data["stock"];
+          }
+
+          if (_rewardDetail != null && _rewardDetail!.id == rewardId) {
+            _rewardDetail!.stock = data["stock"];
+          }
+
+          _stockCacheTime[rewardId] = DateTime.now();
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      _connected = false;
+    }
+  }
 }

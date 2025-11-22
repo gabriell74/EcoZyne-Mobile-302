@@ -54,118 +54,126 @@ class _GiftScreenState extends State<GiftScreen> {
       body: AppBackground(
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: CustomScrollView(
-            slivers: [
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: CustomText(
-                    "Tukar Poin",
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+          child: RefreshIndicator.adaptive(
+            onRefresh: () async {
+              await context.read<RewardProvider>().getRewards(forceRefresh: true);
+            },
+            color: Colors.black,
+            backgroundColor: const Color(0xFF55C173),
+            child: CustomScrollView(
+              key: PageStorageKey('reward_scroll'),
+              slivers: [
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: CustomText(
+                      "Tukar Poin",
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
 
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: GiftSearchBar(
-                    onSearch: (query) {
-                      setState(() {
-                        _query = query;
-                      });
-                    },
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: GiftSearchBar(
+                      onSearch: (query) {
+                        setState(() {
+                          _query = query;
+                        });
+                      },
+                    ),
                   ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: CustomText(
-                    "Temukan hadiah menarik",
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: CustomText(
+                      "Temukan hadiah menarik",
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
 
-              Consumer<RewardProvider>(
-                builder: (context, provider, _) {
-                  final rewards = provider.rewards;
+                Consumer<RewardProvider>(
+                  builder: (context, provider, _) {
+                    final rewards = provider.rewards;
 
-                  final filtered = _query.isEmpty
-                      ? rewards
-                      : rewards
-                            .where(
-                              (q) => q.rewardName.toLowerCase().contains(
-                                _query.toLowerCase(),
-                              ),
-                            )
-                            .toList();
+                    final filtered = _query.isEmpty
+                        ? rewards
+                        : rewards
+                        .where(
+                          (q) => q.rewardName.toLowerCase().contains(
+                            _query.toLowerCase(),
+                          ),
+                        )
+                        .toList();
 
-                  if (provider.isLoading) {
-                    return const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(child: LoadingWidget()),
-                    );
-                  }
+                    if (provider.isLoading) {
+                      return const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(child: LoadingWidget()),
+                      );
+                    }
 
-                  if (provider.rewards.isEmpty) {
-                    return SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: EmptyState(
-                          connected: provider.connected,
-                          message: provider.message,
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (filtered.isEmpty) {
-                    return const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: EmptyState(
-                          connected: true,
-                          message: "Hadiah tidak ditemukan.",
-                        ),
-                      ),
-                    );
-                  }
-
-                  return SliverMasonryGrid.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 5,
-                    crossAxisSpacing: 2,
-                    childCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final reward = filtered[index];
-
-                      return SlideFadeIn(
-                        delayMilliseconds: index * 100,
-                        child: GiftCard(
-                          reward: reward,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => GiftExchangeScreen(
-                                  rewardId: reward.id,
-                                  onPressed: () => _showConfirmDialog(context),
-                                ),
-                              ),
-                            );
-                          },
+                    if (provider.rewards.isEmpty) {
+                      return SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: EmptyState(
+                            connected: provider.connected,
+                            message: provider.message,
+                          ),
                         ),
                       );
-                    },
-                  );
-                },
-              ),
-            ],
+                    }
+
+                    if (filtered.isEmpty) {
+                      return const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: EmptyState(
+                            connected: true,
+                            message: "Hadiah tidak ditemukan.",
+                          ),
+                        ),
+                      );
+                    }
+
+                    return SliverMasonryGrid.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 5,
+                      crossAxisSpacing: 2,
+                      childCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final reward = filtered[index];
+
+                        return SlideFadeIn(
+                          delayMilliseconds: index * 100,
+                          child: GiftCard(
+                            reward: reward,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GiftExchangeScreen(
+                                    reward: reward,
+                                    onPressed: () => _showConfirmDialog(context),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
