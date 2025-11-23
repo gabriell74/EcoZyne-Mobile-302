@@ -18,16 +18,18 @@ class _HistoryScreenState extends State<HistoryScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      animationDuration: const Duration(milliseconds: 180),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Riwayat',
-        ),
+        title: const Text('Riwayat'),
         centerTitle: true,
         backgroundColor: const Color(0xFF55C173),
         bottom: TabBar(
@@ -45,6 +47,7 @@ class _HistoryScreenState extends State<HistoryScreen>
       body: AppBackground(
         child: TabBarView(
           controller: _tabController,
+          physics: const BouncingScrollPhysics(),
           children: const [
             PointInScreen(),
             PointOutScreen(),

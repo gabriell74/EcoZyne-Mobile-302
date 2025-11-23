@@ -45,7 +45,7 @@ class RewardProvider with ChangeNotifier {
 
     if (result["success"]) {
       final data = result["data"];
-      if (data != null && data.isNotEmpty) {
+      if (data.isNotEmpty) {
         _rewards = data;
         _message = result["message"];
         _lastFetchedRewards = DateTime.now();
