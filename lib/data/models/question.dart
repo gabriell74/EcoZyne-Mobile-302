@@ -28,10 +28,4 @@ class Question {
       username: json['user']?['username'] ?? 'Anonim',
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'question': question,
-    };
-  }
 }

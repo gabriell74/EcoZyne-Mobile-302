@@ -22,12 +22,4 @@ class Answer {
       username: json["user"] != null ? json["user"]["username"] : null,
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "question_id": questionId,
-      "user_id": userId,
-      "answer": answer,
-    };
-  }
 }
