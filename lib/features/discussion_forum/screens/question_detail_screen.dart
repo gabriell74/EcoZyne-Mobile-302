@@ -51,7 +51,9 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
         builder: (context) => ConfirmationDialog(
           "Apakah kamu yakin ingin menghapus jawaban ini?",
           onTap: () async {
-            final success = await context.read<AnswerProvider>().deleteAnswer(answerId);
+            final success = await context.read<AnswerProvider>().deleteAnswer(
+              answerId,
+            );
 
             if (!mounted) return;
 
@@ -77,7 +79,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
+        title: const CustomText("Forum Diskusi"),
         centerTitle: true,
       ),
       body: AppBackground(
@@ -162,117 +164,124 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
               const SizedBox(height: 16),
               Expanded(
                 child: answerProvider.isLoading
-                    ? const Center(child: LoadingWidget(height: 80,))
+                    ? const Center(child: LoadingWidget(height: 80))
                     : answerProvider.answers.isEmpty
                     ? Center(
-                  child: EmptyState(connected: answerProvider.connected, message: answerProvider.message)
-                )
+                        child: EmptyState(
+                          connected: answerProvider.connected,
+                          message: answerProvider.message,
+                        ),
+                      )
                     : ListView.builder(
-                  itemCount: answerProvider.answers.length,
-                  itemBuilder: (context, index) {
-                    final answer = answerProvider.answers[index];
-                    return ReplyItem(
-                      answer: answer,
-                      onEdit: () {
-                        Navigator.push(
-                          context, 
-                          MaterialPageRoute(builder: (context) => EditAnswerScreen(answer: answer),)
-                        );
-                      },
-                      onDelete: (id) {
-                        _showConfirmDeleteDialog(answer.id);
-                      },
-                    );
-                  },
-                ),
+                        itemCount: answerProvider.answers.length,
+                        itemBuilder: (context, index) {
+                          final answer = answerProvider.answers[index];
+                          return ReplyItem(
+                            answer: answer,
+                            onEdit: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditAnswerScreen(answer: answer),
+                                ),
+                              );
+                            },
+                            onDelete: (id) {
+                              _showConfirmDeleteDialog(answer.id);
+                            },
+                          );
+                        },
+                      ),
               ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: Colors.grey.shade300)),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _replyController,
-                  decoration: InputDecoration(
-                    hintText: "Tulis balasan...",
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    filled: true,
-                    fillColor: Colors.grey.shade100,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide.none,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          top: 6,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _replyController,
+                decoration: InputDecoration(
+                  hintText: "Tulis balasan...",
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400,
+                      width: 1.2,
                     ),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade700,
+                      width: 1.2,
+                    ),
+                  ),
+                  filled: false,
                 ),
               ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.send, color: Color(0xFF55C173)),
-                onPressed: () async {
-                  final userProvider = context.read<UserProvider>();
+            ),
+            const SizedBox(width: 10),
+            IconButton(
+              icon: const Icon(Icons.send, color: Color(0xFF55C173)),
+              onPressed: () async {
+                final userProvider = context.read<UserProvider>();
 
-                  if (userProvider.isGuest || userProvider.user == null) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const LoginRequiredDialog(),
+                if (userProvider.isGuest || userProvider.user == null) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const LoginRequiredDialog(),
+                  );
+                } else {
+                  final text = _replyController.text.trim();
+                  if (text.isEmpty) return;
+
+                  bool success = await context
+                      .read<AnswerProvider>()
+                      .createAnswer(widget.question.id, text);
+
+                  if (success) {
+                    if (!mounted) return;
+                    _replyController.clear();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: CustomText(
+                          "Mengirim jawaban...",
+                          color: Colors.black,
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.white,
+                      ),
                     );
                   } else {
-                    final text = _replyController.text.trim();
-                    if (text.isEmpty) return;
-
-                    bool success = await context
-                        .read<AnswerProvider>()
-                        .createAnswer(widget.question.id, text);
-
-                    if (success) {
-                      if (!mounted) return;
-                      _replyController.clear();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: CustomText(
-                            "Mengirim jawaban...",
-                            color: Colors.black,
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(10))),
-                          backgroundColor: Colors.white,
-                          elevation: 5,
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: CustomText(
+                          context.read<AnswerProvider>().message,
+                          color: Colors.white,
                         ),
-                      );
-                    } else {
-                      if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: CustomText(
-                            context.read<AnswerProvider>().message,
-                            color: Colors.white,
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(10))),
-                          backgroundColor: Colors.redAccent,
-                          elevation: 5,
-                        ),
-                      );
-                    }
+                        backgroundColor: Colors.redAccent,
+                      ),
+                    );
                   }
-                },
-              ),
-            ],
-          ),
+                }
+              },
+            ),
+          ],
         ),
       ),
     );

@@ -31,7 +31,10 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
     });
   }
 
-  Future<void> _showConfirmDeleteDialog(BuildContext context, int questionId) async {
+  Future<void> _showConfirmDeleteDialog(
+    BuildContext context,
+    int questionId,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (confirmDialogContext) => ConfirmationDialog(
@@ -67,30 +70,30 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
         backgroundColor: const Color(0xFF55C173),
         title: const CustomText("Forum Diskusi", color: Colors.black),
         centerTitle: true,
+        actions: [
+          IconButton(
+            padding: const EdgeInsets.only(right: 18),
+            icon: const Icon(Icons.add_comment_outlined, color: Colors.black),
+            onPressed: () {
+              final userProvider = context.read<UserProvider>();
+              if (userProvider.isGuest || userProvider.user == null) {
+                showDialog(
+                  context: context,
+                  builder: (context) => const LoginRequiredDialog(),
+                );
+              } else {
+                Navigator.pushNamed(context, '/question');
+              }
+            },
+          ),
+        ],
       ),
       backgroundColor: Colors.grey[200],
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 20, right: 10),
-        child: FloatingActionButton(
-          backgroundColor: const Color(0xFF55C173),
-          onPressed: () {
-            final userProvider = context.read<UserProvider>();
-            if (userProvider.isGuest || userProvider.user == null) {
-              showDialog(
-                context: context,
-                builder: (context) => const LoginRequiredDialog(),
-              );
-            } else {
-              Navigator.pushNamed(context, '/question');
-            }
-          },
-          child: const Icon(Icons.add, color: Colors.black),
-        ),
-      ),
+
       body: AppBackground(
         child: RefreshIndicator.adaptive(
-          onRefresh: () async => await context.read<QuestionProvider>().getQuestions(),
+          onRefresh: () async =>
+              await context.read<QuestionProvider>().getQuestions(),
           color: Colors.black,
           backgroundColor: const Color(0xFF55C173),
           child: CustomScrollView(
@@ -121,8 +124,12 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   final filtered = _query.isEmpty
                       ? questions
                       : questions
-                      .where((q) => q.question.toLowerCase().contains(_query.toLowerCase()))
-                      .toList();
+                            .where(
+                              (q) => q.question.toLowerCase().contains(
+                                _query.toLowerCase(),
+                              ),
+                            )
+                            .toList();
 
                   if (provider.isLoading) {
                     return const SliverFillRemaining(
@@ -156,27 +163,29 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   }
 
                   return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                        final question = filtered[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 6.0),
-                          child: QuestionCard(
-                            question: question,
-                            onEdit: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditQuestionScreen(question: question),
-                                ),
-                              );
-                            },
-                            onDelete: (id) => _showConfirmDeleteDialog(context, id),
-                          ),
-                        );
-                      },
-                      childCount: filtered.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final question = filtered[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 13.0,
+                          vertical: 6.0,
+                        ),
+                        child: QuestionCard(
+                          question: question,
+                          onEdit: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EditQuestionScreen(question: question),
+                              ),
+                            );
+                          },
+                          onDelete: (id) =>
+                              _showConfirmDeleteDialog(context, id),
+                        ),
+                      );
+                    }, childCount: filtered.length),
                   );
                 },
               ),
