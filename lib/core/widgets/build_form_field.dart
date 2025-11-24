@@ -9,6 +9,8 @@ class BuildFormField extends StatelessWidget {
   final TextInputType keyboardType;
   final IconData? prefixIcon;
   final String? hintText;
+  final bool isDate;
+  final VoidCallback? onTap;
 
   const BuildFormField({
     super.key,
@@ -19,6 +21,8 @@ class BuildFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.prefixIcon,
     this.hintText,
+    this.isDate = false,
+    this.onTap,
   });
 
   @override
@@ -33,6 +37,8 @@ class BuildFormField extends StatelessWidget {
           validator: validator,
           maxLines: maxLines,
           keyboardType: keyboardType,
+          readOnly: isDate,
+          onTap: isDate ? onTap : null,
           decoration: InputDecoration(
             hintText: hintText,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),

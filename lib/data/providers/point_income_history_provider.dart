@@ -39,27 +39,32 @@ class PointIncomeHistoryProvider with ChangeNotifier {
 
     if (result["success"]) {
       _pointIncomeHistory = result["data"] as PointIncomeHistory?;
-      _message = result["message"];
       _lastFetchedPointIncome = DateTime.now();
 
-      final allItems = [
-        ...?_pointIncomeHistory?.rejectedReward.map((e) => {
-          "type": "rejectedReward",
-          "item": e,
-          "date": e.updatedAt,
-        }),
-        ...?_pointIncomeHistory?.wasteSubmission.map((e) => {
-          "type": "wasteSubmission",
-          "item": e,
-          "date": e.createdAt,
-        }),
-      ];
+      if (_pointIncomeHistory == null ||
+          (_pointIncomeHistory!.rejectedReward.isEmpty && _pointIncomeHistory!.wasteSubmission.isEmpty)) {
+        _message = "Belum ada riwayat Pemasukan Poin";
+        _groupedHistory = {};
+      } else {
+        _message = result["message"];
+        final allItems = [
+          ...?_pointIncomeHistory?.rejectedReward.map((e) => {
+                "type": "rejectedReward",
+                "item": e,
+                "date": e.updatedAt,
+              }),
+          ...?_pointIncomeHistory?.wasteSubmission.map((e) => {
+                "type": "wasteSubmission",
+                "item": e,
+                "date": e.createdAt,
+              }),
+        ];
 
-      _groupedHistory = groupByDate<Map<String, dynamic>>(
-        allItems,
-        getDate: (item) => DateTime.parse(item["date"] as String),
-      );
-
+        _groupedHistory = groupByDate<Map<String, dynamic>>(
+          allItems,
+          getDate: (item) => DateTime.parse(item["date"] as String),
+        );
+      }
     } else {
       _pointIncomeHistory = null;
       _groupedHistory = {};

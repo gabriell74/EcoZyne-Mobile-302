@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/theme.dart';
+import 'data/providers/eco_enzyme_tracking_provider.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,7 @@ void main() async{
         ChangeNotifierProvider(create: (_) => RewardProvider()),
         ChangeNotifierProvider(create: (_) => PointOutHistoryProvider()),
         ChangeNotifierProvider(create: (_) => PointIncomeHistoryProvider()),
+        ChangeNotifierProvider(create: (_) => EcoEnzymeTrackingProvider()),
       ],
       child: EcoApp(),
     ),
