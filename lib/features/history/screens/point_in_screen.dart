@@ -89,18 +89,18 @@ class _PointInScreenState extends State<PointInScreen>
                         return HistoryItem(
                           icon: Icons.add_circle_outline,
                           color: const Color(0xFF55C173),
-                          title: "Poin Masuk",
+                          title: "Poin Masuk (Penukaran Ditolak)",
                           subtitle: "+${data.totalUnitPoint} Poin",
                           subtitleColor: const Color(0xFF55C173),
-                          time: timeAgo(item.createdAt),
+                          time: timeAgo(item.updatedAt),
                           description:
-                          "Pengembalian poin dari penukaran '${data.reward.rewardName}' (${data.amount} item)",
+                          "Pengembalian poin dari penukaran '${data.reward.rewardName}' (${data.amount} item) pada tanggal '${DateFormatter.formatDate(item.createdAt)}'",
                         );
                       } else {
                         return HistoryItem(
                           icon: Icons.add_circle_outline,
                           color: Colors.blue,
-                          title: "Poin Masuk (Sampah)",
+                          title: "Poin Masuk (Setoran Sampah)",
                           subtitle: "+${item.point ?? 0} Poin",
                           subtitleColor: Colors.blue,
                           time: timeAgo(item.createdAt),

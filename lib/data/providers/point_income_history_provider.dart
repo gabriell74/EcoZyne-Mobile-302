@@ -42,12 +42,11 @@ class PointIncomeHistoryProvider with ChangeNotifier {
       _message = result["message"];
       _lastFetchedPointIncome = DateTime.now();
 
-      // gabungkan semua item jadi satu list generik
       final allItems = [
         ...?_pointIncomeHistory?.rejectedReward.map((e) => {
           "type": "rejectedReward",
           "item": e,
-          "date": e.createdAt,
+          "date": e.updatedAt,
         }),
         ...?_pointIncomeHistory?.wasteSubmission.map((e) => {
           "type": "wasteSubmission",
