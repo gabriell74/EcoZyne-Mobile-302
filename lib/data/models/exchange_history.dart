@@ -6,7 +6,7 @@ class ExchangeHistory {
   final String exchangeStatus;
   final String createdAt;
   final String updatedAt;
-  final List<ExchangeTransaction> exchangeTransactions;
+  final List<ExchangeTransactionHistory> exchangeTransactions;
 
   ExchangeHistory({
     required this.id,
@@ -25,7 +25,7 @@ class ExchangeHistory {
       createdAt: json["created_at"],
       updatedAt: json["updated_at"],
       exchangeTransactions: (json["exchange_transactions"] as List)
-          .map((e) => ExchangeTransaction.fromJson(e))
+          .map((e) => ExchangeTransactionHistory.fromJson(e))
           .toList(),
     );
   }

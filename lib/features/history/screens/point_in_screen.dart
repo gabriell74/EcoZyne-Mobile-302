@@ -1,4 +1,11 @@
+import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
+import 'package:ecozyne_mobile/core/utils/history_helper.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/data/providers/point_income_history_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/history_item.dart';
 
 class PointInScreen extends StatefulWidget {
@@ -14,60 +21,99 @@ class _PointInScreenState extends State<PointInScreen>
   @override
   bool get wantKeepAlive => true;
 
-  // Dummy data sementara (karena belum ada provider & service)
-  final List<Map<String, dynamic>> dummyData = [
-    {
-      "label": "HARI INI",
-      "items": [
-        HistoryItem(
-          icon: Icons.check_circle_outline,
-          color: Color(0xFF55C173),
-          title: "Tambah Poin Berhasil",
-          subtitle: "+1000 Poin",
-          time: "3j",
-        ),
-      ],
-    },
-    {
-      "label": "KEMARIN",
-      "items": [
-        HistoryItem(
-          icon: Icons.check_circle_outline,
-          color: Color(0xFF55C173),
-          title: "Tambah Poin Berhasil",
-          subtitle: "+2000 Poin",
-        ),
-      ],
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PointIncomeHistoryProvider>().getPointIncomeHistory();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: dummyData.length,
-      itemBuilder: (context, index) {
-        final group = dummyData[index];
+    return Consumer<PointIncomeHistoryProvider>(
+      builder: (context, prov, _) {
+        if (prov.isLoading) {
+          return const Center(child: LoadingWidget());
+        }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              group["label"],
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
+        if (prov.pointIncomeHistory == null || prov.groupedHistory.isEmpty) {
+          return Center(
+            child: EmptyState(
+              connected: prov.connected,
+              message: prov.message,
             ),
+          );
+        }
 
-            const SizedBox(height: 8),
+        final grouped = prov.groupedHistory;
+        final dateKeys = grouped.keys.toList()
+          ..sort((a, b) => DateTime.parse(b).compareTo(DateTime.parse(a)));
 
-            ...group["items"],
+        return RefreshIndicator.adaptive(
+          onRefresh: () async =>
+              prov.getPointIncomeHistory(forceRefresh: true),
+          color: Colors.black,
+          backgroundColor: const Color(0xFF55C173),
+          child: ListView.builder(
+            key: const PageStorageKey("point_in_list"),
+            padding: const EdgeInsets.all(16),
+            itemCount: dateKeys.length,
+            itemBuilder: (context, index) {
+              final dateKey = dateKeys[index];
+              final dateLabel = DateFormatter.formatDate(DateTime.parse(dateKey));
+              final items = grouped[dateKey]!;
 
-            const SizedBox(height: 20),
-          ],
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    dateLabel,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(height: 8),
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: items.length,
+                    itemBuilder: (context, i) {
+                      final mapItem = items[i];
+                      final type = mapItem["type"];
+                      final item = mapItem["item"];
+
+                      if (type == "rejectedReward") {
+                        final data = item.exchangeTransactions.first;
+                        return HistoryItem(
+                          icon: Icons.add_circle_outline,
+                          color: const Color(0xFF55C173),
+                          title: "Poin Masuk",
+                          subtitle: "+${data.totalUnitPoint} Poin",
+                          subtitleColor: const Color(0xFF55C173),
+                          time: timeAgo(item.createdAt),
+                          description:
+                          "Pengembalian poin dari penukaran '${data.reward.rewardName}' (${data.amount} item)",
+                        );
+                      } else {
+                        return HistoryItem(
+                          icon: Icons.add_circle_outline,
+                          color: Colors.blue,
+                          title: "Poin Masuk (Sampah)",
+                          subtitle: "+${item.point ?? 0} Poin",
+                          subtitleColor: Colors.blue,
+                          time: timeAgo(item.createdAt),
+                          description: "Riwayat sampah masuk",
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              );
+            },
+          ),
         );
       },
     );

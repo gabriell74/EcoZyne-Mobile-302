@@ -1,30 +1,24 @@
-import 'package:ecozyne_mobile/data/models/reward.dart';
+import 'package:ecozyne_mobile/data/models/reward_history.dart';
 
-class ExchangeTransaction {
+class ExchangeTransactionHistory {
   final int id;
-  final int exchangeId;
-  final int rewardId;
   final int amount;
   final int totalUnitPoint;
-  final Reward reward;
+  final RewardHistory reward;
 
-  ExchangeTransaction({
+  ExchangeTransactionHistory({
     required this.id,
-    required this.exchangeId,
-    required this.rewardId,
     required this.amount,
     required this.totalUnitPoint,
     required this.reward,
   });
 
-  factory ExchangeTransaction.fromJson(Map<String, dynamic> json) {
-    return ExchangeTransaction(
+  factory ExchangeTransactionHistory.fromJson(Map<String, dynamic> json) {
+    return ExchangeTransactionHistory(
       id: json["id"],
-      exchangeId: json["exchange_id"],
-      rewardId: json["reward_id"],
       amount: json["amount"],
       totalUnitPoint: json["total_unit_point"],
-      reward: Reward.fromJson(json["reward"]),
+      reward: RewardHistory.fromJson(json["reward"]),
     );
   }
 }
