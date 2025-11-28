@@ -23,8 +23,7 @@ class _PointOutScreenState extends State<PointOutScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<PointOutHistoryProvider>(context, listen: false)
-          .getRewardExchangeHistory();
+      context.read<PointOutHistoryProvider>().getRewardExchangeHistory();
     });
   }
 
@@ -32,81 +31,107 @@ class _PointOutScreenState extends State<PointOutScreen>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Consumer<PointOutHistoryProvider>(
-      builder: (context, prov, _) {
-        if (prov.isLoading) {
-          return const Center(child: LoadingWidget());
-        }
+    return RefreshIndicator.adaptive(
+      onRefresh: () async => await context
+          .read<PointOutHistoryProvider>()
+          .getRewardExchangeHistory(forceRefresh: true),
+      color: Colors.black,
+      backgroundColor: const Color(0xFF55C173),
 
-        if (prov.exchangeHistory.isEmpty) {
-          return Center(
-            child: EmptyState(
-              connected: prov.connected,
-              message: prov.message,
-            ),
-          );
-        }
-
-        // langsung pakai groupedHistory dari provider
-        final grouped = prov.groupedHistory;
-
-        return RefreshIndicator.adaptive(
-          onRefresh: () async => await prov.getRewardExchangeHistory(forceRefresh: true),
-          color: Colors.black,
-          backgroundColor: const Color(0xFF55C173),
-          child: ListView.builder(
-            key: const PageStorageKey('point_out_list'),
-            padding: const EdgeInsets.all(16),
-            itemCount: grouped.length,
-            itemBuilder: (context, index) {
-              final dateKey = grouped.keys.elementAt(index);
-              final dateLabel = DateFormatter.formatDate(dateKey);
-              final items = grouped[dateKey]!;
-
-              return Column(
+      child: CustomScrollView(
+        key: const PageStorageKey("point_out_list"),
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    dateLabel,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
+                children: const [SizedBox(height: 10)],
+              ),
+            ),
+          ),
+
+          Consumer<PointOutHistoryProvider>(
+            builder: (context, prov, child) {
+              final grouped = prov.groupedHistory;
+
+              if (prov.isLoading) {
+                return const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 80),
+                    child: Center(child: LoadingWidget()),
                   ),
-                  const SizedBox(height: 8),
+                );
+              }
 
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: items.length,
-                    itemBuilder: (context, itemIndex) {
-                      final item = items[itemIndex];
-                      final trx = item.exchangeTransactions.first;
+              if (prov.exchangeHistory.isEmpty) {
+                return SliverFillRemaining(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 40),
+                      EmptyState(
+                        connected: prov.connected,
+                        message: prov.message,
+                      ),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
+                );
+              }
 
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: HistoryItem(
-                          icon: _iconFromStatus(item.exchangeStatus),
-                          color: _colorFromStatus(item.exchangeStatus),
-                          title:
-                          "Penukaran Hadiah (${_textStatus(item.exchangeStatus)})",
-                          subtitle: "- ${trx.totalUnitPoint} Poin",
-                          subtitleColor: Colors.red,
-                          time: timeAgo(item.createdAt),
-                          description:
-                          "Menukar '${trx.reward.rewardName}' (${trx.amount}) item",
+              return SliverList.builder(
+                itemCount: grouped.length,
+                itemBuilder: (context, index) {
+                  final dateKey = grouped.keys.elementAt(index);
+                  final dateLabel = DateFormatter.formatDate(dateKey);
+                  final items = grouped[dateKey]!;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          dateLabel,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
                         ),
-                      );
-                    },
-                  ),
+                        const SizedBox(height: 8),
 
-                  const SizedBox(height: 20),
-                ],
+                        Column(
+                          children: List.generate(items.length, (itemIndex) {
+                            final item = items[itemIndex];
+                            final trx = item.exchangeTransactions.first;
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: HistoryItem(
+                                icon: _iconFromStatus(item.exchangeStatus),
+                                color: _colorFromStatus(item.exchangeStatus),
+                                title:
+                                    "Penukaran Hadiah (${_textStatus(item.exchangeStatus)})",
+                                subtitle: "- ${trx.totalUnitPoint} Poin",
+                                subtitleColor: Colors.red,
+                                time: timeAgo(item.createdAt),
+                                description:
+                                    "Menukar '${trx.reward.rewardName}' (${trx.amount}) item",
+                              ),
+                            );
+                          }),
+                        ),
+
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  );
+                },
               );
             },
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
@@ -142,7 +167,7 @@ Color _colorFromStatus(String status) {
     case "pending":
       return Colors.orange;
     case "approved":
-      return const Color(0xFF55C173);
+      return Color(0xFF55C173);
     case "rejected":
       return Colors.red;
     default:
