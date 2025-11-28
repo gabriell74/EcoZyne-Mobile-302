@@ -2,6 +2,7 @@ import 'package:ecozyne_mobile/data/providers/activity_provider.dart';
 import 'package:ecozyne_mobile/data/providers/answer_provider.dart';
 import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
+import 'package:ecozyne_mobile/data/providers/comic_provider.dart';
 import 'package:ecozyne_mobile/data/providers/point_income_history_provider.dart';
 import 'package:ecozyne_mobile/data/providers/point_out_history_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
@@ -34,6 +35,7 @@ void main() async{
         ChangeNotifierProvider(create: (_) => PointOutHistoryProvider()),
         ChangeNotifierProvider(create: (_) => PointIncomeHistoryProvider()),
         ChangeNotifierProvider(create: (_) => EcoEnzymeTrackingProvider()),
+        ChangeNotifierProvider(create: (_) => ComicProvider()),
       ],
       child: EcoApp(),
     ),
