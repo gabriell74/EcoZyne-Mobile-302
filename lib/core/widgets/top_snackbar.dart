@@ -37,6 +37,11 @@ void showSuccessTopSnackBar(
     ),
     displayDuration: const Duration(seconds: 2),
     animationDuration: const Duration(milliseconds: 600),
+    dismissType: DismissType.onSwipe,
+    dismissDirection: [
+      DismissDirection.horizontal,
+      DismissDirection.vertical,
+    ]
   );
 }
 
@@ -58,6 +63,11 @@ void showErrorTopSnackBar(BuildContext context, String message) {
     ),
     displayDuration: const Duration(seconds: 3),
     animationDuration: const Duration(milliseconds: 600),
+    dismissType: DismissType.onSwipe,
+    dismissDirection: [
+      DismissDirection.horizontal,
+      DismissDirection.vertical,
+    ]
   );
 }
 
@@ -70,7 +80,7 @@ void showInfoTopSnackBar(
       icon: const Icon(
             Icons.info,
             color: Colors.white,
-            size: 80,
+            size: 50,
           ),
       message: message,
       textStyle: const TextStyle(
@@ -81,5 +91,10 @@ void showInfoTopSnackBar(
     ),
     displayDuration: const Duration(seconds: 3),
     animationDuration: const Duration(milliseconds: 600),
+    dismissType: DismissType.onSwipe,
+    dismissDirection: [
+      DismissDirection.horizontal,
+      DismissDirection.vertical,
+    ]
   );
 }

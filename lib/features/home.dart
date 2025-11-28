@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 13, right: 1),
-              child: Image.asset("assets/images/logo.png", width: 65),
+              child: Image.asset("assets/images/logo.png", width: 40),
             ),
             AnimatedGradientText(
               "Eco Enzyne",

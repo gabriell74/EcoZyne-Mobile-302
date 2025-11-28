@@ -1,6 +1,7 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/eco_enzyme_tracking.dart';
 import 'package:ecozyne_mobile/data/providers/eco_enzyme_tracking_provider.dart';
@@ -56,16 +57,12 @@ class _EcoEnzymeTrackingFormScreenState extends State<EcoEnzymeTrackingFormScree
   Future<void> _saveForm() async {
     if (_formKey.currentState!.validate()) {
       if (_startDate == null || _dueDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Silakan pilih tanggal mulai dan tanggal selesai")),
-        );
+        showInfoTopSnackBar(context, "Isi Tanggal Mulai dan Tanggal Selesai");
         return;
       }
 
       if (_dueDate!.isBefore(_startDate!)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Tanggal selesai tidak boleh lebih awal dari tanggal mulai")),
-        );
+        showInfoTopSnackBar(context, "Tanggal Selesai harus setelah tanggal Mulai");
         return;
       }
 
@@ -92,6 +89,8 @@ class _EcoEnzymeTrackingFormScreenState extends State<EcoEnzymeTrackingFormScree
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<EcoEnzymeTrackingProvider>();
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -100,7 +99,9 @@ class _EcoEnzymeTrackingFormScreenState extends State<EcoEnzymeTrackingFormScree
         centerTitle: true,
       ),
       body: AppBackground(
-        child: Padding(
+        child: provider.isLoading
+            ? const Center(child: LoadingWidget())
+            : Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
@@ -109,7 +110,8 @@ class _EcoEnzymeTrackingFormScreenState extends State<EcoEnzymeTrackingFormScree
                 BuildFormField(
                   label: "Nama Batch",
                   controller: _nameController,
-                  validator: (value) => value == null || value.isEmpty ? "Nama wajib diisi" : null,
+                  validator: (value) =>
+                  value == null || value.isEmpty ? "Nama wajib diisi" : null,
                 ),
 
                 BuildFormField(
@@ -133,7 +135,8 @@ class _EcoEnzymeTrackingFormScreenState extends State<EcoEnzymeTrackingFormScree
                 BuildFormField(
                   label: "Catatan",
                   controller: _notesController,
-                  validator: (_) => null,
+                  validator: (value) =>
+                  value == null || value.isEmpty ? "Catatan wajib diisi" : null,
                   maxLines: 3,
                   hintText: "Tambahkan catatan",
                 ),
