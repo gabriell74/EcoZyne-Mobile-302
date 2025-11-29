@@ -1,14 +1,17 @@
-import 'dart:io';
+import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/image_upload_widget.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/pdf_upload_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/core/utils/validators.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
+import 'package:latlong2/latlong.dart';
 
 class WasteBankRegisterScreen extends StatefulWidget {
   const WasteBankRegisterScreen({super.key});
@@ -21,15 +24,34 @@ class WasteBankRegisterScreen extends StatefulWidget {
 class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  final MapController _mapController = MapController();
   final TextEditingController _bankNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  final ImagePicker _picker = ImagePicker();
-
+  LatLng? _selectedLocation;
   String? _selectedImagePath;
   String? _selectedPdfPath;
+
+  final ImagePicker _picker = ImagePicker();
+
+  // Batam Configuration
+  final LatLng defaultCenter = const LatLng(1.0456, 104.0305);
+  final double defaultZoom = 12.0;
+  final LatLngBounds batamBounds = LatLngBounds(
+    const LatLng(0.9550, 103.7850),
+    const LatLng(1.2100, 104.1750),
+  );
+
+  @override
+  void dispose() {
+    _bankNameController.dispose();
+    _addressController.dispose();
+    _whatsappController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImage() async {
     final XFile? picked = await showModalBottomSheet<XFile?>(
@@ -79,9 +101,9 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Periksa kembali inputan')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Periksa kembali inputan')),
+      );
       return;
     }
 
@@ -115,53 +137,20 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
       return;
     }
 
+    if (_selectedLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pilih lokasi di peta dulu')),
+      );
+      return;
+    }
+
     showSuccessTopSnackBar(
       context,
       "Pendaftaran diproses. Menunggu persetujuan admin.",
       icon: const Icon(Icons.pending_actions, size: 10),
     );
-    Navigator.pop(context);
-  }
 
-  Widget _buildUploadBox({
-    required String label,
-    required String placeholder,
-    required IconData icon,
-    required VoidCallback onTap,
-    String? filePath,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomText(label, fontWeight: FontWeight.w500),
-        const SizedBox(height: 0),
-        InkWell(
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: const Color(0xFFB9F5C6),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey.shade400),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: CustomText(
-                    filePath != null
-                        ? File(filePath).path.split('/').last
-                        : placeholder,
-                    color: Colors.black87,
-                  ),
-                ),
-                Icon(icon, color: Colors.black54),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
+    Navigator.pop(context);
   }
 
   @override
@@ -177,169 +166,127 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
         child: SlideFadeIn(
           delayMilliseconds: 200,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CustomText("Unggah Foto", fontWeight: FontWeight.bold),
-                  const SizedBox(height: 8),
+            child: Column(
+              children: [
+                MapSelectionWidget(
+                  mapController: _mapController,
+                  defaultCenter: defaultCenter,
+                  defaultZoom: defaultZoom,
+                  batamBounds: batamBounds,
+                  selectedLocation: _selectedLocation,
+                  onLocationSelected: (location) {
+                    setState(() => _selectedLocation = location);
+                  },
+                ),
 
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Container(
-                      width: double.infinity,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.shade400),
-                      ),
-                      child: _selectedImagePath == null
-                          ? const Center(
-                              child: Icon(
-                                Icons.image_outlined,
-                                size: 50,
-                                color: Colors.black45,
-                              ),
-                            )
-                          : Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.file(
-                                    File(_selectedImagePath!),
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: GestureDetector(
-                                    onTap: () => setState(
-                                      () => _selectedImagePath = null,
-                                    ),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.black54,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.close,
-                                        size: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ),
+                const SizedBox(height: 12),
 
-                  const SizedBox(height: 20),
+                const CustomText(
+                  "Pilih Lokasi di Peta",
+                  fontWeight: FontWeight.bold,
+                ),
 
-                  BuildFormField(
-                    label: "Nama Bank Sampah",
-                    controller: _bankNameController,
-                    validator: Validators.bankName,
-                    prefixIcon: Icons.recycling,
-                  ),
+                const SizedBox(height: 6),
 
-                  BuildFormField(
-                    label: "Alamat",
-                    controller: _addressController,
-                    validator: Validators.address,
-                    prefixIcon: Icons.location_on,
-                  ),
-
-                  BuildFormField(
-                    label: "Nomor WhatsApp",
-                    controller: _whatsappController,
-                    validator: Validators.whatsapp,
-                    keyboardType: TextInputType.phone,
-                    prefixIcon: Icons.phone,
-                  ),
-
-                  BuildFormField(
-                    label: "Deskripsi",
-                    controller: _descriptionController,
-                    validator: Validators.description,
-                    hintText: "Jenis sampah, dsb",
-                    maxLines: 4,
-                  ),
-
-                  const SizedBox(height: 4),
-                  const CustomText(
-                    "Surat Pernyataan",
-                    fontWeight: FontWeight.bold,
-                  ),
-                  const SizedBox(height: 4),
-
-                  GestureDetector(
-                    onTap: () async {
-                      final url = Uri.parse(
-                        'https://example.com/surat_pernyataan.pdf',
-                      );
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(
-                          url,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      }
-                    },
-                    child: const Text(
-                      'Download file',
-                      style: TextStyle(
-                        color: Colors.red,
-                        decoration: TextDecoration.underline,
+                if (_selectedLocation != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        "Latitude: ${_selectedLocation!.latitude.toStringAsFixed(6)}",
                         fontSize: 14,
                       ),
-                    ),
-                  ),
-
-                  Transform.translate(
-                    offset: const Offset(0, -15),
-                    child: _buildUploadBox(
-                      label: "",
-                      placeholder: "Unggah file PDF",
-                      icon: Icons.upload_file,
-                      onTap: _pickPDF,
-                      filePath: _selectedPdfPath,
-                    ),
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: _submitForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF55C173),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 60,
-                          vertical: 14,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      CustomText(
+                        "Longitude: ${_selectedLocation!.longitude.toStringAsFixed(6)}",
+                        fontSize: 14,
                       ),
-                      child: const CustomText(
-                        "Kirim Pendaftaran",
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    ],
+                  ),
+
+                const SizedBox(height: 16),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ImageUploadWidget(
+                          selectedImagePath: _selectedImagePath,
+                          onPickImage: _pickImage,
+                          onRemoveImage: () {
+                            setState(() => _selectedImagePath = null);
+                          },
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        BuildFormField(
+                          label: "Nama Bank Sampah",
+                          controller: _bankNameController,
+                          validator: Validators.bankName,
+                          prefixIcon: Icons.recycling,
+                        ),
+                        BuildFormField(
+                          label: "Alamat",
+                          controller: _addressController,
+                          validator: Validators.address,
+                          prefixIcon: Icons.location_on,
+                        ),
+                        BuildFormField(
+                          label: "Nomor WhatsApp",
+                          controller: _whatsappController,
+                          validator: Validators.whatsapp,
+                          keyboardType: TextInputType.phone,
+                          prefixIcon: Icons.phone,
+                        ),
+                        BuildFormField(
+                          label: "Deskripsi",
+                          controller: _descriptionController,
+                          validator: Validators.description,
+                          hintText: "Jenis sampah, dsb",
+                          maxLines: 4,
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        PdfUploadWidget(
+                          selectedPdfPath: _selectedPdfPath,
+                          onPickPdf: _pickPDF,
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: _submitForm,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF55C173),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 60,
+                                vertical: 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const CustomText(
+                              "Kirim Pendaftaran",
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 50),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 50),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
+          )
         ),
       ),
     );
