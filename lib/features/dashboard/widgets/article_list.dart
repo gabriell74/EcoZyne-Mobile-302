@@ -58,7 +58,7 @@ class ArticleList extends StatelessWidget {
                               imageUrl: article.photo,
                               fit: BoxFit.cover,
                               placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: LoadingWidget(width: 60,),
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: Colors.grey.shade100,

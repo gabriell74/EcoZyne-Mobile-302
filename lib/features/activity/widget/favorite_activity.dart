@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/models/activity.dart';
 import 'package:ecozyne_mobile/features/activity/screens/activity_detail_screen.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class FavoriteActivity extends StatelessWidget {
                   imageUrl: activity?.photo ?? '',
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2.0),
+                    child: LoadingWidget(width: 60,),
                       ),
                   errorWidget: (context, url, error) => const Center(
                     child: Icon(Icons.broken_image, color: Colors.grey, size: 50),

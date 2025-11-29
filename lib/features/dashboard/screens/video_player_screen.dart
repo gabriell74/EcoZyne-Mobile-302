@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -121,7 +122,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                 _controller.value.isPlaying
                                     ? Icons.pause_circle_filled
                                     : Icons.play_circle_fill,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                               ),
                               onPressed: _togglePlayPause,
                             ),
@@ -205,7 +206,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               ),
             )
           : const Center(
-              child: CircularProgressIndicator(color: Color(0xFF55C173)),
+              child: LoadingWidget(),
             ),
     );
   }

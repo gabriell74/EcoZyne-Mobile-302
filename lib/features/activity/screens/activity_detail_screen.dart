@@ -87,7 +87,7 @@ class ActivityDetailScreen extends StatelessWidget {
                         placeholder: (context, url) => Container(
                           color: Colors.grey.shade200,
                           child: const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: LoadingWidget(width: 60,),
                           ),
                         ),
                         errorWidget: (context, url, error) => Container(
