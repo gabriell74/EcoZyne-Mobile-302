@@ -1,7 +1,12 @@
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/models/region.dart';
+import 'package:ecozyne_mobile/data/models/user.dart';
+import 'package:ecozyne_mobile/data/providers/region_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
-import 'package:ecozyne_mobile/core/utils/validators.dart'; 
+import 'package:ecozyne_mobile/core/utils/validators.dart';
+import 'package:provider/provider.dart';
 
 class EditAccountScreen extends StatefulWidget {
   const EditAccountScreen({super.key});
@@ -13,11 +18,15 @@ class EditAccountScreen extends StatefulWidget {
 class _EditAccountScreenState extends State<EditAccountScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  late TextEditingController _usernameController;
+  late TextEditingController _nameController;
+  late TextEditingController _whatsappNumController;
+  late TextEditingController _emailController;
+  late TextEditingController _addressController;
+  late TextEditingController _postalCodeController;
+
+  Kecamatan? _selectedKecamatan;
+  Kelurahan? _selectedKelurahan;
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
@@ -31,9 +40,56 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final screenSize = MediaQuery.sizeOf(context);
+  void initState() {
+    super.initState();
 
+    User? user = context.read<UserProvider>().user;
+
+    _usernameController = TextEditingController(text: user!.username);
+    _nameController = TextEditingController(text: user.communityName);
+    _emailController = TextEditingController(text: user.email);
+    _whatsappNumController = TextEditingController(text: user.communityPhone);
+    _addressController = TextEditingController(text: user.communityAddress);
+    _postalCodeController = TextEditingController(text: user.communityPostalCode);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final regionProvider = context.read<RegionProvider>();
+
+      if (regionProvider.kecamatanList.isEmpty) {
+        await regionProvider.loadRegions();
+      }
+
+      _selectedKecamatan = regionProvider.kecamatanList.firstWhere(
+            (k) => k.kecamatan == user.communityKecamatan,
+        orElse: () => regionProvider.kecamatanList.first,
+      );
+
+      _selectedKelurahan = regionProvider.kelurahanList.firstWhere(
+            (kel) => kel.kelurahan == user.communityKelurahan,
+        orElse: () => regionProvider.kelurahanList.first,
+      );
+
+      setState(() {});
+    });
+
+  }
+
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _whatsappNumController.dispose();
+    _addressController.dispose();
+    _postalCodeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final regionProvider = Provider.of<RegionProvider>(context);
+    final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -63,13 +119,13 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            const CustomText(
-              'vio',
+            CustomText(
+              user!.username,
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
-            const CustomText('2000 Poin', fontSize: 14, color: Colors.grey),
+            CustomText("${user.communityPoint} Poin", fontSize: 14, color: Colors.grey),
             const SizedBox(height: 25),
 
             Form(
@@ -88,7 +144,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   ),
                   _buildTextField(
                     'No HP',
-                    _phoneController,
+                    _whatsappNumController,
                     keyboardType: TextInputType.phone,
                     validator: Validators.whatsapp,
                   ),
@@ -104,9 +160,55 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     maxLines: 2,
                     validator: Validators.address,
                   ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDropdownField<Kecamatan>(
+                          label: "Kecamatan",
+                          value: _selectedKecamatan,
+                          items: regionProvider.kecamatanList
+                              .map(
+                                (k) => DropdownMenuItem(
+                              value: k,
+                              child: Text(k.kecamatan, overflow: TextOverflow.ellipsis),
+                            ),
+                          )
+                              .toList(),
+                          onChanged: (k) {
+                            setState(() {
+                              _selectedKecamatan = k;
+                              _selectedKelurahan = null;
+                            });
+                            regionProvider.selectKecamatan(k);
+                          },
+                          validator: (v) => v == null ? "Pilih Kecamatan" : null,
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: _selectedKecamatan == null
+                            ? const Text("Pilih Kecamatan dulu")
+                            : _buildDropdownField<Kelurahan>(
+                          label: "Kelurahan",
+                          value: _selectedKelurahan,
+                          items: regionProvider.kelurahanList
+                              .map(
+                                (kel) => DropdownMenuItem(
+                              value: kel,
+                              child: Text(kel.kelurahan, overflow: TextOverflow.ellipsis),
+                            ),
+                          )
+                              .toList(),
+                          onChanged: (kel) => setState(() => _selectedKelurahan = kel),
+                          validator: (v) => v == null ? "Pilih Kelurahan" : null,
+                        ),
+
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 25),
                   SizedBox(
-                    width: screenSize.width * 0.4,
+                    width: double.infinity,
                     height: 45,
                     child: ElevatedButton(
                       onPressed: _saveProfile,
@@ -186,3 +288,50 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     );
   }
 }
+
+Widget _buildDropdownField<T>({
+  required String label,
+  required T? value,
+  required List<DropdownMenuItem<T>> items,
+  required void Function(T?) onChanged,
+  String? Function(T?)? validator,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: DropdownButtonFormField<T>(
+      initialValue: value,
+      items: items,
+      onChanged: onChanged,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(
+          color: Colors.grey,
+        ),
+        filled: true,
+        fillColor: const Color(0xFFF7F7F7),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color(0xFFE0E0E0),
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color(0xFF55C173),
+            width: 1.8,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+      ),
+      isExpanded: true,
+      icon: const Icon(Icons.arrow_drop_down),
+    ),
+  );
+}
+
