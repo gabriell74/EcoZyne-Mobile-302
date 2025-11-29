@@ -45,6 +45,20 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
   );
 
   @override
+  void initState() {
+    super.initState();
+
+    _addressController.text =
+    "Nama Jalan .................... No. ....,\n"
+        "RT .. / RW ..,\n"
+        "Kelurahan ....................,\n"
+        "Kecamatan ....................,\n"
+        "Kota Batam,\n"
+        "Provinsi Kepulauan Riau,\n"
+    ;
+  }
+
+  @override
   void dispose() {
     _bankNameController.dispose();
     _addressController.dispose();
@@ -158,7 +172,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: const Color(0xFF55C173),
+        backgroundColor: Colors.white,
         title: const CustomText("Daftar Bank Sampah"),
         centerTitle: true,
       ),
@@ -178,30 +192,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                     setState(() => _selectedLocation = location);
                   },
                 ),
-
-                const SizedBox(height: 12),
-
-                const CustomText(
-                  "Pilih Lokasi di Peta",
-                  fontWeight: FontWeight.bold,
-                ),
-
-                const SizedBox(height: 6),
-
-                if (_selectedLocation != null)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        "Latitude: ${_selectedLocation!.latitude.toStringAsFixed(6)}",
-                        fontSize: 14,
-                      ),
-                      CustomText(
-                        "Longitude: ${_selectedLocation!.longitude.toStringAsFixed(6)}",
-                        fontSize: 14,
-                      ),
-                    ],
-                  ),
 
                 const SizedBox(height: 16),
 
@@ -233,6 +223,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                           controller: _addressController,
                           validator: Validators.address,
                           prefixIcon: Icons.location_on,
+                          maxLines: 4,
                         ),
                         BuildFormField(
                           label: "Nomor WhatsApp",
@@ -242,7 +233,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                           prefixIcon: Icons.phone,
                         ),
                         BuildFormField(
-                          label: "Deskripsi",
+                          label: "Deskripsi Bank Sampah",
                           controller: _descriptionController,
                           validator: Validators.description,
                           hintText: "Jenis sampah, dsb",
@@ -259,27 +250,30 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                         const SizedBox(height: 18),
 
                         Center(
-                          child: ElevatedButton(
-                            onPressed: _submitForm,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF55C173),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 60,
-                                vertical: 14,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _submitForm,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF55C173),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 60,
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                              child: const CustomText(
+                                "Kirim Pendaftaran",
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ),
-                            child: const CustomText(
-                              "Kirim Pendaftaran",
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
 
-                        const SizedBox(height: 50),
+                        const SizedBox(height: 30),
                       ],
                     ),
                   ),
