@@ -20,6 +20,7 @@ class ActivityScreen extends StatefulWidget {
 
 class _ActivityScreenState extends State<ActivityScreen> {
   bool selectedFilter = true;
+  String _query = "";
 
   @override
   void initState() {
@@ -57,7 +58,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SearchActivity(),
+                      SearchActivity(
+                        onSearch: (query) {
+                          setState(() => _query = query);
+                        },
+                      ),
                       const SizedBox(height: 30),
                       const ActivityHeader(),
                       const SizedBox(height: 25),
@@ -129,6 +134,33 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
               Consumer<ActivityProvider>(
                 builder: (context, provider, child) {
+                  final activities = provider.activities;
+                  final filtered = _query.isEmpty
+                      ? activities
+                      : activities
+                          .where(
+                            (a) => a.title.toLowerCase().contains(
+                              _query.toLowerCase(),
+                              ),
+                          ).toList();
+
+                  if (filtered.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Column(
+                          children: [
+                            EmptyState(
+                              connected: true,
+                              message: "Kegiatan tidak ditemukan.",
+                            ),
+                            SizedBox(height: 50.0),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
                   final bool shouldShowLoading = selectedFilter
                       ? provider.isLoading
                       : provider.isCompletedLoading;
@@ -155,11 +187,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     mainAxisSpacing: 5,
                     crossAxisSpacing: 2,
                     childCount: selectedFilter
-                        ? provider.activities.length
+                        ? filtered.length
                         : provider.completedActivities.length,
                     itemBuilder: (context, index) {
                       final activity = selectedFilter
-                          ? provider.activities[index]
+                          ? filtered[index]
                           : provider.completedActivities[index];
                       return Column(
                         children: [
