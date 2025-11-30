@@ -21,6 +21,7 @@ class ComicDetailScreen extends StatefulWidget {
 
 class _ComicDetailScreenState extends State<ComicDetailScreen> {
   final ScrollController _scrollController = ScrollController();
+  final int maxImageWidth = 1080; 
 
   @override
   void initState() {
@@ -49,7 +50,6 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       ),
       body: Consumer<ComicProvider>(
         builder: (context, provider, child) {
-
           if (provider.isLoadingDetail) {
             return const Center(child: LoadingWidget());
           }
@@ -86,24 +86,38 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
             itemBuilder: (context, index) {
               final img = photos[index];
 
-              if (index + 2 < photos.length) {
-                precacheImage(CachedNetworkImageProvider(photos[index + 2]), context);
+              if (index + 1 < photos.length) {
+                precacheImage(
+                  CachedNetworkImageProvider(
+                    photos[index + 1],
+                    maxWidth: maxImageWidth,
+                  ),
+                  context,
+                );
               }
 
               return CachedNetworkImage(
                 imageUrl: img,
+                memCacheWidth: maxImageWidth,
+
                 width: double.infinity,
-                fit: BoxFit.cover,
+                fit: BoxFit.fitWidth,
+
+                fadeInDuration: const Duration(milliseconds: 80),
+                fadeOutDuration: const Duration(milliseconds: 80),
+
                 placeholder: (context, url) => Container(
+                  height: 260,
                   color: Colors.grey[300],
-                  child: const Center(child: LoadingWidget()),
+                  alignment: Alignment.center,
+                  child: const LoadingWidget(),
                 ),
+
                 errorWidget: (context, url, error) => Container(
+                  height: 260,
                   color: Colors.grey[300],
-                  height: 400,
-                  child: const Center(
-                    child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                  ),
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.broken_image, size: 48),
                 ),
               );
             },
