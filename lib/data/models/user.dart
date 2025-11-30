@@ -47,23 +47,22 @@ class User {
   double? get longitude => wasteBank?.longitude;
 
   Map<String, dynamic> toJson({
+    required String username,
     required String name,
     required String phoneNumber,
+    required String email,
     required String address,
-    required String postalCode,
     required int kelurahanId,
-    required String password,
+    required String postalCode,
   }) {
     return {
       'username': username,
       'email': email,
-      'password': password,
-      'role': role,
       'name': name,
       'phone_number': phoneNumber,
       'address': address,
-      'postal_code': postalCode,
       'kelurahan': kelurahanId,
+      'postal_code': postalCode,
     };
   }
 }

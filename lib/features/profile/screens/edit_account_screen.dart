@@ -1,3 +1,5 @@
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/region.dart';
 import 'package:ecozyne_mobile/data/models/user.dart';
@@ -28,14 +30,64 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   Kecamatan? _selectedKecamatan;
   Kelurahan? _selectedKelurahan;
 
-  void _saveProfile() {
+  Future<void> _saveProfile(
+      BuildContext context,
+      User user, {
+        required String username,
+        required String name,
+        required String phoneNumber,
+        required String email,
+        required String address,
+        required int kelurahanId,
+        required String postalCode,
+      }) async {
+
     if (_formKey.currentState!.validate()) {
-      showSuccessTopSnackBar(
-        context,
-        "Data berhasil diperbarui",
-        icon: const Icon(Icons.save_alt, size: 28),
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (confirmDialogContext) =>
+            ConfirmationDialog(
+              "Apakah anda yakin mengubah data profil?",
+              onTap: () => Navigator.pop(confirmDialogContext, true),
+            ),
       );
-      Navigator.pop(context);
+
+      if (confirmed != true) return;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (loadingContext) => const LoadingWidget(height: 100),
+      );
+
+      final userProvider = context.read<UserProvider>();
+
+      final success = await userProvider.updateUserProfile(
+        username: username,
+        name: name,
+        phoneNumber: phoneNumber,
+        email: email,
+        address: address,
+        kelurahanId: kelurahanId,
+        postalCode: postalCode,
+      );
+
+      if (context.mounted) Navigator.pop(context);
+
+      if (success) {
+        showSuccessTopSnackBar(
+          context,
+          "Profil berhasil diperbarui",
+          icon: const Icon(Icons.check_circle),
+        );
+
+        Navigator.pop(context);
+      } else {
+        showErrorTopSnackBar(
+          context,
+          userProvider.message,
+        );
+      }
     }
   }
 
@@ -98,9 +150,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: const CustomText(
           'Edit Akun',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          color: Colors.black, fontWeight: FontWeight.bold,
         ),
         centerTitle: true,
       ),
@@ -170,7 +222,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                               .map(
                                 (k) => DropdownMenuItem(
                               value: k,
-                              child: Text(k.kecamatan, overflow: TextOverflow.ellipsis),
+                              child: CustomText(k.kecamatan, textOverflow: TextOverflow.ellipsis),
                             ),
                           )
                               .toList(),
@@ -195,7 +247,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                               .map(
                                 (kel) => DropdownMenuItem(
                               value: kel,
-                              child: Text(kel.kelurahan, overflow: TextOverflow.ellipsis),
+                              child: CustomText(kel.kelurahan, textOverflow: TextOverflow.ellipsis),
                             ),
                           )
                               .toList(),
@@ -206,24 +258,39 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                  _buildTextField(
+                    'Kode pos',
+                    _postalCodeController,
+                    keyboardType: TextInputType.number,
+                    validator: Validators.postalCode,
+                  ),
                   SizedBox(
                     width: double.infinity,
                     height: 45,
                     child: ElevatedButton(
-                      onPressed: _saveProfile,
+                      onPressed: () {
+                        _saveProfile(
+                          context,
+                          user,
+                          username: _usernameController.text,
+                          name: _nameController.text,
+                          phoneNumber: _whatsappNumController.text,
+                          email: _emailController.text,
+                          address: _addressController.text,
+                          kelurahanId: _selectedKelurahan!.id,
+                          postalCode: _postalCodeController.text,
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF55C173),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      child: const Text(
+                      child: const CustomText(
                         'Simpan',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
                   ),

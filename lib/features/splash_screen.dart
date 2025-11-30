@@ -1,6 +1,6 @@
-import 'dart:async';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
+import 'package:ecozyne_mobile/features/no_connection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,21 +22,53 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 2),
     );
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.microtask(() {
-        context.read<UserProvider>().fetchCurrentUser();
-      });
+      _startFlow();
     });
+  }
 
+  Future<void> _startFlow() async {
+    final userProvider = context.read<UserProvider>();
 
-    Timer(const Duration(seconds: 5), () {
+    await userProvider.fetchCurrentUser();
+
+    if (!mounted) return;
+
+    // Tidak ada koneksi
+    if (userProvider.message == "NO_CONNECTION") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (screenContext) => NoConnectionScreen(
+            onRetry: () {
+              screenContext.read<UserProvider>().fetchCurrentUser();
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
+    // Token tidak ada -> Guest Mode
+    if (userProvider.user == null && userProvider.isGuest) {
       Navigator.pushReplacementNamed(context, '/get_started');
-    });
+      return;
+    }
+
+    // Token invalid -> Login
+    if (userProvider.isGuest &&
+        userProvider.message.contains("Token tidak valid")) {
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
+
+    // User valid -> Masuk Get Started
+    Navigator.pushReplacementNamed(context, '/get_started');
   }
 
   @override
