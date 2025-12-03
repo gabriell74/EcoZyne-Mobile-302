@@ -1,5 +1,8 @@
 import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/image_upload_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/pdf_upload_widget.dart';
@@ -12,6 +15,7 @@ import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/core/utils/validators.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 class WasteBankRegisterScreen extends StatefulWidget {
   const WasteBankRegisterScreen({super.key});
@@ -23,8 +27,8 @@ class WasteBankRegisterScreen extends StatefulWidget {
 
 class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final MapController _mapController = MapController();
+
   final TextEditingController _bankNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
@@ -36,7 +40,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
 
   final ImagePicker _picker = ImagePicker();
 
-  // Batam Configuration
   final LatLng defaultCenter = const LatLng(1.0456, 104.0305);
   final double defaultZoom = 12.0;
   final LatLngBounds batamBounds = LatLngBounds(
@@ -54,8 +57,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
         "Kelurahan ....................,\n"
         "Kecamatan ....................,\n"
         "Kota Batam,\n"
-        "Provinsi Kepulauan Riau,\n"
-    ;
+        "Provinsi Kepulauan Riau,\n";
   }
 
   @override
@@ -77,9 +79,8 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
               leading: const Icon(Icons.photo_library),
               title: const Text('Pilih dari Galeri'),
               onTap: () async {
-                final file = await _picker.pickImage(
-                  source: ImageSource.gallery,
-                );
+                final file =
+                await _picker.pickImage(source: ImageSource.gallery);
                 Navigator.pop(context, file);
               },
             ),
@@ -87,9 +88,8 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
               leading: const Icon(Icons.camera_alt),
               title: const Text('Ambil Foto'),
               onTap: () async {
-                final file = await _picker.pickImage(
-                  source: ImageSource.camera,
-                );
+                final file =
+                await _picker.pickImage(source: ImageSource.camera);
                 Navigator.pop(context, file);
               },
             ),
@@ -98,7 +98,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
       ),
     );
 
-    if (picked != null && picked.path.isNotEmpty) {
+    if (picked != null) {
       setState(() => _selectedImagePath = picked.path);
     }
   }
@@ -113,59 +113,78 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     }
   }
 
-  void _submitForm() {
+  // ============================================================
+  //                CONFIRM + LOADING + SUBMIT
+  // ============================================================
+
+  Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Periksa kembali inputan')),
-      );
+      showErrorTopSnackBar(context, "Periksa kembali inputan");
       return;
     }
 
     if (_selectedImagePath == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const CustomText(
-            'Unggah foto terlebih dahulu',
-            color: Colors.white,
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
+      showErrorTopSnackBar(context, "Unggah foto terlebih dahulu");
       return;
     }
 
     if (_selectedPdfPath == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const CustomText(
-            'Harap unggah file persetujuan',
-            color: Colors.white,
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
+      showErrorTopSnackBar(context, "Harap unggah file persetujuan");
       return;
     }
 
     if (_selectedLocation == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih lokasi di peta dulu')),
-      );
+      showErrorTopSnackBar(context, "Pilih lokasi di peta dulu");
       return;
     }
 
-    showSuccessTopSnackBar(
-      context,
-      "Pendaftaran diproses. Menunggu persetujuan admin.",
-      icon: const Icon(Icons.pending_actions, size: 10),
+    // --- SHOW CONFIRM DIALOG ---
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => ConfirmationDialog(
+        "Kirim pendaftaran Bank Sampah?",
+        onTap: () => Navigator.pop(ctx, true),
+      ),
     );
 
-    Navigator.pop(context);
+    if (confirmed != true) return;
+
+    // --- SHOW LOADING ---
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const LoadingWidget(height: 100),
+    );
+
+    final provider = context.read<WasteBankSubmissionProvider>();
+
+    final success = await provider.addSubmission({
+      "waste_bank_name": _bankNameController.text,
+      "waste_bank_location": _addressController.text,
+      "photo": _selectedImagePath!,
+      "latitude": _selectedLocation!.latitude.toString(),
+      "longitude": _selectedLocation!.longitude.toString(),
+      "file_document": _selectedPdfPath!,
+      "notes": _descriptionController.text,
+      "status": "pending",
+    });
+
+
+    if (context.mounted) Navigator.pop(context); // close loading
+
+    if (success) {
+      showSuccessTopSnackBar(
+        context,
+        "Pendaftaran sedang diproses",
+        icon: const Icon(Icons.pending_actions),
+      );
+      Navigator.pop(context);
+    } else {
+      showErrorTopSnackBar(context, provider.message);
+    }
   }
+
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
@@ -188,8 +207,8 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                   defaultZoom: defaultZoom,
                   batamBounds: batamBounds,
                   selectedLocation: _selectedLocation,
-                  onLocationSelected: (location) {
-                    setState(() => _selectedLocation = location);
+                  onLocationSelected: (loc) {
+                    setState(() => _selectedLocation = loc);
                   },
                 ),
 
@@ -200,14 +219,12 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                   child: Form(
                     key: _formKey,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ImageUploadWidget(
                           selectedImagePath: _selectedImagePath,
                           onPickImage: _pickImage,
-                          onRemoveImage: () {
-                            setState(() => _selectedImagePath = null);
-                          },
+                          onRemoveImage: () =>
+                              setState(() => _selectedImagePath = null),
                         ),
 
                         const SizedBox(height: 20),
@@ -221,9 +238,9 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                         BuildFormField(
                           label: "Alamat",
                           controller: _addressController,
+                          maxLines: 4,
                           validator: Validators.address,
                           prefixIcon: Icons.location_on,
-                          maxLines: 4,
                         ),
                         BuildFormField(
                           label: "Nomor WhatsApp",
@@ -235,9 +252,9 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                         BuildFormField(
                           label: "Deskripsi Bank Sampah",
                           controller: _descriptionController,
+                          maxLines: 4,
                           validator: Validators.description,
                           hintText: "Jenis sampah, dsb",
-                          maxLines: 4,
                         ),
 
                         const SizedBox(height: 4),
@@ -249,26 +266,23 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
 
                         const SizedBox(height: 18),
 
-                        Center(
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _submitForm,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF55C173),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 60,
-                                  vertical: 14,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _submitForm,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF55C173),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 14,
                               ),
-                              child: const CustomText(
-                                "Kirim Pendaftaran",
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
+                            ),
+                            child: const CustomText(
+                              "Kirim Pendaftaran",
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -280,7 +294,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                 ),
               ],
             ),
-          )
+          ),
         ),
       ),
     );

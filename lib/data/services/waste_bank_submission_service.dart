@@ -5,37 +5,36 @@ import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
 class WasteBankSubmissionService {
   final Dio _dio = ApiClient.dio;
 
-  Future<Map<String, dynamic>> storeWasteBankSubmission(
-      WasteBankSubmission submission) async {
+  Future<Map<String, dynamic>> storeWasteBankSubmission(Map<String, dynamic> submission) async {
     try {
-      final Map<String, dynamic> data = submission.toJson();
+      final formData = FormData.fromMap({
+        "community_id": submission["community_id"],
+        "waste_bank_name": submission["waste_bank_name"],
+        "waste_bank_location": submission["waste_bank_location"],
+        "latitude": submission["latitude"],
+        "longitude": submission["longitude"],
+        "notes": submission["notes"],
+        "status": submission["status"],
 
-      if (submission.photo.isNotEmpty) {
-        data["photo"] = await MultipartFile.fromFile(
-          submission.photo,
-          filename: submission.photo.split('/').last,
-        );
-      }
+        "photo": await MultipartFile.fromFile(
+          submission["photo"],
+          filename: submission["photo"].split('/').last,
+        ),
 
-      if (submission.fileDocument.isNotEmpty) {
-        data["file_document"] = await MultipartFile.fromFile(
-          submission.fileDocument,
-          filename: submission.fileDocument.split('/').last,
-        );
-      }
-
-      final formData = FormData.fromMap(data);
+        "file_document": await MultipartFile.fromFile(
+          submission["file_document"],
+          filename: submission["file_document"].split('/').last,
+        ),
+      });
 
       final response = await _dio.post(
         "/waste-bank-submission/store",
         data: formData,
       );
 
-      final success = response.data["success"] == true;
-
-      if (response.statusCode == 201 && success) {
-        final newSubmission =
-        WasteBankSubmission.fromJson(response.data["data"]);
+      if (response.data["success"] == true &&
+          response.statusCode == 201) {
+        final newSubmission = WasteBankSubmission.fromJson(response.data["data"]);
 
         return {
           "success": true,
@@ -50,12 +49,12 @@ class WasteBankSubmissionService {
         "message": response.data["message"] ?? "Gagal membuat pengajuan",
         "connected": true,
       };
+
     } on DioException catch (e) {
       if (e.response != null) {
         return {
           "success": false,
-          "message":
-          e.response?.data["message"] ?? "Gagal membuat pengajuan",
+          "message": e.response?.data["message"] ?? "Gagal membuat pengajuan",
           "connected": true,
         };
       }
@@ -68,3 +67,4 @@ class WasteBankSubmissionService {
     }
   }
 }
+
