@@ -79,7 +79,7 @@ class AuthProvider with ChangeNotifier {
       _success = false;
       if (result['errors'] != null) {
         Validators.setServerErrors(result['errors']);
-        _message = "Validasi gagal, periksa kembali input kamu.";
+        _message = result["message"] ?? "Validasi gagal, periksa kembali input kamu.";
       } else {
         Validators.clearServerErrors();
         _message = result['message'] ?? "Registrasi gagal";

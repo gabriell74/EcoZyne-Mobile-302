@@ -76,7 +76,7 @@ class AuthService {
         'address': address,
         'postal_code': postalCode,
         'kecamatan_id': kecamatanId,
-        'kelurahan_id': kelurahanId,
+        'kelurahan': kelurahanId,
       };
 
       final response = await _dio.post('/register', data: data);
