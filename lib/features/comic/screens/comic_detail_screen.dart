@@ -5,6 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
+class KeepAliveImageWrapper extends StatefulWidget {
+  final Widget child;
+  const KeepAliveImageWrapper({super.key, required this.child});
+
+  @override
+  State<KeepAliveImageWrapper> createState() => _KeepAliveImageWrapperState();
+}
+
+class _KeepAliveImageWrapperState extends State<KeepAliveImageWrapper>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); 
+    return widget.child;
+  }
+}
+
 class ComicDetailScreen extends StatefulWidget {
   final int comicId;
   final String title;
@@ -21,7 +41,7 @@ class ComicDetailScreen extends StatefulWidget {
 
 class _ComicDetailScreenState extends State<ComicDetailScreen> {
   final ScrollController _scrollController = ScrollController();
-  final int maxImageWidth = 1080; 
+  final int maxImageWidth = 1080;
 
   @override
   void initState() {
@@ -96,28 +116,26 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                 );
               }
 
-              return CachedNetworkImage(
-                imageUrl: img,
-                memCacheWidth: maxImageWidth,
-
-                width: double.infinity,
-                fit: BoxFit.fitWidth,
-
-                fadeInDuration: const Duration(milliseconds: 80),
-                fadeOutDuration: const Duration(milliseconds: 80),
-
-                placeholder: (context, url) => Container(
-                  height: 260,
-                  color: Colors.grey[300],
-                  alignment: Alignment.center,
-                  child: const LoadingWidget(),
-                ),
-
-                errorWidget: (context, url, error) => Container(
-                  height: 260,
-                  color: Colors.grey[300],
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.broken_image, size: 48),
+              return KeepAliveImageWrapper(
+                child: CachedNetworkImage(
+                  imageUrl: img,
+                  memCacheWidth: maxImageWidth,
+                  width: double.infinity,
+                  fit: BoxFit.fitWidth,
+                  fadeInDuration: const Duration(milliseconds: 80),
+                  fadeOutDuration: const Duration(milliseconds: 80),
+                  placeholder: (context, url) => Container(
+                    height: 260,
+                    color: Colors.grey[300],
+                    alignment: Alignment.center,
+                    child: const LoadingWidget(),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 260,
+                    color: Colors.grey[300],
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image, size: 48),
+                  ),
                 ),
               );
             },
