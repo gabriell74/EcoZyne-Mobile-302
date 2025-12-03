@@ -1,0 +1,73 @@
+[33mcommit f9426b0201eb75ef2d9fa868fbe2a7b8d4692d9a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Vioni16 <vioniazzahra16@gmail.com>
+Date:   Sun Nov 30 21:52:59 2025 +0700
+
+    Mengoptimasi comic screen
+
+[1mdiff --git a/lib/features/comic/screens/comic_detail_screen.dart b/lib/features/comic/screens/comic_detail_screen.dart[m
+[1mindex 7ea3393..5df7c2a 100644[m
+[1m--- a/lib/features/comic/screens/comic_detail_screen.dart[m
+[1m+++ b/lib/features/comic/screens/comic_detail_screen.dart[m
+[36m@@ -21,6 +21,7 @@[m [mclass ComicDetailScreen extends StatefulWidget {[m
+ [m
+ class _ComicDetailScreenState extends State<ComicDetailScreen> {[m
+   final ScrollController _scrollController = ScrollController();[m
+[32m+[m[32m  final int maxImageWidth = 1080;[m[41m [m
+ [m
+   @override[m
+   void initState() {[m
+[36m@@ -49,7 +50,6 @@[m [mclass _ComicDetailScreenState extends State<ComicDetailScreen> {[m
+       ),[m
+       body: Consumer<ComicProvider>([m
+         builder: (context, provider, child) {[m
+[31m-[m
+           if (provider.isLoadingDetail) {[m
+             return const Center(child: LoadingWidget());[m
+           }[m
+[36m@@ -86,24 +86,38 @@[m [mclass _ComicDetailScreenState extends State<ComicDetailScreen> {[m
+             itemBuilder: (context, index) {[m
+               final img = photos[index];[m
+ [m
+[31m-              if (index + 2 < photos.length) {[m
+[31m-                precacheImage(CachedNetworkImageProvider(photos[index + 2]), context);[m
+[32m+[m[32m              if (index + 1 < photos.length) {[m
+[32m+[m[32m                precacheImage([m
+[32m+[m[32m                  CachedNetworkImageProvider([m
+[32m+[m[32m                    photos[index + 1],[m
+[32m+[m[32m                    maxWidth: maxImageWidth,[m
+[32m+[m[32m                  ),[m
+[32m+[m[32m                  context,[m
+[32m+[m[32m                );[m
+               }[m
+ [m
+               return CachedNetworkImage([m
+                 imageUrl: img,[m
+[32m+[m[32m                memCacheWidth: maxImageWidth,[m
+[32m+[m
+                 width: double.infinity,[m
+[31m-                fit: BoxFit.cover,[m
+[32m+[m[32m                fit: BoxFit.fitWidth,[m
+[32m+[m
+[32m+[m[32m                fadeInDuration: const Duration(milliseconds: 80),[m
+[32m+[m[32m                fadeOutDuration: const Duration(milliseconds: 80),[m
+[32m+[m
+                 placeholder: (context, url) => Container([m
+[32m+[m[32m                  height: 260,[m
+                   color: Colors.grey[300],[m
+[31m-                  child: const Center(child: LoadingWidget()),[m
+[32m+[m[32m                  alignment: Alignment.center,[m
+[32m+[m[32m                  child: const LoadingWidget(),[m
+                 ),[m
+[32m+[m
+                 errorWidget: (context, url, error) => Container([m
+[32m+[m[32m                  height: 260,[m
+                   color: Colors.grey[300],[m
+[31m-                  height: 400,[m
+[31m-                  child: const Center([m
+[31m-                    child: Icon(Icons.broken_image, size: 50, color: Colors.grey),[m
+[31m-                  ),[m
+[32m+[m[32m                  alignment: Alignment.center,[m
+[32m+[m[32m                  child: const Icon(Icons.broken_image, size: 48),[m
+                 ),[m
+               );[m
+             },[m

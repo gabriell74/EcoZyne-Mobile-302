@@ -7,6 +7,28 @@ import 'package:ecozyne_mobile/features/comic/widgets/comic_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+class KeepAliveWrapper extends StatefulWidget {
+  final Widget child;
+
+  const KeepAliveWrapper({super.key, required this.child});
+
+  @override
+  State<KeepAliveWrapper> createState() => _KeepAliveWrapperState();
+}
+
+class _KeepAliveWrapperState extends State<KeepAliveWrapper>
+    with AutomaticKeepAliveClientMixin {
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
+  }
+}
+
 class ComicScreen extends StatefulWidget {
   const ComicScreen({super.key});
 
@@ -18,7 +40,6 @@ class _ComicScreenState extends State<ComicScreen> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ComicProvider>().getComics();
     });
@@ -38,7 +59,6 @@ class _ComicScreenState extends State<ComicScreen> {
       body: AppBackground(
         child: Consumer<ComicProvider>(
           builder: (context, provider, child) {
-
             if (provider.isLoadingList) {
               return const Center(child: LoadingWidget());
             }
@@ -58,20 +78,23 @@ class _ComicScreenState extends State<ComicScreen> {
               itemBuilder: (context, index) {
                 final comic = provider.comics[index];
 
-                return ComicCard(
-                  title: comic.title,
-                  imagePath: comic.coverPhoto,
-                  createdAt: comic.createdAt,
-                  onTap: () {
-                    Navigator.push(
-                      context, MaterialPageRoute(
-                        builder: (context) => ComicDetailScreen(
-                          comicId: comic.id,
-                          title: comic.title,
+                return KeepAliveWrapper(
+                  child: ComicCard(
+                    title: comic.title,
+                    imagePath: comic.coverPhoto,
+                    createdAt: comic.createdAt,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ComicDetailScreen(
+                            comicId: comic.id,
+                            title: comic.title,
+                          ),
                         ),
-                      )
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               },
             );
