@@ -113,10 +113,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     }
   }
 
-  // ============================================================
-  //                CONFIRM + LOADING + SUBMIT
-  // ============================================================
-
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       showErrorTopSnackBar(context, "Periksa kembali inputan");
@@ -138,7 +134,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
       return;
     }
 
-    // --- SHOW CONFIRM DIALOG ---
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => ConfirmationDialog(
@@ -149,7 +144,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
 
     if (confirmed != true) return;
 
-    // --- SHOW LOADING ---
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -170,7 +164,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     });
 
 
-    if (context.mounted) Navigator.pop(context); // close loading
+    if (context.mounted) Navigator.pop(context);
 
     if (success) {
       showSuccessTopSnackBar(
@@ -183,8 +177,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
       showErrorTopSnackBar(context, provider.message);
     }
   }
-
-  // ============================================================
 
   @override
   Widget build(BuildContext context) {

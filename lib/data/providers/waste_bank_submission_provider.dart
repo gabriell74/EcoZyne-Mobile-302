@@ -15,15 +15,10 @@ class WasteBankSubmissionProvider with ChangeNotifier {
   String get message => _message;
   bool get connected => _connected;
 
-  // ============================================================
-  //                    ADD SUBMISSION
-  // ============================================================
-
   Future<bool> addSubmission(Map<String, dynamic> submissionData) async {
     _isLoading = true;
     notifyListeners();
 
-    // Tambahkan community_id disini agar konsisten
     submissionData["community_id"] = 21;
 
     final result = await _submissionService.storeWasteBankSubmission(submissionData);
