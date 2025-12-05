@@ -4,7 +4,6 @@ import 'package:ecozyne_mobile/data/models/reward.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/data/services/reward_service.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class RewardProvider with ChangeNotifier {
   final RewardService _rewardService = RewardService();

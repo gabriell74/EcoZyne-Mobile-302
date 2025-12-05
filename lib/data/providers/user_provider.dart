@@ -1,4 +1,3 @@
-import 'package:ecozyne_mobile/data/models/community_profile.dart';
 import 'package:ecozyne_mobile/data/models/user.dart';
 import 'package:ecozyne_mobile/data/services/secure_storage_service.dart';
 import 'package:ecozyne_mobile/data/services/user_service.dart';

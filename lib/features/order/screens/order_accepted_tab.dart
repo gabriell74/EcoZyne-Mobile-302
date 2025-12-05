@@ -1,13 +1,28 @@
 import 'package:ecozyne_mobile/features/order/widgets/order_card.dart';
 import 'package:flutter/material.dart';
- 
+
 class OrderAcceptedTab extends StatelessWidget {
   const OrderAcceptedTab({super.key});
 
   final List<Map<String, dynamic>> acceptedOrders = const [
-    {'produk': 'Pupuk', 'jumlah': 12, 'metode': 'COD'},
-    {'produk': 'Pupuk', 'jumlah': 8, 'metode': 'COD'},
-    {'produk': 'Pupuk', 'jumlah': 20, 'metode': 'COD'},
+    {
+      'tanggal': 'May 22, 2023',
+      'produk': 'Pupuk',
+      'jumlah': 12,
+      'metode': 'COD',
+      'bankSampah': 'Bank Sampah Maju Jaya',
+      'status': 'Selesai',
+      'reason': null,
+    },
+    {
+      'tanggal': 'June 14, 2023',
+      'produk': 'Pupuk',
+      'jumlah': 3,
+      'metode': 'COD',
+      'bankSampah': 'Bank Sampah Berkah',
+      'status': 'Selesai',
+      'reason': null,
+    },
   ];
 
   @override
@@ -22,10 +37,14 @@ class OrderAcceptedTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = acceptedOrders[index];
         return OrderCard(
+          tanggal: item['tanggal'],
           produk: item['produk'],
           jumlah: item['jumlah'],
           metode: item['metode'],
+          bankSampah: item['bankSampah'],
           showButtons: false,
+          status: item['status'],
+          reason: item['reason'],
         );
       },
     );

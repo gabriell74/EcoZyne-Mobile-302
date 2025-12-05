@@ -3,7 +3,6 @@ import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
-import 'package:ecozyne_mobile/data/models/community_profile.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/marketplace/widgets/product_checkout_detail.dart';
 import 'package:flutter/material.dart';
