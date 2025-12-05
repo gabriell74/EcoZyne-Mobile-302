@@ -5,26 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
-class KeepAliveImageWrapper extends StatefulWidget {
-  final Widget child;
-  const KeepAliveImageWrapper({super.key, required this.child});
-
-  @override
-  State<KeepAliveImageWrapper> createState() => _KeepAliveImageWrapperState();
-}
-
-class _KeepAliveImageWrapperState extends State<KeepAliveImageWrapper>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context); 
-    return widget.child;
-  }
-}
-
 class ComicDetailScreen extends StatefulWidget {
   final int comicId;
   final String title;
@@ -41,7 +21,6 @@ class ComicDetailScreen extends StatefulWidget {
 
 class _ComicDetailScreenState extends State<ComicDetailScreen> {
   final ScrollController _scrollController = ScrollController();
-  final int maxImageWidth = 1080;
 
   @override
   void initState() {
@@ -57,8 +36,18 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     super.dispose();
   }
 
+  int getOptimalWidth(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final ratio = MediaQuery.of(context).devicePixelRatio;
+
+    final maxWidth = (width * ratio).clamp(600, 1200).toInt();
+    return maxWidth;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final optimalWidth = getOptimalWidth(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -69,7 +58,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
         elevation: 0,
       ),
       body: Consumer<ComicProvider>(
-        builder: (context, provider, child) {
+        builder: (context, provider, _) {
           if (provider.isLoadingDetail) {
             return const Center(child: LoadingWidget());
           }
@@ -101,41 +90,30 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
           return ListView.builder(
             controller: _scrollController,
             padding: EdgeInsets.zero,
-            physics: const BouncingScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
             itemCount: photos.length,
             itemBuilder: (context, index) {
-              final img = photos[index];
+              final imgUrl = photos[index];
 
-              if (index + 1 < photos.length) {
-                precacheImage(
-                  CachedNetworkImageProvider(
-                    photos[index + 1],
-                    maxWidth: maxImageWidth,
-                  ),
-                  context,
-                );
-              }
+              return CachedNetworkImage(
+                imageUrl: imgUrl,
+                memCacheWidth: optimalWidth,
+                width: double.infinity,
+                fit: BoxFit.fitWidth,
 
-              return KeepAliveImageWrapper(
-                child: CachedNetworkImage(
-                  imageUrl: img,
-                  memCacheWidth: maxImageWidth,
-                  width: double.infinity,
-                  fit: BoxFit.fitWidth,
-                  fadeInDuration: const Duration(milliseconds: 80),
-                  fadeOutDuration: const Duration(milliseconds: 80),
-                  placeholder: (context, url) => Container(
-                    height: 260,
-                    color: Colors.grey[300],
-                    alignment: Alignment.center,
-                    child: const LoadingWidget(),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    height: 260,
-                    color: Colors.grey[300],
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.broken_image, size: 48),
-                  ),
+                fadeInDuration: const Duration(milliseconds: 80),
+                fadeOutDuration: const Duration(milliseconds: 80),
+
+                placeholder: (context, url) => Container(
+                  height: 260,
+                  color: Colors.grey[300],
+                ),
+
+                errorWidget: (context, url, error) => Container(
+                  height: 260,
+                  color: Colors.grey[300],
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.broken_image, size: 48),
                 ),
               );
             },
