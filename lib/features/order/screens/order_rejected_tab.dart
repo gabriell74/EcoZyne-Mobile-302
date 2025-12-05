@@ -5,9 +5,24 @@ class OrderRejectedTab extends StatelessWidget {
   const OrderRejectedTab({super.key});
 
   final List<Map<String, dynamic>> rejectedOrders = const [
-    {'produk': 'Pupuk', 'jumlah': 50, 'metode': 'COD'},
-    {'produk': 'Pupuk', 'jumlah': 70, 'metode': 'COD'},
-    {'produk': 'Pupuk', 'jumlah': 100, 'metode': 'COD'},
+    {
+      'tanggal': 'June 14, 2023',
+      'produk': 'Eco Enzyme',
+      'jumlah': 1,
+      'metode': 'COD',
+      'bankSampah': 'Waste Bank Maju',
+      'status': 'Ditolak',
+      'reason': 'Stok produk tidak tersedia di bank sampah.', // Alasan Penolakan
+    },
+    {
+      'tanggal': 'May 22, 2023',
+      'produk': 'Pupuk Kompos',
+      'jumlah': 2,
+      'metode': 'COD',
+      'bankSampah': 'Waste Bank Sejahtera',
+      'status': 'Dibatalkan',
+      'reason': 'Permintaan pembatalan dari penjual.', // Alasan Pembatalan
+    },
   ];
 
   @override
@@ -22,10 +37,14 @@ class OrderRejectedTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = rejectedOrders[index];
         return OrderCard(
+          tanggal: item['tanggal'],
           produk: item['produk'],
           jumlah: item['jumlah'],
           metode: item['metode'],
+          bankSampah: item['bankSampah'],
           showButtons: false,
+          status: item['status'],
+          reason: item['reason'],
         );
       },
     );

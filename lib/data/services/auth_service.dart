@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:ecozyne_mobile/data/api_client.dart';
-import 'package:ecozyne_mobile/data/models/user.dart';
 import 'package:ecozyne_mobile/data/services/secure_storage_service.dart';
 
 class AuthService {
