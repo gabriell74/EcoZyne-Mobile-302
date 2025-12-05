@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/utils/user_helper.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
@@ -130,8 +131,16 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                   GestureDetector(
-                    onTap: () {
-                      questionProvider.toggleLike(widget.question.id);
+                    onTap: () async{
+                      final isLoggedIn = UserHelper.isLoggedIn(context);
+                      if (!isLoggedIn) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => LoginRequiredDialog()
+                        );
+                      } else {
+                        await questionProvider.toggleLike(widget.question.id);
+                      }
                     },
                     child: Row(
                       children: [

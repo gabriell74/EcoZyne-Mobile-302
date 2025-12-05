@@ -62,15 +62,15 @@ class GreetingCard extends StatelessWidget {
                   color: Colors.black87,
                   height: 1.3,
                 ),
-                if (user == null) ...[
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    child: const Text("Masuk Akun"),
-                  ),
-                ],
+                // if (user == null) ...[
+                //   const SizedBox(height: 10),
+                //   ElevatedButton(
+                //     onPressed: () {
+                //       Navigator.pushNamed(context, '/login');
+                //     },
+                //     child: const Text("Masuk Akun"),
+                //   ),
+                // ],
               ],
             ),
           ),

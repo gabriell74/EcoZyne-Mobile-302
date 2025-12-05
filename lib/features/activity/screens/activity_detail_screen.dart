@@ -61,8 +61,7 @@ class ActivityDetailScreen extends StatelessWidget {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const CustomText(
-          'Detail Aktivitas',
-          fontWeight: FontWeight.bold,
+          'Detail Kegiatan',
         ),
         backgroundColor: const Color(0xFF55C173),
         centerTitle: true,

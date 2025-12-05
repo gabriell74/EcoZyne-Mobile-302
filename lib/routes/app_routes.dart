@@ -17,6 +17,7 @@ import 'package:ecozyne_mobile/features/marketplace/screens/checkout_screen.dart
 import 'package:ecozyne_mobile/features/marketplace/screens/marketplace_screen.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_screen.dart';
 import 'package:ecozyne_mobile/features/splash_screen.dart';
+import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_register_screen.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_screen.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_deposit_screen.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/screens/waste_detail.dart';
@@ -48,6 +49,7 @@ class AppRoutes {
   static const String ecoEnzymeTrackingForm = '/eco-enzyme-tracking-form';
   static const String checkout = '/checkout';
   static const String history = '/history';
+  static const String wasteBankRegister = '/waste-bank-register';
   // static const String discussionComen = '/discussion-comen';
 
   static Map<String, WidgetBuilder> routes = {
@@ -74,6 +76,7 @@ class AppRoutes {
     marketplace: (context) => MarketplaceScreen(),
     history: (context) => HistoryScreen(),
     splashScreen: (context) => SplashScreen(),
+    wasteBankRegister: (context) => WasteBankRegisterScreen(),
     // discussionComen: (context) => DiscussionComen(),
   };
 }

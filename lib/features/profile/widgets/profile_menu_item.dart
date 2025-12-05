@@ -51,7 +51,7 @@ class ProfileMenuItem extends StatelessWidget {
               Expanded(
                 child: CustomText(
                   label,
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey[800],
                 ),

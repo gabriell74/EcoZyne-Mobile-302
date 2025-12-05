@@ -30,6 +30,8 @@ class _AccountScreenState extends State<AccountScreen> {
         }
         await context.read<UserProvider>().fetchCurrentUser();
       },
+      color: Colors.black,
+      backgroundColor: const Color(0xFF55C173),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(

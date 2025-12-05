@@ -43,5 +43,31 @@ class WasteBankSubmissionProvider with ChangeNotifier {
     notifyListeners();
     return success;
   }
+
+  Future<void> getSubmissionHistory() async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await _submissionService.getSubmissionHistory();
+
+    _connected = result["connected"] ?? false;
+
+    if (result["success"]) {
+      final data = result["data"];
+      if (data != null && data.isNotEmpty) {
+        _submissions = data;
+        _message = result["message"];
+      } else {
+        _submissions = [];
+        _message = "Tidak ada riwayat pengajuan, Ayo mendaftar!";
+      }
+    } else {
+      _submissions = [];
+      _message = result["message"] ?? "Gagal memuat riwayat pengajuan";
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
 }
 

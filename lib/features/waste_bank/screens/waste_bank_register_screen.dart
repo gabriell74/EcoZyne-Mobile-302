@@ -125,7 +125,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     }
 
     if (_selectedPdfPath == null) {
-      showErrorTopSnackBar(context, "Harap unggah file persetujuan");
+      showErrorTopSnackBar(context, "Harap unggah file pengajuan");
       return;
     }
 
@@ -156,8 +156,8 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
       "waste_bank_name": _bankNameController.text,
       "waste_bank_location": _addressController.text,
       "photo": _selectedImagePath!,
-      "latitude": _selectedLocation!.latitude.toString(),
-      "longitude": _selectedLocation!.longitude.toString(),
+      "latitude": _selectedLocation!.latitude,
+      "longitude": _selectedLocation!.longitude,
       "file_document": _selectedPdfPath!,
       "notes": _descriptionController.text,
       "status": "pending",

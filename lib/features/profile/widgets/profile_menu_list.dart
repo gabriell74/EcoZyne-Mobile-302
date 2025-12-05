@@ -1,9 +1,11 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
+import 'package:ecozyne_mobile/data/models/user.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/profile/screens/edit_account_screen.dart';
 import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_item.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_register_screen.dart';
+import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_submission_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,17 +14,35 @@ class ProfileMenuList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String userRole = context.read<UserProvider>().user!.role;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+
+        if (userRole == "community")
+          ProfileMenuItem(
+            icon: Icons.recycling_outlined,
+            label: "Daftar Menjadi Bank Sampah",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const WasteBankRegisterScreen(),
+                ),
+              );
+            },
+          ),
+
         ProfileMenuItem(
-          icon: Icons.recycling_outlined,
-          label: "Daftar Menjadi Bank Sampah",
+          icon: Icons.pending_actions,
+          iconColor: Colors.indigo,
+          label: "Riwayat Pengajuan Bank Sampah",
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => WasteBankRegisterScreen(),
+                builder: (context) => const WasteBankSubmissionHistoryScreen(),
               ),
             );
           },
