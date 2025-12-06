@@ -86,8 +86,7 @@ class _PointOutScreenState extends State<PointOutScreen>
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: HistoryItem(
-                          icon: _iconFromStatus(item.exchangeStatus),
-                          color: _colorFromStatus(item.exchangeStatus),
+                          photo: trx.reward.photo,
                           title:
                           "Penukaran Hadiah (${_textStatus(item.exchangeStatus)})",
                           subtitle: "- ${trx.totalUnitPoint} Poin",
@@ -121,31 +120,5 @@ String _textStatus(String status) {
       return "Ditolak";
     default:
       return "Status tidak diketahui";
-  }
-}
-
-IconData _iconFromStatus(String status) {
-  switch (status) {
-    case "pending":
-      return Icons.hourglass_top;
-    case "approved":
-      return Icons.check_circle_outline;
-    case "rejected":
-      return Icons.cancel_outlined;
-    default:
-      return Icons.info_outline;
-  }
-}
-
-Color _colorFromStatus(String status) {
-  switch (status) {
-    case "pending":
-      return Colors.orange;
-    case "approved":
-      return const Color(0xFF55C173);
-    case "rejected":
-      return Colors.red;
-    default:
-      return Colors.blueGrey;
   }
 }

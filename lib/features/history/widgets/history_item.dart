@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 
 class HistoryItem extends StatelessWidget {
-  final IconData icon;
-  final Color color;
+  final IconData? icon;
+  final Color? color;
+  final String? photo;
   final String title;
   final String subtitle;
   final Color subtitleColor;
@@ -12,8 +15,9 @@ class HistoryItem extends StatelessWidget {
 
   const HistoryItem({
     super.key,
-    required this.icon,
-    required this.color,
+    this.icon,
+    this.color,
+    this.photo,
     required this.title,
     required this.subtitle,
     this.subtitleColor = Colors.black,
@@ -37,14 +41,41 @@ class HistoryItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
+          if (photo == null)
+            Container(
+              decoration: BoxDecoration(
+                color: color?.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              padding: const EdgeInsets.all(10),
+              child: Icon(icon, color: color),
             ),
-            padding: const EdgeInsets.all(10),
-            child: Icon(icon, color: color),
-          ),
+
+          if (icon == null && photo != null)
+            SizedBox(
+              width: 60,
+              height: 60,
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: photo!,
+                  fit: BoxFit.cover,
+                  fadeInDuration: const Duration(milliseconds: 400),
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey.shade200,
+                    child: const Center(
+                      child: LoadingWidget(width: 60,),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey.shade100,
+                    child: const Center(
+                      child: Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
           const SizedBox(width: 10),
           Expanded(
             child: Column(

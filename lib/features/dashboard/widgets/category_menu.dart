@@ -74,7 +74,7 @@ class CategoryMenu extends StatelessWidget {
         'color': Colors.orange,
         'label': "Pesanan",
         'icon': Icons.receipt_long,
-        'onTap': !isLoggedIn ? null : () => Navigator.pushNamed(context, '/order'),
+        'onTap': shouldLockRestricted ? null : () => Navigator.pushNamed(context, '/order'),
         'isRestricted': true,
       },
       {
