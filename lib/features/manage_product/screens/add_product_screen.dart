@@ -1,114 +1,175 @@
 import 'dart:io';
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/image_picker_field.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
 
   @override
-  State<AddProductScreen> createState() => _TambahProdukScreenState();
+  State<AddProductScreen> createState() => _AddProductScreenState();
 }
 
-class _TambahProdukScreenState extends State<AddProductScreen> {
-  final _picker = ImagePicker();
+class _AddProductScreenState extends State<AddProductScreen> {
+  final _formKey = GlobalKey<FormState>();
   File? _selectedImage;
 
   final TextEditingController namaCtrl = TextEditingController();
   final TextEditingController hargaCtrl = TextEditingController();
   final TextEditingController alamatCtrl = TextEditingController();
+  final TextEditingController deskripsiCtrl = TextEditingController();
+  final TextEditingController stokCtrl = TextEditingController();
 
-  Future<void> _pickImage() async {
-    final picked = await showModalBottomSheet<XFile?>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Pilih dari Galeri'),
-              onTap: () async {
-                final file = await _picker.pickImage(source: ImageSource.gallery);
-                Navigator.pop(context, file);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Ambil Foto'),
-              onTap: () async {
-                final file = await _picker.pickImage(source: ImageSource.camera);
-                Navigator.pop(context, file);
-              },
-            ),
-          ],
+  @override
+  void dispose() {
+    namaCtrl.dispose();
+    hargaCtrl.dispose();
+    alamatCtrl.dispose();
+    deskripsiCtrl.dispose();
+    stokCtrl.dispose();
+    super.dispose();
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedImage == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text("Silakan unggah foto produk terlebih dahulu"),
+            backgroundColor: Colors.orange.shade400,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Produk berhasil ditambahkan!"),
+          backgroundColor: Colors.green.shade500,
+          behavior: SnackBarBehavior.floating,
         ),
-      ),
-    );
-
-    if (picked != null) {
-      setState(() {
-        _selectedImage = File(picked.path);
-      });
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Tambah Produk'),
+        backgroundColor: Colors.white,
+        title: CustomText(
+          'Tambah Produk',
+          color: Colors.grey.shade900,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+        ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.grey.shade800,
+            size: 20,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Unggah Foto Produk'),
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
+      body: AppBackground(
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(
+                  'Informasi Produk',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey.shade900,
                 ),
-                child: _selectedImage != null
-                    ? Image.file(_selectedImage!, fit: BoxFit.cover)
-                    : const Center(
-                        child: Icon(Icons.image_outlined,
-                            size: 40, color: Colors.grey),
+                const SizedBox(height: 24),
+
+                ImagePickerField(
+                  label: "Foto Produk",
+                  initialImage: _selectedImage,
+                  onImageSelected: (file) {
+                    setState(() => _selectedImage = file);
+                  },
+                ),
+
+                const SizedBox(height: 28),
+
+                BuildFormField(
+                  label: "Nama Produk",
+                  controller: namaCtrl,
+                  hintText: "Contoh: Tas Rajut Handmade",
+                  prefixIcon: Icons.inventory_2_rounded,
+                  validator: (v) =>
+                  v == null || v.isEmpty ? "Nama produk harus diisi" : null,
+                ),
+
+                BuildFormField(
+                  label: "Harga",
+                  controller: hargaCtrl,
+                  keyboardType: TextInputType.number,
+                  hintText: "Contoh: 150000",
+                  prefixIcon: Icons.payments_rounded,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return "Harga harus diisi";
+                    if (int.tryParse(v) == null) return "Harga harus berupa angka";
+                    return null;
+                  },
+                ),
+
+                BuildFormField(
+                  label: "Deskripsi",
+                  controller: deskripsiCtrl,
+                  hintText: "Tuliskan deskripsi produk...",
+                  prefixIcon: Icons.description_rounded,
+                  maxLines: 3,
+                  validator: (v) =>
+                  v == null || v.isEmpty ? "Deskripsi harus diisi" : null,
+                ),
+
+                BuildFormField(
+                  label: "Stok",
+                  controller: stokCtrl,
+                  hintText: "Contoh: 10",
+                  keyboardType: TextInputType.number,
+                  prefixIcon: Icons.inventory_rounded,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return "Stok harus diisi";
+                    if (int.tryParse(v) == null) return "Stok harus berupa angka";
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                SafeArea(
+                  top: false,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _submitForm,
+                      child: const CustomText(
+                        "Buat Order",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: namaCtrl,
-              decoration: const InputDecoration(labelText: 'Nama Produk'),
-            ),
-            TextField(
-              controller: hargaCtrl,
-              decoration: const InputDecoration(labelText: 'Harga'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: alamatCtrl,
-              decoration: const InputDecoration(labelText: 'Alamat'),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
+                    ),
+                  ),
                 ),
-                child: const Text('Tambah Produk'),
-              ),
+
+                const SizedBox(height: 20),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

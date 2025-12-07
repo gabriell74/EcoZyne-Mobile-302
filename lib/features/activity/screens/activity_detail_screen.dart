@@ -58,7 +58,7 @@ class ActivityDetailScreen extends StatelessWidget {
     final bool isFull = activity.currentQuota == activity.quota;
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: const CustomText(
           'Detail Kegiatan',

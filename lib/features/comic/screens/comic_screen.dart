@@ -48,7 +48,7 @@ class _ComicScreenState extends State<ComicScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Komik'),
         centerTitle: true,

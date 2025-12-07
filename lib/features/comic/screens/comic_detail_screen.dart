@@ -49,7 +49,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     final optimalWidth = getOptimalWidth(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: Text(widget.title, style: const TextStyle(color: Colors.black)),
         centerTitle: true,

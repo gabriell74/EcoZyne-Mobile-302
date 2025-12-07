@@ -24,7 +24,7 @@ class OrderScreenState extends State<OrderScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         title: const Text('Pesanan', style: TextStyle(color: Colors.black)),
         centerTitle: true,

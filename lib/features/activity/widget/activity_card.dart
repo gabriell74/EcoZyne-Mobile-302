@@ -42,7 +42,7 @@ class ActivityCard extends StatelessWidget {
                   ),
                 ),
                 errorWidget: (context, url, error) => Container(
-                  color: Colors.grey.shade100,
+                  color: Colors.grey.shade200,
                   child: const Center(
                     child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
                   ),

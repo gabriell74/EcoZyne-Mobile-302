@@ -46,7 +46,7 @@ class _GiftExchangeScreenState extends State<GiftExchangeScreen> {
     final reward = widget.reward;
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
         title: const CustomText("Detail Produk", fontWeight: FontWeight.bold),

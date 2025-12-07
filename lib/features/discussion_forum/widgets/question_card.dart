@@ -24,12 +24,12 @@ class QuestionCard extends StatelessWidget {
 
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
-      elevation: 3,
-      shadowColor: Colors.black.withAlpha(13),
+      elevation: 5,
+      shadowColor: Colors.black.withValues(alpha: 0.5),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(

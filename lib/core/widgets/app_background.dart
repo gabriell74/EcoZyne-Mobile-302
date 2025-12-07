@@ -11,7 +11,7 @@ class AppBackground extends StatelessWidget {
       children: [
         SizedBox.expand(
           child: Image.asset(
-            'assets/images/background2.jpg',
+            'assets/images/background.png',
             fit: BoxFit.cover,
           ),
         ),

@@ -88,7 +88,7 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
           ),
         ],
       ),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey.shade50,
 
       body: AppBackground(
         child: RefreshIndicator.adaptive(

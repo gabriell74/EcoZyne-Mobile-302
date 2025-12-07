@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/image_picker_field.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
-import 'package:ecozyne_mobile/features/waste_bank/widgets/image_upload_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/pdf_upload_widget.dart';
 import 'package:file_picker/file_picker.dart';
@@ -212,11 +214,14 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        ImageUploadWidget(
-                          selectedImagePath: _selectedImagePath,
-                          onPickImage: _pickImage,
-                          onRemoveImage: () =>
-                              setState(() => _selectedImagePath = null),
+                        ImagePickerField(
+                          label: "Foto Bank Sampah",
+                          initialImage: _selectedImagePath != null ? File(_selectedImagePath!) : null,
+                          onImageSelected: (file) {
+                            setState(() {
+                              _selectedImagePath = file?.path;
+                            });
+                          },
                         ),
 
                         const SizedBox(height: 20),
