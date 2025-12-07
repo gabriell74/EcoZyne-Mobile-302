@@ -84,9 +84,10 @@ class _PointOutScreenState extends State<PointOutScreen>
                       final trx = item.exchangeTransactions.first;
 
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
+                        padding: const EdgeInsets.only(bottom: 5.0),
                         child: HistoryItem(
-                          photo: trx.reward.photo,
+                          icon: Icons.card_giftcard_rounded,
+                          color: Colors.pink,
                           title:
                           "Penukaran Hadiah (${_textStatus(item.exchangeStatus)})",
                           subtitle: "- ${trx.totalUnitPoint} Poin",
@@ -113,7 +114,7 @@ class _PointOutScreenState extends State<PointOutScreen>
 String _textStatus(String status) {
   switch (status) {
     case "pending":
-      return "Menunggu Persetujuan";
+      return "Menunggu";
     case "approved":
       return "Disetujui";
     case "rejected":

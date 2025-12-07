@@ -14,7 +14,7 @@ class AppTheme {
         backgroundColor: primaryGreen,
         foregroundColor: Colors.black,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
       ),
     ),

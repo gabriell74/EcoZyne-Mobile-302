@@ -264,33 +264,35 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     keyboardType: TextInputType.number,
                     validator: Validators.postalCode,
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 45,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _saveProfile(
-                          context,
-                          user,
-                          username: _usernameController.text,
-                          name: _nameController.text,
-                          phoneNumber: _whatsappNumController.text,
-                          email: _emailController.text,
-                          address: _addressController.text,
-                          kelurahanId: _selectedKelurahan!.id,
-                          postalCode: _postalCodeController.text,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF55C173),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                  SafeArea(
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 45,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _saveProfile(
+                            context,
+                            user,
+                            username: _usernameController.text,
+                            name: _nameController.text,
+                            phoneNumber: _whatsappNumController.text,
+                            email: _emailController.text,
+                            address: _addressController.text,
+                            kelurahanId: _selectedKelurahan!.id,
+                            postalCode: _postalCodeController.text,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF55C173),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                         ),
-                      ),
-                      child: const CustomText(
-                        'Simpan',
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        child: const CustomText(
+                          'Simpan',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),

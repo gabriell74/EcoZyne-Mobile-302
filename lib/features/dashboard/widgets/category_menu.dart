@@ -57,11 +57,18 @@ class CategoryMenu extends StatelessWidget {
         'isRestricted': false,
       },
       {
-        'color': Color(0xFF9B9B9B),
+        'color': Colors.blueGrey,
         'label': "Riwayat",
         'icon': Icons.history,
         'onTap': () => !isLoggedIn ? null : Navigator.pushNamed(context, '/history'),
         'isRestricted': !isLoggedIn ? true : false,
+      },
+      {
+        'color': Colors.purple,
+        'label': "Tracking",
+        'icon': Icons.hourglass_bottom_rounded,
+        'onTap': shouldLockRestricted ? null : () => Navigator.pushNamed(context, '/eco-enzyme-tracking'),
+        'isRestricted': true,
       },
       {
         'color': Colors.green,
@@ -78,14 +85,7 @@ class CategoryMenu extends StatelessWidget {
         'isRestricted': true,
       },
       {
-        'color': Colors.purple,
-        'label': "Tracking",
-        'icon': Icons.hourglass_bottom_rounded,
-        'onTap': shouldLockRestricted ? null : () => Navigator.pushNamed(context, '/eco-enzyme-tracking'),
-        'isRestricted': true,
-      },
-      {
-        'color': Colors.teal,
+        'color': Colors.pink,
         'label': "Kelola Produk",
         'icon': Icons.shopping_bag_outlined,
         'onTap': shouldLockRestricted ? null : () => Navigator.pushNamed(context, '/manage-product'),
