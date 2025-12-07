@@ -87,7 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 5),
 
                     AnimatedGradientText(
-                      "Ecozyne",
+                      "Daftar Akun",
                       colors: [Colors.green, Colors.blue],
                       style: const TextStyle(
                         fontSize: 30,

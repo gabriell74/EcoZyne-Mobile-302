@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 5),
 
                 AnimatedGradientText(
-                  "Ecozyne",
+                  "Masuk Akun",
                   colors: [Colors.green, Colors.blue],
                   style: const TextStyle(
                     fontSize: 30,
