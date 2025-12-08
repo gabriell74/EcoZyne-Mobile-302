@@ -1,4 +1,3 @@
-import 'package:ecozyne_mobile/core/utils/price_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
@@ -36,7 +35,7 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => ConfirmationDialog(
-        "Tambah Produk Baru?",
+        "Apakah kamu yakin ingin menghapus produk ini?",
         onTap: () => Navigator.pop(ctx, true),
       ),
     );
@@ -46,15 +45,12 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
     final provider = context.read<WasteBankProductProvider>();
 
     final success = await provider.deleteProduct(productId);
-    if (context.mounted) Navigator.pop(context);
 
     if (success) {
       showSuccessTopSnackBar(
         context,
-        "Berhasil Menambah Produk",
-        icon: const Icon(Icons.pending_actions),
+        "Berhasil Menghapus Produk",
       );
-      Navigator.pop(context);
     } else {
       showErrorTopSnackBar(context, provider.message);
     }
@@ -86,8 +82,6 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
       body: AppBackground(
         child: loading
             ? const Center(child: LoadingWidget())
-            : products.isEmpty
-            ? Center(child: EmptyState(connected: provider.connected, message: provider.message,))
             : RefreshIndicator.adaptive(
           onRefresh: () async {
             await context.read<WasteBankProductProvider>().getProduct();
@@ -96,12 +90,14 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
           backgroundColor: const Color(0xFF55C173),
           child: CustomScrollView(
             slivers: [
+              // Header Section - Selalu tampil
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Stats Card
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -142,6 +138,7 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
                       ),
                       const SizedBox(height: 20),
 
+                      // Section Title - Selalu tampil
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -171,7 +168,18 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
                 ),
               ),
 
-              SliverPadding(
+              // Products Grid atau Empty State
+              products.isEmpty
+                  ? SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: EmptyState(
+                    connected: provider.connected,
+                    message: provider.message,
+                  ),
+                ),
+              )
+                  : SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 sliver: SliverMasonryGrid.count(
                   crossAxisCount: 2,
@@ -203,6 +211,7 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
                 ),
               ),
 
+              // Bottom Spacing
               const SliverToBoxAdapter(
                 child: SizedBox(height: 20),
               ),
