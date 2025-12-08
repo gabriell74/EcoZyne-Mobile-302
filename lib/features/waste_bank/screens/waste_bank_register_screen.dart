@@ -11,7 +11,6 @@ import 'package:ecozyne_mobile/features/waste_bank/widgets/pdf_upload_widget.dar
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
@@ -40,8 +39,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
   String? _selectedImagePath;
   String? _selectedPdfPath;
 
-  final ImagePicker _picker = ImagePicker();
-
   final LatLng defaultCenter = const LatLng(1.0456, 104.0305);
   final double defaultZoom = 12.0;
   final LatLngBounds batamBounds = LatLngBounds(
@@ -69,40 +66,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     _whatsappController.dispose();
     _descriptionController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final XFile? picked = await showModalBottomSheet<XFile?>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Pilih dari Galeri'),
-              onTap: () async {
-                final file =
-                await _picker.pickImage(source: ImageSource.gallery);
-                Navigator.pop(context, file);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Ambil Foto'),
-              onTap: () async {
-                final file =
-                await _picker.pickImage(source: ImageSource.camera);
-                Navigator.pop(context, file);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (picked != null) {
-      setState(() => _selectedImagePath = picked.path);
-    }
   }
 
   Future<void> _pickPDF() async {

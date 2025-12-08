@@ -1,134 +1,160 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/data/models/product.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ManageProductCard extends StatelessWidget {
-  final Map<String, String> item;
-  final VoidCallback? onDelete; // callback ketika dikonfirmasi hapus
-  final VoidCallback? onTap; // callback ketika card ditekan
+  final Product product;
+  final Future<bool> Function() onDelete;
+  final VoidCallback onEdit;
 
   const ManageProductCard({
     super.key,
-    required this.item,
-    this.onDelete,
-    this.onTap,
+    required this.product,
+    required this.onDelete,
+    required this.onEdit,
   });
 
-  void _showDeleteDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          "Hapus Produk",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: const Text("Apakah Anda yakin ingin menghapus produk ini?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Batal"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              if (onDelete != null) onDelete!();
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text("Hapus"),
-          ),
-        ],
-      ),
-    );
+  String formatDate(String? date) {
+    if (date == null) return "-";
+    final d = DateTime.tryParse(date);
+    if (d == null) return "-";
+    return DateFormat("dd MMM yyyy").format(d);
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 6,
-      shadowColor: Colors.black.withValues(alpha: 0.5),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      elevation: 3,
+      shadowColor: Colors.black.withValues(alpha: 0.1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: onTap,
+        onTap: onEdit,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bagian gambar dengan tombol X di pojok kanan atas
             Stack(
               children: [
-                Container(
-                  height: 120,
+                SizedBox(
+                  height: 140,
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(item["image"]!),
-                      fit: BoxFit.cover,
+                  child: CachedNetworkImage(
+                    imageUrl: product.photo,
+                    fit: BoxFit.cover,
+                    fadeInDuration: const Duration(milliseconds: 400),
+                    placeholder: (context, url) => Container(
+                      height: 150,
+                      color: Colors.grey.shade200,
+                      child: const Center(
+                        child: LoadingWidget(width: 60,),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 150,
+                      color: Colors.grey.shade100,
+                      child: const Center(
+                        child: Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                          size: 50,
+                        ),
+                      ),
                     ),
                   ),
                 ),
+
                 Positioned(
                   top: 8,
                   right: 8,
                   child: InkWell(
-                    onTap: () => _showDeleteDialog(context),
+                      onTap: () async {
+                          await onDelete();
+                      },
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.black54,
+                        color: Colors.black.withValues(alpha: 0.5),
                       ),
-                      padding: const EdgeInsets.all(4),
-                      child: const Icon(
-                        Icons.close,
-                        color: Colors.white,
-                        size: 18,
-                      ),
+                      padding: const EdgeInsets.all(6),
+                      child: const Icon(Icons.close, color: Colors.white, size: 18),
                     ),
                   ),
                 ),
               ],
             ),
 
-            // Nama produk
+            const SizedBox(height: 10),
+
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 8.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: CustomText(
-                item["name"]!,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                product.productName,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
                 maxLines: 2,
                 textOverflow: TextOverflow.ellipsis,
               ),
             ),
 
-            // Harga
+            const SizedBox(height: 4),
+
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: CustomText(
-                item["price"]!,
-                fontSize: 16,
+                product.description,
+                fontSize: 13,
                 maxLines: 2,
-                fontWeight: FontWeight.bold,
                 textOverflow: TextOverflow.ellipsis,
                 color: Colors.black87,
               ),
             ),
 
-            // Lokasi
+            const SizedBox(height: 10),
+
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Icon(Icons.location_on, color: Colors.green),
-                  const SizedBox(width: 5),
                   Expanded(
                     child: CustomText(
-                      "Bank Sampah Poltek",
-                      textOverflow: TextOverflow.ellipsis,
-                      fontSize: 12,
+                      "Rp ${product.price}",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
                     ),
+                  ),
+                  Container(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: CustomText(
+                      "Stok: ${product.stock}",
+                      fontSize: 12,
+                      color: Colors.green.shade900,
+                    ),
+                  )
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              child: Row(
+                children: [
+                  const Icon(Icons.calendar_today,
+                      size: 14, color: Colors.green),
+                  const SizedBox(width: 6),
+                  CustomText(
+                    formatDate(product.createdAt),
+                    fontSize: 12,
+                    color: Colors.black54,
                   ),
                 ],
               ),

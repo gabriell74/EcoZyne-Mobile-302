@@ -19,8 +19,6 @@ class WasteBankSubmissionProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    submissionData["community_id"] = 21;
-
     final result = await _submissionService.storeWasteBankSubmission(submissionData);
 
     bool success = false;

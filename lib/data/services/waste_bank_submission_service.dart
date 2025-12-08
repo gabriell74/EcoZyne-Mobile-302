@@ -8,7 +8,6 @@ class WasteBankSubmissionService {
   Future<Map<String, dynamic>> storeWasteBankSubmission(Map<String, dynamic> submission) async {
     try {
       final formData = FormData.fromMap({
-        "community_id": submission["community_id"],
         "waste_bank_name": submission["waste_bank_name"],
         "waste_bank_location": submission["waste_bank_location"],
         "latitude": submission["latitude"],

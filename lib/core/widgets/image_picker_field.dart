@@ -6,6 +6,7 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 class ImagePickerField extends StatefulWidget {
   final String label;
   final File? initialImage;
+  final String? initialImageUrl;
   final Function(File?) onImageSelected;
 
   const ImagePickerField({
@@ -13,6 +14,7 @@ class ImagePickerField extends StatefulWidget {
     required this.label,
     required this.onImageSelected,
     this.initialImage,
+    this.initialImageUrl
   });
 
   @override
@@ -21,12 +23,15 @@ class ImagePickerField extends StatefulWidget {
 
 class _ImagePickerFieldState extends State<ImagePickerField> {
   final ImagePicker _picker = ImagePicker();
+
   File? _selectedImage;
+  String? _initialImageUrl;
 
   @override
   void initState() {
     super.initState();
     _selectedImage = widget.initialImage;
+    _initialImageUrl = widget.initialImageUrl;
   }
 
   Future<void> _pickImage() async {
@@ -38,7 +43,12 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
 
     if (picked != null) {
       final file = File(picked.path);
-      setState(() => _selectedImage = file);
+
+      setState(() {
+        _selectedImage = file;
+        _initialImageUrl = null;
+      });
+
       widget.onImageSelected(file);
     }
   }
@@ -63,6 +73,7 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
               ),
             ),
             const SizedBox(height: 20),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -95,6 +106,7 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
           ],
         ),
@@ -143,6 +155,51 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
 
   @override
   Widget build(BuildContext context) {
+    Widget content;
+
+    if (_selectedImage != null) {
+      content = Image.file(
+        _selectedImage!,
+        fit: BoxFit.cover,
+      );
+    } else if (_initialImageUrl != null) {
+      content = Image.network(
+        _initialImageUrl!,
+        fit: BoxFit.cover,
+      );
+    } else {
+      content = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.green.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.add_photo_alternate_rounded,
+              size: 48,
+              color: Colors.green.shade400,
+            ),
+          ),
+          const SizedBox(height: 12),
+          CustomText(
+            'Tap untuk unggah foto',
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade700,
+          ),
+          const SizedBox(height: 4),
+          CustomText(
+            'JPG, PNG (Max 5MB)',
+            fontSize: 12,
+            color: Colors.grey.shade500,
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -163,11 +220,10 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: _selectedImage != null
+                color: (_selectedImage != null || _initialImageUrl != null)
                     ? Colors.green.shade300
                     : Colors.grey.shade300,
                 width: 2,
-                strokeAlign: BorderSide.strokeAlignInside,
               ),
               boxShadow: [
                 BoxShadow(
@@ -177,43 +233,9 @@ class _ImagePickerFieldState extends State<ImagePickerField> {
                 ),
               ],
             ),
-            child: _selectedImage != null
-                ? ClipRRect(
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(14),
-              child: Image.file(
-                _selectedImage!,
-                fit: BoxFit.cover,
-              ),
-            )
-                : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.add_photo_alternate_rounded,
-                    size: 48,
-                    color: Colors.green.shade400,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                CustomText(
-                  'Tap untuk unggah foto',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
-                ),
-                const SizedBox(height: 4),
-                CustomText(
-                  'JPG, PNG (Max 5MB)',
-                  fontSize: 12,
-                  color: Colors.grey.shade500,
-                ),
-              ],
+              child: content,
             ),
           ),
         )

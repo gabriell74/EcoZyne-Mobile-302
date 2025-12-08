@@ -1,9 +1,14 @@
 import 'dart:io';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/image_picker_field.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_product_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -14,46 +19,75 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
-  File? _selectedImage;
+  String? _selectedImagePath;
 
-  final TextEditingController namaCtrl = TextEditingController();
-  final TextEditingController hargaCtrl = TextEditingController();
-  final TextEditingController alamatCtrl = TextEditingController();
-  final TextEditingController deskripsiCtrl = TextEditingController();
-  final TextEditingController stokCtrl = TextEditingController();
+  final TextEditingController nameCtrl = TextEditingController();
+  final TextEditingController priceCtrl = TextEditingController();
+  final TextEditingController addressCtrl = TextEditingController();
+  final TextEditingController descriptionCtrl = TextEditingController();
+  final TextEditingController stockCtrl = TextEditingController();
 
   @override
   void dispose() {
-    namaCtrl.dispose();
-    hargaCtrl.dispose();
-    alamatCtrl.dispose();
-    deskripsiCtrl.dispose();
-    stokCtrl.dispose();
+    nameCtrl.dispose();
+    priceCtrl.dispose();
+    addressCtrl.dispose();
+    descriptionCtrl.dispose();
+    stockCtrl.dispose();
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedImage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Silakan unggah foto produk terlebih dahulu"),
-            backgroundColor: Colors.orange.shade400,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        return;
-      }
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) {
+      showErrorTopSnackBar(context, "Periksa kembali inputan");
+      return;
+    }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Produk berhasil ditambahkan!"),
-          backgroundColor: Colors.green.shade500,
-          behavior: SnackBarBehavior.floating,
-        ),
+    if (_selectedImagePath == null) {
+      showErrorTopSnackBar(context, "Unggah foto terlebih dahulu");
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => ConfirmationDialog(
+        "Tambah Produk Baru?",
+        onTap: () => Navigator.pop(ctx, true),
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const LoadingWidget(height: 100),
+    );
+
+    final provider = context.read<WasteBankProductProvider>();
+
+    final success = await provider.addProduct({
+      "product_name": nameCtrl.text,
+      "description": descriptionCtrl.text,
+      "price": double.parse(priceCtrl.text),
+      "stock": int.parse(stockCtrl.text),
+      "photo": _selectedImagePath!,
+    });
+
+    if (context.mounted) Navigator.pop(context);
+
+    if (success) {
+      showSuccessTopSnackBar(
+        context,
+        "Berhasil Menambah Produk",
+        icon: const Icon(Icons.pending_actions),
       );
+      Navigator.pop(context);
+    } else {
+      showErrorTopSnackBar(context, provider.message);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,9 +129,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                 ImagePickerField(
                   label: "Foto Produk",
-                  initialImage: _selectedImage,
+                  initialImage: _selectedImagePath != null ? File(_selectedImagePath!) : null,
                   onImageSelected: (file) {
-                    setState(() => _selectedImage = file);
+                    setState(() => _selectedImagePath = file?.path);
                   },
                 ),
 
@@ -105,8 +139,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                 BuildFormField(
                   label: "Nama Produk",
-                  controller: namaCtrl,
-                  hintText: "Contoh: Tas Rajut Handmade",
+                  controller: nameCtrl,
+                  hintText: "Contoh: Eco Enzyme 1 Liter",
                   prefixIcon: Icons.inventory_2_rounded,
                   validator: (v) =>
                   v == null || v.isEmpty ? "Nama produk harus diisi" : null,
@@ -114,7 +148,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                 BuildFormField(
                   label: "Harga",
-                  controller: hargaCtrl,
+                  controller: priceCtrl,
                   keyboardType: TextInputType.number,
                   hintText: "Contoh: 150000",
                   prefixIcon: Icons.payments_rounded,
@@ -127,7 +161,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                 BuildFormField(
                   label: "Deskripsi",
-                  controller: deskripsiCtrl,
+                  controller: descriptionCtrl,
                   hintText: "Tuliskan deskripsi produk...",
                   prefixIcon: Icons.description_rounded,
                   maxLines: 3,
@@ -137,7 +171,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                 BuildFormField(
                   label: "Stok",
-                  controller: stokCtrl,
+                  controller: stockCtrl,
                   hintText: "Contoh: 10",
                   keyboardType: TextInputType.number,
                   prefixIcon: Icons.inventory_rounded,

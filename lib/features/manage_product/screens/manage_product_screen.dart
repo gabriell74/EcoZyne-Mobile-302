@@ -1,9 +1,16 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/data/models/product.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_product_provider.dart';
 import 'package:ecozyne_mobile/features/manage_product/screens/add_product_screen.dart';
 import 'package:ecozyne_mobile/features/manage_product/screens/edit_product_screen.dart';
+import 'package:ecozyne_mobile/features/manage_product/widgets/manage_product_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 
 class ManageProductScreen extends StatefulWidget {
   const ManageProductScreen({super.key});
@@ -13,20 +20,16 @@ class ManageProductScreen extends StatefulWidget {
 }
 
 class _ManageProductScreenState extends State<ManageProductScreen> {
-  final List<Map<String, dynamic>> produkList = [
-    {
-      'nama': 'Pupuk Kompos',
-      'harga': 10000,
-      'image': 'assets/images/cover1.png',
-    },
-    {
-      'nama': 'Eco Enzym Cair',
-      'harga': 15000,
-      'image': 'assets/images/cover1.png',
-    },
-  ];
 
-  void _showConfirmDialog(BuildContext context) {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WasteBankProductProvider>().getProduct();
+    });
+  }
+
+  Future<bool> _showConfirmDeleteDialog(BuildContext context) async {
     showDialog(
       context: context,
       builder: (context) => ConfirmationDialog(
@@ -43,17 +46,22 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
                 borderRadius: BorderRadius.circular(15),
               ),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: Color(0xFF55C173),
+              backgroundColor: const Color(0xFF55C173),
             ),
           );
           Navigator.pop(context);
         },
       ),
     );
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<WasteBankProductProvider>();
+    final List<Product> products = provider.products;
+    final loading = provider.isLoading;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -76,81 +84,45 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
       body: AppBackground(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.8,
-            ),
-            itemCount: produkList.length,
-            itemBuilder: (context, index) {
-              final produk = produkList[index];
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: const BorderSide(color: Colors.grey),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        Expanded(
-                          child: Image.asset(
-                            produk['image'],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
+          child: loading
+              ? const Center(child: LoadingWidget())
+              : products.isEmpty
+              ? Center(child: EmptyState(connected: provider.connected, message: provider.message,))
+              : RefreshIndicator.adaptive(
+                onRefresh: () async {
+                  await context.read<WasteBankProductProvider>().getProduct();
+                },
+                color: Colors.black,
+                backgroundColor: const Color(0xFF55C173),
+                child: MasonryGridView.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 2,
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return ManageProductCard(
+                        product: product,
+                        onDelete: () => _showConfirmDeleteDialog(context),
+                        onEdit: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditProductScreen(
+                                initialName: product.productName,
+                                initialPrice: product.price.toString(),
+                                initialDescription: product.description,
+                                initialStock: product.stock.toString(),
+                                initialImageUrl: product.photo,
+                              ),
+                            ),
+                          );
+                        },
+
+                      );
+                    },
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          produk['nama'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 4),
-                        Text('Rp ${produk['harga']}'),
-                        const SizedBox(height: 6),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.green),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const EditProductScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      right: 6,
-                      top: 6,
-                      child: GestureDetector(
-                        onTap: () => _showConfirmDialog(context),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          padding: const EdgeInsets.all(4),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+              ),
         ),
       ),
     );
