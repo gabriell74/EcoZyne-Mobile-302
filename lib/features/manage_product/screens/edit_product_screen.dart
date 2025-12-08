@@ -1,11 +1,18 @@
 import 'dart:io';
+import 'package:ecozyne_mobile/core/utils/price_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/image_picker_field.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_product_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditProductScreen extends StatefulWidget {
+  final int productId;
   final String initialName;
   final String initialPrice;
   final String initialDescription;
@@ -14,6 +21,7 @@ class EditProductScreen extends StatefulWidget {
 
   const EditProductScreen({
     super.key,
+    required this.productId,
     required this.initialName,
     required this.initialPrice,
     required this.initialDescription,
@@ -29,40 +37,79 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _formKey = GlobalKey<FormState>();
   File? _selectedImage;
 
-  late TextEditingController namaCtrl;
-  late TextEditingController hargaCtrl;
-  late TextEditingController deskripsiCtrl;
-  late TextEditingController stokCtrl;
+  late TextEditingController nameCtrl;
+  late TextEditingController priceCtrl;
+  late TextEditingController descriptionCtrl;
+  late TextEditingController stockCtrl;
 
   @override
   void initState() {
     super.initState();
-    namaCtrl = TextEditingController(text: widget.initialName);
-    hargaCtrl = TextEditingController(text: widget.initialPrice);
-    deskripsiCtrl = TextEditingController(text: widget.initialDescription);
-    stokCtrl = TextEditingController(text: widget.initialStock);
+    nameCtrl = TextEditingController(text: widget.initialName);
+    priceCtrl = TextEditingController(text: widget.initialPrice.cleanPrice);
+    descriptionCtrl = TextEditingController(text: widget.initialDescription);
+    stockCtrl = TextEditingController(text: widget.initialStock);
   }
 
   @override
   void dispose() {
-    namaCtrl.dispose();
-    hargaCtrl.dispose();
-    deskripsiCtrl.dispose();
-    stokCtrl.dispose();
+    nameCtrl.dispose();
+    priceCtrl.dispose();
+    descriptionCtrl.dispose();
+    stockCtrl.dispose();
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Perubahan produk telah disimpan!"),
-          backgroundColor: Colors.green.shade600,
-          behavior: SnackBarBehavior.floating,
-        ),
+  Future<void> _showConfirmationUpdateDialog() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => ConfirmationDialog(
+        "Simpan perubahan produk?",
+        onTap: () => Navigator.pop(ctx, true),
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final provider = context.read<WasteBankProductProvider>();
+
+    final Map<String, dynamic> updateData = {
+      "product_name": nameCtrl.text,
+      "description": descriptionCtrl.text,
+      "price": double.parse(priceCtrl.text),
+      "stock": int.parse(stockCtrl.text),
+    };
+
+    if (_selectedImage != null) {
+      updateData["photo"] = _selectedImage!.path;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (loadingContext) => const LoadingWidget(height: 100),
+    );
+
+    final success =
+    await provider.updateProduct(widget.productId, updateData);
+
+    if (context.mounted) Navigator.pop(context);
+
+    if (success) {
+      showSuccessTopSnackBar(
+        context,
+        provider.message,
+        icon: const Icon(Icons.check_circle_rounded),
       );
+
+      Navigator.pop(context);
+    } else {
+      showErrorTopSnackBar(context, provider.message);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +160,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
                 BuildFormField(
                   label: "Nama Produk",
-                  controller: namaCtrl,
+                  controller: nameCtrl,
                   hintText: "Contoh: Eco Enzyme 1 Liter",
                   prefixIcon: Icons.inventory_2_rounded,
                   validator: (v) =>
@@ -122,20 +169,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
                 BuildFormField(
                   label: "Harga",
-                  controller: hargaCtrl,
+                  controller: priceCtrl,
                   keyboardType: TextInputType.number,
                   hintText: "Contoh: 150000",
                   prefixIcon: Icons.payments_rounded,
                   validator: (v) {
                     if (v == null || v.isEmpty) return "Harga harus diisi";
-                    if (int.tryParse(v) == null) return "Harga harus berupa angka";
+                    if (double.tryParse(v) == null) return "Harga harus angka";
                     return null;
                   },
                 ),
 
                 BuildFormField(
                   label: "Deskripsi",
-                  controller: deskripsiCtrl,
+                  controller: descriptionCtrl,
                   hintText: "Tuliskan deskripsi produk...",
                   prefixIcon: Icons.description_rounded,
                   maxLines: 3,
@@ -145,13 +192,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
                 BuildFormField(
                   label: "Stok",
-                  controller: stokCtrl,
+                  controller: stockCtrl,
                   hintText: "Contoh: 10",
                   keyboardType: TextInputType.number,
                   prefixIcon: Icons.inventory_rounded,
                   validator: (v) {
                     if (v == null || v.isEmpty) return "Stok harus diisi";
-                    if (int.tryParse(v) == null) return "Stok harus berupa angka";
+                    if (int.tryParse(v) == null) return "Stok harus angka";
                     return null;
                   },
                 ),
@@ -164,7 +211,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: _submitForm,
+                      onPressed: _showConfirmationUpdateDialog,
                       child: const CustomText(
                         "Simpan Perubahan",
                         fontWeight: FontWeight.bold,

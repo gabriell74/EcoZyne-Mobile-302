@@ -1,13 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
+import 'package:ecozyne_mobile/core/utils/price_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/models/product.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class ManageProductCard extends StatelessWidget {
   final Product product;
-  final Future<bool> Function() onDelete;
+  final Future<void> Function() onDelete;
   final VoidCallback onEdit;
 
   const ManageProductCard({
@@ -16,13 +17,6 @@ class ManageProductCard extends StatelessWidget {
     required this.onDelete,
     required this.onEdit,
   });
-
-  String formatDate(String? date) {
-    if (date == null) return "-";
-    final d = DateTime.tryParse(date);
-    if (d == null) return "-";
-    return DateFormat("dd MMM yyyy").format(d);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +114,7 @@ class ManageProductCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CustomText(
-                      "Rp ${product.price}",
+                      product.price.toCurrency,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -152,7 +146,7 @@ class ManageProductCard extends StatelessWidget {
                       size: 14, color: Colors.green),
                   const SizedBox(width: 6),
                   CustomText(
-                    formatDate(product.createdAt),
+                    DateFormatter.formatDate(product.createdAt),
                     fontSize: 12,
                     color: Colors.black54,
                   ),
