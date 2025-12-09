@@ -66,7 +66,7 @@ class ActivityCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 14, color: Colors.green),
+                    const Icon(Icons.location_on, size: 14, color: Colors.red),
                     const SizedBox(width: 4),
                     Expanded(
                       child: CustomText(

@@ -11,10 +11,25 @@ import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
 
-class ActivityDetailScreen extends StatelessWidget {
+class ActivityDetailScreen extends StatefulWidget {
   final Activity activity;
 
   const ActivityDetailScreen({super.key, required this.activity});
+
+  @override
+  State<ActivityDetailScreen> createState() => _ActivityDetailScreenState();
+}
+
+class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<ActivityProvider>().checkRegistrationStatus(widget.activity.id);
+    });
+  }
 
   Future<void> _showConfirmDialog(BuildContext context) async {
     final confirmed = await showDialog<bool>(
@@ -36,11 +51,13 @@ class ActivityDetailScreen extends StatelessWidget {
     );
 
     final activityProvider = context.read<ActivityProvider>();
-    final bool isSuccess = await activityProvider.activityRegister(activity.id);
+    final bool isSuccess = await activityProvider.activityRegister(widget.activity.id);
 
     if (context.mounted) Navigator.pop(context);
 
     if (isSuccess) {
+      context.read<ActivityProvider>().checkRegistrationStatus(widget.activity.id);
+
       showSuccessTopSnackBar(
         context,
         "Berhasil Mendaftar Kegiatan",
@@ -54,8 +71,7 @@ class ActivityDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isCompleted = DateTime.now().isAfter(DateTime.parse(activity.dueDate));
-    final bool isFull = activity.currentQuota == activity.quota;
+    final activity = widget.activity;
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -74,6 +90,7 @@ class ActivityDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // IMAGE WITH HERO ANIMATION
                   SizedBox(
                     height: 300,
                     width: double.infinity,
@@ -86,7 +103,7 @@ class ActivityDetailScreen extends StatelessWidget {
                         placeholder: (context, url) => Container(
                           color: Colors.grey.shade200,
                           child: const Center(
-                            child: LoadingWidget(width: 60,),
+                            child: LoadingWidget(width: 60),
                           ),
                         ),
                         errorWidget: (context, url, error) => Container(
@@ -98,7 +115,9 @@ class ActivityDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+
+                  const SizedBox(height: 20),
+
                   Consumer<ActivityProvider>(
                     builder: (context, provider, _) {
                       final currentActivity = provider.activities.firstWhere(
@@ -106,136 +125,308 @@ class ActivityDetailScreen extends StatelessWidget {
                         orElse: () => activity,
                       );
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // TITLE
+                            CustomText(
+                              currentActivity.title,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // LOCATION & QUOTA CHIPS
+                            Row(
                               children: [
                                 Expanded(
-                                  child: CustomText(
-                                    currentActivity.title,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
+                                  child: _infoChip(
+                                    icon: Icons.location_on,
+                                    label: currentActivity.location,
+                                    color: Colors.red.shade400,
                                   ),
                                 ),
-                                CustomText(
-                                  '${currentActivity.currentQuota}/${currentActivity.quota}',
-                                  color: Colors.black54,
+                                const SizedBox(width: 8),
+                                _infoChip(
+                                  icon: Icons.people,
+                                  label: "${currentActivity.currentQuota}/${currentActivity.quota}",
+                                  color: Colors.blue.shade400,
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.location_on, size: 16, color: Colors.green),
-                                const SizedBox(width: 4),
-                                CustomText(currentActivity.location, color: Colors.black54),
-                              ],
+
+                            const SizedBox(height: 20),
+
+                            // DATE SECTIONS WITH CLEAR LABELS
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.teal.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.teal.shade100),
+                              ),
+                              child: Column(
+                                children: [
+                                  _dateInfoRow(
+                                    label: "Periode Pendaftaran",
+                                    icon: Icons.app_registration,
+                                    dateRange:
+                                    "${DateFormatter.formatDate(currentActivity.regisStartDate)} - ${DateFormatter.formatDate(currentActivity.regisDueDate)}",
+                                    iconColor: Colors.orange.shade600,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Divider(height: 1, color: Colors.teal.shade200),
+                                  const SizedBox(height: 12),
+                                  _dateInfoRow(
+                                    label: "Periode Kegiatan",
+                                    icon: Icons.event_available,
+                                    dateRange:
+                                    "${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}",
+                                    iconColor: Colors.green.shade600,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: CustomText("Tanggal Pendaftaran", fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.calendar_today, size: 16, color: Colors.green),
-                                const SizedBox(width: 4),
-                                CustomText(
-                                  '${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}',
-                                  color: Colors.black54,
-                                ),
-                              ],
+
+                            const SizedBox(height: 20),
+
+                            // DESCRIPTION SECTION
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade200),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.description, size: 20, color: Color(0xFF55C173)),
+                                      const SizedBox(width: 8),
+                                      const CustomText(
+                                        "Deskripsi Kegiatan",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Color(0xFF55C173),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  CustomText(
+                                    currentActivity.description,
+                                    fontSize: 14,
+                                    color: Colors.grey.shade700,
+                                    height: 1.5,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: CustomText(
-                              "Tanggal Kegiatan Berlangsung",
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.calendar_today, size: 16, color: Colors.green),
-                                const SizedBox(width: 4),
-                                CustomText(
-                                  '${DateFormatter.formatDate(currentActivity.startDate)} - ${DateFormatter.formatDate(currentActivity.dueDate)}',
-                                  color: Colors.black54,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: CustomText(
-                              currentActivity.description,
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     },
                   ),
-                  const SizedBox(height: 80),
+
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
 
+          // BOTTOM BUTTON
           SafeArea(
             top: false,
-            child: Padding(
+            child: Container(
               padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: isCompleted || isFull
-                      ? null
-                      : () {
-                    final userProvider = context.read<UserProvider>();
-
-                    if (userProvider.isGuest || userProvider.user == null) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const LoginRequiredDialog(),
-                      );
-                    } else {
-                      _showConfirmDialog(context);
-                    }
-                  },
-                  child: CustomText(
-                    isCompleted
-                        ? "Kegiatan Sudah Selesai"
-                        : isFull
-                        ? "Kuota Penuh"
-                        : "Daftar Kegiatan",
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -3),
                   ),
-                ),
+                ],
+              ),
+              child: Consumer<ActivityProvider>(
+                builder: (context, provider, _) {
+
+                  final bool alreadyRegistered = provider.isActivityRegistered(activity.id);
+                  final bool checking = provider.isCheckingStatus;
+
+                  if (checking) {
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed: null,
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const LoadingWidget(height: 40, width: 40),
+                      ),
+                    );
+                  }
+
+                  final bool isCompleted = DateTime.now().isAfter(DateTime.parse(activity.dueDate));
+                  final bool isFull = activity.currentQuota == activity.quota;
+
+                  String buttonText;
+                  VoidCallback? action;
+                  Color? buttonColor;
+                  IconData? buttonIcon;
+
+                  if (isCompleted) {
+                    buttonText = "Kegiatan Sudah Selesai";
+                    action = null;
+                    buttonColor = Colors.grey.shade400;
+                    buttonIcon = Icons.event_busy;
+                  }
+                  else if (isFull) {
+                    buttonText = "Kuota Penuh";
+                    action = null;
+                    buttonColor = Colors.orange.shade400;
+                    buttonIcon = Icons.people_alt;
+                  }
+                  else if (alreadyRegistered) {
+                    buttonText = "Sudah Terdaftar";
+                    action = null;
+                    buttonColor = Colors.teal.shade600;
+                    buttonIcon = Icons.check_circle;
+                  }
+                  else {
+                    buttonText = "Daftar Kegiatan";
+                    buttonColor = const Color(0xFF55C173);
+                    buttonIcon = Icons.how_to_reg;
+                    action = () {
+                      final userProvider = context.read<UserProvider>();
+                      if (userProvider.isGuest || userProvider.user == null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const LoginRequiredDialog(),
+                        );
+                      } else {
+                        _showConfirmDialog(context);
+                      }
+                    };
+                  }
+
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: action,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: buttonColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: action != null ? 2 : 0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ...[
+                            Icon(buttonIcon, size: 20),
+                            const SizedBox(width: 8),
+                          ],
+                          CustomText(
+                            buttonText,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _infoChip({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 8),
+          Flexible(
+            child: CustomText(
+              label,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: color,
+              maxLines: 1,
+              textOverflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _dateInfoRow({
+    required String label,
+    required IconData icon,
+    required String dateRange,
+    required Color iconColor,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: iconColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 20, color: iconColor),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                label,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade600,
+              ),
+              const SizedBox(height: 4),
+              CustomText(
+                dateRange,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade800,
+                maxLines: 2,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

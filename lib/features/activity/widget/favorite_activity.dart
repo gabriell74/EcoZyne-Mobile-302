@@ -101,7 +101,7 @@ class FavoriteActivity extends StatelessWidget {
           
                       Row(
                         children: [
-                          const Icon(Icons.location_on, size: 14, color: Colors.green),
+                          const Icon(Icons.location_on, size: 14, color: Colors.red),
                           const SizedBox(width: 4),
                           CustomText(
                             activity?.location ?? 'No Location',
