@@ -10,6 +10,7 @@ class ActivityProvider with ChangeNotifier {
   bool _isLoading = false;
   bool _isCompletedLoading = false;
   String _message = "";
+  String _completedMessage = '';
   bool _connected = true;
 
   Activity? _latestActivity;
@@ -19,6 +20,7 @@ class ActivityProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isCompletedLoading => _isCompletedLoading;
   String get message => _message;
+  String get completedMessage => _completedMessage;
   bool get connected => _connected;
   Activity? get latestActivity => _latestActivity;
 
@@ -116,14 +118,14 @@ class ActivityProvider with ChangeNotifier {
       final data = result["data"];
       if (data != null && data.isNotEmpty) {
         _completedActivities = data;
-        _message = result["message"] ?? "Berhasil mengambil kegiatan yang sudah selesai";
+        _completedMessage = result["message"] ?? "Berhasil mengambil kegiatan yang sudah selesai";
       } else {
         _completedActivities = [];
-        _message = "Belum ada kegiatan yang selesai";
+        _completedMessage = "Belum ada kegiatan yang selesai";
       }
     } else {
       _completedActivities = [];
-      _message = result["message"] ?? "Gagal memuat kegiatan yang sudah selesai";
+      _completedMessage = result["message"] ?? "Gagal memuat kegiatan yang sudah selesai";
     }
 
     _isCompletedLoading = false;

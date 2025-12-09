@@ -138,13 +138,47 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   final filtered = _query.isEmpty
                       ? activities
                       : activities
-                          .where(
-                            (a) => a.title.toLowerCase().contains(
-                              _query.toLowerCase(),
-                              ),
-                          ).toList();
+                      .where(
+                        (a) => a.title.toLowerCase().contains(_query.toLowerCase()),
+                  )
+                      .toList();
 
-                  if (filtered.isEmpty) {
+                  final bool isLoading = selectedFilter
+                      ? provider.isLoading
+                      : provider.isCompletedLoading;
+
+                  final bool showEmptyState = selectedFilter
+                      ? provider.activities.isEmpty
+                      : provider.completedActivities.isEmpty;
+
+
+                  if (isLoading) {
+                    return const SliverToBoxAdapter(
+                      child: Center(
+                        child: LoadingWidget(),
+                      ),
+                    );
+                  }
+
+                  if (showEmptyState && _query.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Center(
+                            child: EmptyState(
+                              connected: provider.connected,
+                              message: selectedFilter
+                                  ? provider.message
+                                  : provider.completedMessage,
+                            ),
+                          ),
+                          const SizedBox(height: 50),
+                        ],
+                      ),
+                    );
+                  }
+
+                  if (_query.isNotEmpty && filtered.isEmpty) {
                     return const SliverFillRemaining(
                       hasScrollBody: false,
                       child: Center(
@@ -161,38 +195,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     );
                   }
 
-                  final bool shouldShowLoading = selectedFilter
-                      ? provider.isLoading
-                      : provider.isCompletedLoading;
-                  final bool showEmptyState = selectedFilter
-                      ? provider.activities.isEmpty
-                      : provider.completedActivities.isEmpty;
-                  if (shouldShowLoading) {
-                    return const SliverToBoxAdapter(
-                      child: Center(child: LoadingWidget()),
-                    );
-                  }
-                  if (showEmptyState) {
-                    return SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          Center(child: EmptyState(connected: provider.connected, message: provider.message)),
-                          const SizedBox(height: 50),
-                        ],
-                      ));
-                  }
-
                   return SliverMasonryGrid.count(
                     crossAxisCount: 2,
                     mainAxisSpacing: 5,
                     crossAxisSpacing: 2,
-                    childCount: selectedFilter
-                        ? filtered.length
-                        : provider.completedActivities.length,
+                    childCount: selectedFilter ? filtered.length : provider.completedActivities.length,
                     itemBuilder: (context, index) {
                       final activity = selectedFilter
                           ? filtered[index]
                           : provider.completedActivities[index];
+
                       return Column(
                         children: [
                           SlideFadeIn(
@@ -205,7 +217,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     },
                   );
                 },
-              ),
+              )
             ],
           ),
         ),
