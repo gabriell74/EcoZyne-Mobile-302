@@ -101,4 +101,99 @@ class WasteBankProductService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> updateProduct(int id, Map<String, dynamic> product) async {
+    try {
+      final mapData = {
+        "_method": "PUT",    // <-- wajib
+        "product_name": product["product_name"],
+        "description": product["description"],
+        "price": product["price"],
+        "stock": product["stock"],
+      };
+
+      if (product["photo"] != null) {
+        mapData["photo"] = await MultipartFile.fromFile(
+          product["photo"],
+          filename: product["photo"].split('/').last,
+        );
+      }
+
+      final formData = FormData.fromMap(mapData);
+
+      final response = await _dio.post(
+        "/waste-bank/products/$id/update",
+        data: formData,
+      );
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        final updatedProduct = Product.fromJson(response.data["data"]);
+        return {
+          "success": true,
+          "message": response.data["message"],
+          "connected": true,
+          "data": updatedProduct,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal mengupdate produk",
+        "connected": true,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal mengupdate produk",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
+    }
+  }
+
+
+  Future<Map<String, dynamic>> deleteProduct(int productId) async {
+    try {
+      final response = await _dio.delete("/waste-bank/products/$productId/delete");
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        return {
+          "success": true,
+          "message": response.data["message"],
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal menghapus produk",
+        "connected": true,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal menghapus produk",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
+    }
+  }
 }

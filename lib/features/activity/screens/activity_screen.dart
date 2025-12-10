@@ -9,9 +9,12 @@ import 'package:ecozyne_mobile/features/activity/widget/activity_header.dart';
 import 'package:ecozyne_mobile/features/activity/widget/empty_favorite_activity.dart';
 import 'package:ecozyne_mobile/features/activity/widget/favorite_activity.dart';
 import 'package:ecozyne_mobile/features/activity/widget/search_activity.dart';
+import 'package:ecozyne_mobile/features/activity/widget/activity_registration_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
+
+enum ActivityFilter { kegiatan, riwayat, pendaftaran }
 
 class ActivityScreen extends StatefulWidget {
   @override
@@ -19,7 +22,7 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  bool selectedFilter = true;
+  ActivityFilter selectedFilter = ActivityFilter.kegiatan;
   String _query = "";
 
   @override
@@ -42,10 +45,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
       body: AppBackground(
         child: RefreshIndicator.adaptive(
           onRefresh: () async {
-            if (selectedFilter) {
-              return await context.read<ActivityProvider>().getActivity();
-            } else {
-              return await context.read<ActivityProvider>().getCompletedActivity();
+            final provider = context.read<ActivityProvider>();
+
+            switch (selectedFilter) {
+              case ActivityFilter.kegiatan:
+                return provider.getActivity();
+              case ActivityFilter.riwayat:
+                return provider.getCompletedActivity();
+              case ActivityFilter.pendaftaran:
+                return provider.getActivityRegistrations();
             }
           },
           color: Colors.black,
@@ -64,8 +72,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         },
                       ),
                       const SizedBox(height: 30),
+
                       const ActivityHeader(),
                       const SizedBox(height: 25),
+
                       const CustomText(
                         "Kegiatan Unggulan",
                         fontWeight: FontWeight.bold,
@@ -77,7 +87,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         builder: (context, provider, child) {
                           final featured = provider.getFeaturedActivity();
                           if (provider.isLoading) {
-                            return const Center(child: LoadingWidget(height: 80,));
+                            return const Center(child: LoadingWidget(height: 80));
                           }
                           if (provider.activities.isEmpty || featured == null) {
                             return const EmptyFavoriteActivity();
@@ -93,39 +103,52 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                       const SizedBox(height: 11),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedFilter = true;
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: selectedFilter ? const Color(0xFF55C173) : Colors.white,
-                              foregroundColor: Colors.black
+
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildFilterButton(
+                              label: "Kegiatan Sosial",
+                              active: selectedFilter == ActivityFilter.kegiatan,
+                              onTap: () async {
+                                final provider = context.read<ActivityProvider>();
+                                setState(() => selectedFilter = ActivityFilter.kegiatan);
+                                if (provider.activities.isEmpty){
+                                  await provider.getActivity();
+                                }
+                              },
                             ),
-                            child: const Text("Kegiatan Sosial"),
-                          ),
-                          const SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: () async {
-                              final provider = context.read<ActivityProvider>();
-                              setState(() {
-                                selectedFilter = false;
-                              });
-                              if (provider.completedActivities.isEmpty) {
-                                await provider.getCompletedActivity();
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: !selectedFilter ? const Color(0xFF55C173) : Colors.white,
-                              foregroundColor: Colors.black
+                            const SizedBox(width: 12),
+
+                            _buildFilterButton(
+                              label: "Riwayat Pendaftaran",
+                              active: selectedFilter == ActivityFilter.pendaftaran,
+                              onTap: () async {
+                                final provider = context.read<ActivityProvider>();
+                                setState(() => selectedFilter = ActivityFilter.pendaftaran);
+
+                                  await provider.getActivityRegistrations();
+                              },
                             ),
-                            child: const Text("Riwayat Kegiatan Sosial"),
-                          ),
-                        ],
+                            const SizedBox(width: 12),
+                            _buildFilterButton(
+                              label: "Riwayat Kegiatan Sosial",
+                              active: selectedFilter == ActivityFilter.riwayat,
+                              onTap: () async {
+                                final provider = context.read<ActivityProvider>();
+                                setState(() => selectedFilter = ActivityFilter.riwayat);
+
+                                if (provider.completedActivities.isEmpty) {
+                                  await provider.getCompletedActivity();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
+
                       const SizedBox(height: 8),
                     ],
                   ),
@@ -134,76 +157,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
               Consumer<ActivityProvider>(
                 builder: (context, provider, child) {
-                  final activities = provider.activities;
-                  final filtered = _query.isEmpty
-                      ? activities
-                      : activities
-                          .where(
-                            (a) => a.title.toLowerCase().contains(
-                              _query.toLowerCase(),
-                              ),
-                          ).toList();
-
-                  if (filtered.isEmpty) {
-                    return const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Column(
-                          children: [
-                            EmptyState(
-                              connected: true,
-                              message: "Kegiatan tidak ditemukan.",
-                            ),
-                            SizedBox(height: 50.0),
-                          ],
-                        ),
-                      ),
-                    );
+                  if (selectedFilter == ActivityFilter.kegiatan) {
+                    return _buildKegiatanSection(provider);
                   }
 
-                  final bool shouldShowLoading = selectedFilter
-                      ? provider.isLoading
-                      : provider.isCompletedLoading;
-                  final bool showEmptyState = selectedFilter
-                      ? provider.activities.isEmpty
-                      : provider.completedActivities.isEmpty;
-                  if (shouldShowLoading) {
-                    return const SliverToBoxAdapter(
-                      child: Center(child: LoadingWidget()),
-                    );
-                  }
-                  if (showEmptyState) {
-                    return SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          Center(child: EmptyState(connected: provider.connected, message: provider.message)),
-                          const SizedBox(height: 50),
-                        ],
-                      ));
+                  if (selectedFilter == ActivityFilter.riwayat) {
+                    return _buildRiwayatSection(provider);
                   }
 
-                  return SliverMasonryGrid.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 5,
-                    crossAxisSpacing: 2,
-                    childCount: selectedFilter
-                        ? filtered.length
-                        : provider.completedActivities.length,
-                    itemBuilder: (context, index) {
-                      final activity = selectedFilter
-                          ? filtered[index]
-                          : provider.completedActivities[index];
-                      return Column(
-                        children: [
-                          SlideFadeIn(
-                            delayMilliseconds: index + 200,
-                            child: ActivityCard(activity: activity),
-                          ),
-                          const SizedBox(height: 15),
-                        ],
-                      );
-                    },
-                  );
+                  return _buildActivityRegistrationSection(provider);
                 },
               ),
             ],
@@ -212,5 +174,176 @@ class _ActivityScreenState extends State<ActivityScreen> {
       ),
     );
   }
-}
 
+  Widget _buildKegiatanSection(ActivityProvider provider) {
+    final activities = provider.activities;
+
+    final filtered = _query.isEmpty
+        ? activities
+        : activities
+        .where((a) => a.title.toLowerCase().contains(_query.toLowerCase()))
+        .toList();
+
+    if (provider.isLoading) {
+      return const SliverFillRemaining(
+        hasScrollBody: false,
+        child: Column(
+          children: [
+            Center(child: LoadingWidget()),
+            SizedBox(height: 50),
+          ],
+        ),
+      );
+    }
+
+    if (activities.isEmpty && _query.isEmpty) {
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            EmptyState(connected: provider.connected, message: provider.message),
+            const SizedBox(height: 50),
+          ],
+        ),
+      );
+    }
+
+    if (_query.isNotEmpty && filtered.isEmpty) {
+      return const SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: EmptyState(connected: true, message: "Kegiatan tidak ditemukan."),
+        ),
+      );
+    }
+
+    return SliverMasonryGrid.count(
+      crossAxisCount: 2,
+      mainAxisSpacing: 5,
+      crossAxisSpacing: 2,
+      childCount: filtered.length,
+      itemBuilder: (context, index) {
+        final activity = filtered[index];
+
+        return Column(
+          children: [
+            SlideFadeIn(
+              delayMilliseconds: index + 200,
+              child: ActivityCard(activity: activity),
+            ),
+            const SizedBox(height: 15),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildRiwayatSection(ActivityProvider provider) {
+    if (provider.isCompletedLoading) {
+      return const SliverToBoxAdapter(child: Center(child: LoadingWidget()));
+    }
+
+    if (provider.completedActivities.isEmpty) {
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            EmptyState(
+              connected: provider.connected,
+              message: provider.completedMessage,
+            ),
+            const SizedBox(height: 50),
+          ],
+        ),
+      );
+    }
+
+
+    return SliverMasonryGrid.count(
+      crossAxisCount: 2,
+      mainAxisSpacing: 5,
+      crossAxisSpacing: 2,
+      childCount: provider.completedActivities.length,
+      itemBuilder: (context, index) {
+        final activity = provider.completedActivities[index];
+        return Column(
+          children: [
+            SlideFadeIn(
+              delayMilliseconds: index + 200,
+              child: ActivityCard(activity: activity),
+            ),
+            const SizedBox(height: 15),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterButton({
+    required String label,
+    required bool active,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        decoration: BoxDecoration(
+          color: active ? const Color(0xFF55C173) : Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: active ? const Color(0xFF55C173) : Colors.grey.shade300,
+            width: 1.5,
+          ),
+          boxShadow: active
+              ? [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            )
+          ]
+              : [],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActivityRegistrationSection(ActivityProvider provider) {
+    if (provider.isRegistrationLoading) {
+      return const SliverToBoxAdapter(child: Center(child: LoadingWidget()));
+    }
+
+    if (provider.activityRegistrations.isEmpty) {
+      return SliverToBoxAdapter(
+        child: EmptyState(
+          connected: provider.connected,
+          message: provider.registrationMessage,
+        ),
+      );
+    }
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+            (context, index) {
+          final item = provider.activityRegistrations[index];
+          return Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+            child: ActivityRegistrationCard(registration: item),
+          );
+        },
+        childCount: provider.activityRegistrations.length,
+      ),
+    );
+  }
+}

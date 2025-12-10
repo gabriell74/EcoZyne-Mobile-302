@@ -192,7 +192,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     child: ElevatedButton(
                       onPressed: _submitForm,
                       child: const CustomText(
-                        "Buat Order",
+                        "Tambah Produk",
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),

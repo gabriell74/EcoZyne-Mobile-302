@@ -68,4 +68,59 @@ class WasteBankProductProvider with ChangeNotifier {
     return success;
   }
 
+  Future<bool> updateProduct(int id, Map<String, dynamic> updateData) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await _wasteBankProductService.updateProduct(id, updateData);
+
+    bool success = false;
+
+    if (result["success"] == true && result["data"] != null) {
+      final updatedProduct = result["data"] as Product;
+
+      final index = _products.indexWhere((p) => p.id == id);
+
+      if (index != -1) {
+        _products[index] = updatedProduct;
+      }
+
+      _message = result["message"];
+      success = true;
+    } else {
+      _message = result["message"];
+    }
+
+    _connected = result["connected"];
+    _isLoading = false;
+
+    notifyListeners();
+    return success;
+  }
+
+
+  Future<bool> deleteProduct(int productId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await _wasteBankProductService.deleteProduct(productId);
+
+    _connected = result["connected"] ?? false;
+
+    bool success = false;
+
+    if (result["success"] == true) {
+      _products.removeWhere((q) => q.id == productId);
+      _message = result["message"] ?? "Produk berhasil dihapus";
+      success = true;
+    } else {
+      _message = result["message"] ?? "Gagal menghapus produk";
+    }
+
+    _isLoading = false;
+    notifyListeners();
+
+    return success;
+  }
+
 }

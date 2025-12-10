@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:ecozyne_mobile/data/models/activity.dart';
 import 'package:ecozyne_mobile/data/api_client.dart';
+import 'package:ecozyne_mobile/data/models/activity_registration.dart';
 
 class ActivityService {
   final Dio _dio = ApiClient.dio;
@@ -48,6 +49,80 @@ class ActivityService {
     }
   }
 
+  Future<Map<String, dynamic>> fetchActivityRegistrations() async {
+    try {
+      final response = await _dio.get("/activities/registration/history");
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        final List data = response.data["data"] ?? [];
+        final activityRegistrations = data.map((json) => ActivityRegistration.fromJson(json)).toList();
+
+        return {
+          "success": success,
+          "message": response.data["message"] ?? "Berhasil mengambil data pendaftaran kegiatan",
+          "connected": true,
+          "data": activityRegistrations,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal memuat pendaftaran kegiatan",
+        "connected": true,
+        "data": <ActivityRegistration>[],
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal memuat pendaftaran kegiatan",
+          "connected": true,
+          "data": <ActivityRegistration>[],
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+        "data": <ActivityRegistration>[],
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> checkRegistrationStatus(int activityId) async {
+    try {
+      final response = await _dio.get("/activities/$activityId/is-registered");
+
+      final bool isRegistered = response.data["registered"] ?? false;
+
+      return {
+        "success": true,
+        "connected": true,
+        "registered": isRegistered,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "connected": true,
+          "registered": false,
+          "message": "Gagal memuat status pendaftaran",
+        };
+      }
+
+      return {
+        "success": false,
+        "connected": false,
+        "registered": false,
+        "message": "Tidak ada koneksi",
+      };
+    }
+  }
+
+
   Future<Map<String, dynamic>> activityRegister(int activityId) async {
     try {
       final response = await _dio.post("/activities/$activityId/register");
@@ -72,7 +147,7 @@ class ActivityService {
         return {
           "success": false,
           "message":
-              e.response?.data["message"] ?? "Gagal mendaftar kegiatan",
+          e.response?.data["message"] ?? "Gagal mendaftar kegiatan",
           "connected": true,
         };
       }

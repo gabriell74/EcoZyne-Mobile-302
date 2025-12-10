@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/data/models/activity.dart';
+import 'package:ecozyne_mobile/data/models/activity_registration.dart';
 import 'package:ecozyne_mobile/data/services/activity_service.dart';
 import 'package:flutter/material.dart';
 
@@ -6,19 +7,35 @@ class ActivityProvider with ChangeNotifier {
   final ActivityService _activityService = ActivityService();
 
   List<Activity> _activities = [];
+  List<ActivityRegistration> _activityRegistrations = [];
+  bool _isRegistrationLoading = false;
+  String _registrationMessage = "";
   List<Activity> _completedActivities = [];
   bool _isLoading = false;
   bool _isCompletedLoading = false;
   String _message = "";
+  String _completedMessage = '';
   bool _connected = true;
+
+  Map<int, bool> _registrationStatus = {};
+  bool _isCheckingStatus = false;
+
+  Map<int, bool> get registrationStatus => _registrationStatus;
+  bool isActivityRegistered(int id) => _registrationStatus[id] ?? false;
+  bool get isCheckingStatus => _isCheckingStatus;
+
 
   Activity? _latestActivity;
 
   List<Activity> get activities => _activities;
   List<Activity> get completedActivities => _completedActivities;
+  List<ActivityRegistration> get activityRegistrations => _activityRegistrations;
   bool get isLoading => _isLoading;
+  bool get isRegistrationLoading => _isRegistrationLoading;
   bool get isCompletedLoading => _isCompletedLoading;
   String get message => _message;
+  String get registrationMessage => _registrationMessage;
+  String get completedMessage => _completedMessage;
   bool get connected => _connected;
   Activity? get latestActivity => _latestActivity;
 
@@ -80,6 +97,36 @@ class ActivityProvider with ChangeNotifier {
     return success;
   }
 
+  Future<void> getActivityRegistrations() async {
+    _isRegistrationLoading = true;
+    notifyListeners();
+
+    final result = await _activityService.fetchActivityRegistrations();
+
+    _connected = result["connected"] ?? false;
+
+    if (result["success"]) {
+      final data = result["data"];
+
+      if (data != null && data.isNotEmpty) {
+        _activityRegistrations = data.cast<ActivityRegistration>();
+        _registrationMessage = result["message"] ??
+            "Berhasil mengambil data pendaftaran kegiatan";
+      } else {
+        _activityRegistrations = [];
+        _registrationMessage = "Belum ada riwayat pendaftaran kegiatan";
+      }
+    } else {
+      _activityRegistrations = [];
+      _registrationMessage =
+          result["message"] ?? "Gagal memuat riwayat pendaftaran kegiatan";
+    }
+
+    _isRegistrationLoading = false;
+    notifyListeners();
+  }
+
+
   Future<void> getLatestActivity() async {
     _isLoading = true;
     notifyListeners();
@@ -116,19 +163,38 @@ class ActivityProvider with ChangeNotifier {
       final data = result["data"];
       if (data != null && data.isNotEmpty) {
         _completedActivities = data;
-        _message = result["message"] ?? "Berhasil mengambil kegiatan yang sudah selesai";
+        _completedMessage = result["message"] ?? "Berhasil mengambil kegiatan yang sudah selesai";
       } else {
         _completedActivities = [];
-        _message = "Belum ada kegiatan yang selesai";
+        _completedMessage = "Belum ada kegiatan yang selesai";
       }
     } else {
       _completedActivities = [];
-      _message = result["message"] ?? "Gagal memuat kegiatan yang sudah selesai";
+      _completedMessage = result["message"] ?? "Gagal memuat kegiatan yang sudah selesai";
     }
 
     _isCompletedLoading = false;
     notifyListeners();
   }
+
+  Future<void> checkRegistrationStatus(int activityId) async {
+    _isCheckingStatus = true;
+    notifyListeners();
+
+    final result = await _activityService.checkRegistrationStatus(activityId);
+
+    _connected = result["connected"] ?? false;
+
+    if (result["success"] == true) {
+      _registrationStatus[activityId] = result["registered"] ?? false;
+    } else {
+      _registrationStatus[activityId] = false;
+    }
+
+    _isCheckingStatus = false;
+    notifyListeners();
+  }
+
 
   Activity? getFeaturedActivity() {
     if (_activities.isEmpty) return null;
