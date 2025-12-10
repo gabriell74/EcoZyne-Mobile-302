@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class WasteBankDetailCard extends StatelessWidget {
   final String name;
-  final String phone;
   final String location;
   final String imageUrl;
   final VoidCallback? onTap;
@@ -12,7 +11,6 @@ class WasteBankDetailCard extends StatelessWidget {
   const WasteBankDetailCard({
     super.key,
     required this.name,
-    required this.phone,
     required this.location,
     required this.imageUrl,
     this.onTap,
@@ -78,8 +76,6 @@ class WasteBankDetailCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
-                    Text("No HP: $phone", style: const TextStyle(fontSize: 15)),
-                    const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(

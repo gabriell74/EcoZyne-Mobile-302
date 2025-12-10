@@ -15,9 +15,11 @@ class WasteBankCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => WasteBankDetailScreen()));
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => WasteBankDetailScreen(wasteBank: wasteBank),
+            ),
+          );
         },
         child: Row(
           children: [

@@ -1,10 +1,12 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_detail_card.dart';
 import 'package:flutter/material.dart';
 
 class WasteBankDetailScreen extends StatefulWidget {
-  const WasteBankDetailScreen({Key? key}) : super(key: key);
+  final WasteBankSubmission wasteBank;
+  const WasteBankDetailScreen({super.key, required this.wasteBank});
 
   @override
   State<WasteBankDetailScreen> createState() => _WasteBankDetailScreenState();
@@ -77,7 +79,7 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                       color: Colors.black.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(16),
                       image: const DecorationImage(
-                        image: AssetImage('assets/map_placeholder.png'),
+                        image: AssetImage(''),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -92,10 +94,9 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                   const SizedBox(height: 16),
 
                   WasteBankDetailCard(
-                    name: "Bank Sampah Oke",
-                    phone: "0812345678",
-                    location: "Batam, dihatimu",
-                    imageUrl: "assets/images/cover3.png",
+                    name: widget.wasteBank.wasteBankName,
+                    location: widget.wasteBank.wasteBankLocation,
+                    imageUrl: widget.wasteBank.photo,
                   ),
 
                   SizedBox(height: 12),
