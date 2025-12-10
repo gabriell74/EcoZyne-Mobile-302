@@ -1,9 +1,11 @@
+import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 
 class WasteBankCard extends StatelessWidget {
-  const WasteBankCard({super.key});
+  final WasteBankSubmission wasteBank;
+  const WasteBankCard({super.key, required this.wasteBank});
 
   @override
   Widget build(BuildContext context) {

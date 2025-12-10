@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
+import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/data/services/waste_bank_submission_service.dart';
 
 class WasteBankSubmissionProvider with ChangeNotifier {
