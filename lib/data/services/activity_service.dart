@@ -147,7 +147,7 @@ class ActivityService {
         return {
           "success": false,
           "message":
-              e.response?.data["message"] ?? "Gagal mendaftar kegiatan",
+          e.response?.data["message"] ?? "Gagal mendaftar kegiatan",
           "connected": true,
         };
       }
