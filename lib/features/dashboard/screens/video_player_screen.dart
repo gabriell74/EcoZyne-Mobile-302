@@ -7,12 +7,14 @@ class VideoPlayerScreen extends StatefulWidget {
   final String videoPath;
   final String title;
   final String description;
+  final String appBarTitle;
 
   const VideoPlayerScreen({
     super.key,
     required this.videoPath,
     required this.title,
     required this.description,
+    required this.appBarTitle,
   });
 
   @override
@@ -94,7 +96,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: Text(widget.title),
+        title: Text(widget.appBarTitle),
         centerTitle: true,
       ),
       body: _isInitialized
@@ -102,7 +104,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- Video Player ---
                   GestureDetector(
                     onTap: _toggleControls,
                     child: Stack(
@@ -171,7 +172,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
                   const SizedBox(height: 20),
 
-                  // --- Judul Video ---
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
@@ -187,7 +187,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
                   const SizedBox(height: 8),
 
-                  // --- Deskripsi Video ---
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
@@ -205,9 +204,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 ],
               ),
             )
-          : const Center(
-              child: LoadingWidget(),
-            ),
+          : const Center(child: LoadingWidget()),
     );
   }
 }

@@ -16,14 +16,18 @@ class _CarouselVideoState extends State<CarouselVideo> {
     {
       "image": "assets/images/cover1.png",
       "video": "assets/videos/eco_enzyme_1.mp4",
-    },
-    {
-      "image": "assets/images/cover2.png",
-      "video": "assets/videos/eco_enzyme_2.mp4",
+      "title": "Apa itu Eco Enzym?",
+      "appBarTitle": "Eco Enzym",
+      "description":
+          "Kalian pernah dengar eco enzyme? Atau masih penasaran sebenarnya apa sih eco enzyme itu? Di video ini kamu bakal diajak kenalan mulai dari apa itu eco enzyme, bagaimana proses fermentasinya terbentuk, sampai alasan kenapa cairan alami ini makin banyak digunakan. Yuk kenalan lebih dekat dengan eco enzyme!",
     },
     {
       "image": "assets/images/cover3.png",
-      "video": "assets/videos/eco_enzyme_3.mp4",
+      "video": "assets/videos/eco_enzyme_2.mp4",
+      "title": "Manfaat Eco Enzym",
+      "appBarTitle": "Eco Enzym",
+      "description":
+          "Eco enzyme itu ternyata bukan cuma cairan biasa, lho! Di video ini kamu akan melihat berbagai manfaat dan penggunaan eco enzyme di kehidupan sehari-hari, mulai dari bersih-bersih rumah, merawat tanaman, sampai membantu mengurangi limbah. Praktis, bermanfaat, dan mudah dipakai di rumah. Ayo cari tahu selengkapnya di video ini!",
     },
   ];
 
@@ -61,7 +65,9 @@ class _CarouselVideoState extends State<CarouselVideo> {
                     MaterialPageRoute(
                       builder: (_) => VideoPlayerScreen(
                         videoPath: item["video"]!,
-                        title: "Video ${index + 1}", description: 'video ini menjelaskan',
+                        title: item["title"]!,
+                        appBarTitle: item["appBarTitle"]!,
+                        description: item["description"]!,
                       ),
                     ),
                   );
@@ -103,4 +109,3 @@ class _CarouselVideoState extends State<CarouselVideo> {
     );
   }
 }
- 
