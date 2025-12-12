@@ -61,16 +61,31 @@ class _ActivityScreenState extends State<ActivityScreen> {
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
+                child: Container(
+                decoration: const BoxDecoration(
+                  color: Color(0xFF55C173),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
+                ),
+                child:  Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  child: SearchActivity(
+                    onSearch: (query) {
+                      setState(() => _query = query);
+                    },
+                  ),
+                ),
+              )
+            ),
+
+              SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(13.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SearchActivity(
-                        onSearch: (query) {
-                          setState(() => _query = query);
-                        },
-                      ),
                       const SizedBox(height: 30),
 
                       const ActivityHeader(),
@@ -326,9 +341,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
     if (provider.activityRegistrations.isEmpty) {
       return SliverToBoxAdapter(
-        child: EmptyState(
-          connected: provider.connected,
-          message: provider.registrationMessage,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            EmptyState(
+              connected: provider.connected,
+              message: provider.registrationMessage,
+            ),
+            const SizedBox(height: 50),
+          ],
         ),
       );
     }

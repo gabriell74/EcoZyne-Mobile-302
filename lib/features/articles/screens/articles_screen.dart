@@ -40,16 +40,25 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(13.0),
-                child: SearchArticle(
-                  onSearch: (query) {
-                    setState(() {
-                      _query = query;
-                    });
-                  },
-                ),
-              ),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF55C173),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
+                    ),
+                  ),
+                  child:  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    child: SearchArticle(
+                      onSearch: (query) {
+                        setState(() {
+                          _query = query;
+                        });
+                      },
+                    ),
+                  ),
+                )
             ),
         
             SliverToBoxAdapter(

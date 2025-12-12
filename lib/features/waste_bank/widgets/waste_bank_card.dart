@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_detail_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,77 +11,110 @@ class WasteBankCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => WasteBankDetailScreen(wasteBank: wasteBank),
-            ),
-          );
-        },
-        child: Row(
-          children: [
-            Container(
-              width: 120,
-              height: 100,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/cover3.png"),
-                  fit: BoxFit.cover,
-                ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withValues(alpha: 0.9),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => WasteBankDetailScreen(wasteBank: wasteBank),
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                      "Bank Sampah Melati",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: SizedBox(
+                    width: 90,
+                    height: 90,
+                    child: CachedNetworkImage(
+                      imageUrl: wasteBank.photo,
+                      fit: BoxFit.cover,
+                      width: 90,
+                      height: 90,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey.shade200,
+                        child: const Center(
+                          child: LoadingWidget(width: 60),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey.shade200,
+                        child: const Center(
+                          child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on,
-                          size: 14,
-                          color: Colors.green,
-                        ),
-                        const SizedBox(width: 4),
-                        CustomText(
-                          "Batam Kota",
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.date_range,
-                          size: 14,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(width: 4),
-                        CustomText(
-                          "Buka Senin - Jumat",
-                          fontSize: 12,
-                          color: Colors.black87,
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+
+                const SizedBox(width: 14),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        wasteBank.wasteBankName,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        maxLines: 2,
+                        textOverflow: TextOverflow.ellipsis,
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_rounded,
+                            size: 16,
+                            color: Colors.red.shade300,
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: CustomText(
+                              wasteBank.wasteBankLocation,
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                              maxLines: 2,
+                              textOverflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 6),
+
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 18,
+                  color: Colors.grey.shade400,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

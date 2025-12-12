@@ -20,7 +20,7 @@ class WasteBankListService {
           "success": true,
           "message": response.data["message"],
           "connected": true,
-          "data": WasteBankSubmission,
+          "data": wasteBankList,
         };
       }
 
