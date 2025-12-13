@@ -1,6 +1,7 @@
 class Product {
   final int id;
   final int wasteBankId;
+  final String? wasteBankName;
   final String productName;
   final String description;
   final double price;
@@ -17,6 +18,7 @@ class Product {
     required this.price,
     required this.stock,
     required this.photo,
+    this.wasteBankName,
     this.createdAt,
     this.updatedAt,
   });
@@ -25,6 +27,7 @@ class Product {
     return Product(
       id: json['id'],
       wasteBankId: json['waste_bank_id'],
+      wasteBankName: json['waste_bank_name'],
       productName: json['product_name'],
       description: json['description'],
       price: (json['price'] as num).toDouble(),

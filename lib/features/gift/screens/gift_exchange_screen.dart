@@ -1,10 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/build_image_section.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
-import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/data/models/reward.dart';
 import 'package:ecozyne_mobile/data/providers/reward_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
+import 'package:ecozyne_mobile/features/marketplace/widgets/feature_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -46,49 +47,23 @@ class _GiftExchangeScreenState extends State<GiftExchangeScreen> {
     final reward = widget.reward;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Detail Produk", fontWeight: FontWeight.bold),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
+      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
+      body: AppBackground(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: 300,
-                    child: Hero(
-                      tag: 'reward-tag-${reward.id}',
-                      child: CachedNetworkImage(
-                        imageUrl: reward.photo,
-                        fit: BoxFit.contain,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey.shade200,
-                          child: const Center(
-                            child: LoadingWidget(width: 100),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          height: 280,
-                          color: Colors.grey.shade100,
-                          child: const Center(
-                            child: Icon(Icons.broken_image,
-                                color: Colors.grey, size: 50),
-                          ),
-                        ),
-                      ),
-                    ),
+                  BuildImageSection(
+                    id: reward.id,
+                    photo: reward.photo,
+                    tagPrefix: 'reward',
                   ),
 
-                  const SizedBox(height: 16),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                  Container(
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -97,7 +72,7 @@ class _GiftExchangeScreenState extends State<GiftExchangeScreen> {
                           children: [
                             CustomText(
                               "${reward.unitPoint} Poin",
-                              fontSize: 24,
+                              fontSize: 28,
                               fontWeight: FontWeight.bold,
                               color: Colors.pink,
                             ),
@@ -109,216 +84,311 @@ class _GiftExchangeScreenState extends State<GiftExchangeScreen> {
                                 );
                                 return updatedReward.stock;
                               },
-                              builder: (_, stock, __) => CustomText(
-                                "Stok: $stock",
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[800],
+                              builder: (_, stock, __) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: stock > 0
+                                      ? const Color(0xFF55C173)
+                                      : Colors.red,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: CustomText(
+                                  "Stok: ${stock.toString()}",
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+
+                        const SizedBox(height: 12),
+
                         CustomText(
                           reward.rewardName,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                  ),
 
-                  const SizedBox(height: 16),
+                        const SizedBox(height: 24),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 55,
-                            height: 55,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFB2E8C9),
-                              borderRadius: BorderRadius.circular(10),
+                        FeatureCard(
+                          icon: Icons.card_giftcard,
+                          title: "Hadiah Poin",
+                          subtitle: "Tukarkan poin Anda dengan hadiah menarik",
+                          color: const Color(0xFF55C173),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.grey.shade200,
+                              width: 1,
                             ),
-                            child: const Icon(Icons.card_giftcard,
-                                color: Colors.white, size: 30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.03),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(
-                                  reward.rewardName,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF55C173).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                const SizedBox(height: 4),
-                                Selector<RewardProvider, int>(
-                                  selector: (_, provider) {
-                                    final updatedReward = provider.rewards.firstWhere(
-                                          (r) => r.id == reward.id,
-                                      orElse: () => reward,
-                                    );
-                                    return updatedReward.stock;
-                                  },
-                                  builder: (_, stock, __) => CustomText(
-                                    "Stok: $stock",
-                                    fontSize: 14,
-                                    color: Colors.grey,
+                                child: const Icon(
+                                  Icons.shopping_basket_outlined,
+                                  color: Color(0xFF55C173),
+                                  size: 28,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const CustomText(
+                                      "Jumlah",
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    CustomText(
+                                      "Pilih jumlah hadiah",
+                                      fontSize: 13,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: decrement,
+                                    child: Container(
+                                      width: 32,
+                                      height: 32,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(Icons.remove, size: 18),
+                                    ),
                                   ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    child: CustomText(
+                                      "$_quantity",
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      final stock = context
+                                          .read<RewardProvider>()
+                                          .rewards
+                                          .firstWhere(
+                                            (r) => r.id == reward.id,
+                                        orElse: () => reward,
+                                      )
+                                          .stock;
+                                      increment(stock);
+                                    },
+                                    child: Container(
+                                      width: 32,
+                                      height: 32,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF55C173),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.add,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        const CustomText(
+                          "Total Poin",
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        Selector<RewardProvider, int>(
+                          selector: (_, provider) {
+                            final stock = provider.rewards.firstWhere(
+                                  (r) => r.id == reward.id,
+                              orElse: () => reward,
+                            ).stock;
+                            return stock;
+                          },
+                          builder: (_, stock, __) => Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.grey.shade200,
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(
+                                      "Total ($_quantity item)",
+                                      fontSize: 15,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    CustomText(
+                                      "${reward.unitPoint} × $_quantity",
+                                      fontSize: 13,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 4),
                                 CustomText(
-                                  "${reward.unitPoint} Point",
-                                  fontSize: 16,
+                                  "${reward.unitPoint * _quantity} Poin",
+                                  fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: const Color(0xFF55C173),
                                 ),
                               ],
                             ),
                           ),
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: decrement,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(6),
-                                    child: Icon(Icons.remove, size: 18),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                const EdgeInsets.symmetric(horizontal: 10),
-                                child: CustomText(
-                                  "$_quantity",
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  final stock = context.read<RewardProvider>().rewards.firstWhere(
-                                        (r) => r.id == reward.id,
-                                    orElse: () => reward,
-                                  ).stock;
-                                  increment(stock);
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(6),
-                                    child: Icon(Icons.add, size: 18),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-
-                  const SizedBox(height: 16),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Selector<RewardProvider, int>(
-                      selector: (_, provider) {
-                        final stock = provider.rewards.firstWhere(
-                              (r) => r.id == reward.id,
-                          orElse: () => reward,
-                        ).stock;
-                        return stock;
-                      },
-                      builder: (_, stock, __) => Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CustomText(
-                              "Total ($_quantity item)",
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                            CustomText(
-                              "${reward.unitPoint * _quantity} Point",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: const Color(0xFF55C173),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
-          ),
 
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: Selector<RewardProvider, int>(
-                  selector: (_, provider) {
-                    final stock = provider.rewards.firstWhere(
-                          (r) => r.id == reward.id,
-                      orElse: () => reward,
-                    ).stock;
-                    return stock;
-                  },
-                  builder: (_, stock, __) => ElevatedButton(
-                    onPressed: stock > 0
-                        ? () {
-                      final userProvider = context.read<UserProvider>();
-                      if (userProvider.isGuest || userProvider.user == null) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => const LoginRequiredDialog(),
-                        );
-                      } else {
-                        widget.onPressed(_quantity);
-                      }
-                    }
-                        : null,
-                    child: CustomText(
-                      stock > 0 ? "Tukar Hadiah" : "Stok Habis",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 12,
+              left: 16,
+              child: Material(
+                color: Colors.black12.withValues(alpha: 0.5),
+                shape: const CircleBorder(),
+                elevation: 4,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 20,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 56,
+                            child: Selector<RewardProvider, int>(
+                              selector: (_, provider) {
+                                final stock = provider.rewards.firstWhere(
+                                      (r) => r.id == reward.id,
+                                  orElse: () => reward,
+                                ).stock;
+                                return stock;
+                              },
+                              builder: (_, stock, __) => ElevatedButton(
+                                onPressed: stock > 0
+                                    ? () {
+                                  final userProvider =
+                                  context.read<UserProvider>();
+                                  if (userProvider.isGuest ||
+                                      userProvider.user == null) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                      const LoginRequiredDialog(),
+                                    );
+                                  } else {
+                                    widget.onPressed(_quantity);
+                                  }
+                                }
+                                    : null,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      stock > 0
+                                          ? Icons.card_giftcard_outlined
+                                          : Icons.error_outline,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    CustomText(
+                                      stock > 0 ? "Tukar Hadiah" : "Stok Habis",
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
-import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
+import 'package:ecozyne_mobile/data/models/waste_bank.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_detail_card.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class WasteBankDetailScreen extends StatefulWidget {
-  final WasteBankSubmission wasteBank;
+  final WasteBank wasteBank;
   const WasteBankDetailScreen({super.key, required this.wasteBank});
 
   @override

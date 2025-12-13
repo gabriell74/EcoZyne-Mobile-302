@@ -1,16 +1,16 @@
-import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
+import 'package:ecozyne_mobile/data/models/waste_bank.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/data/services/waste_bank_submission_service.dart';
 
 class WasteBankSubmissionProvider with ChangeNotifier {
   final WasteBankSubmissionService _submissionService = WasteBankSubmissionService();
 
-  List<WasteBankSubmission> _submissions = [];
+  List<WasteBank> _submissions = [];
   bool _isLoading = false;
   String _message = "";
   bool _connected = true;
 
-  List<WasteBankSubmission> get submissions => _submissions;
+  List<WasteBank> get submissions => _submissions;
   bool get isLoading => _isLoading;
   String get message => _message;
   bool get connected => _connected;
@@ -25,7 +25,7 @@ class WasteBankSubmissionProvider with ChangeNotifier {
 
     if (result["success"] == true && result["data"] != null) {
 
-      final newSubmission = result["data"] as WasteBankSubmission;
+      final newSubmission = result["data"] as WasteBank;
 
       _submissions.insert(0, newSubmission);
       _message = result["message"];

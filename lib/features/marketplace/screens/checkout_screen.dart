@@ -1,15 +1,19 @@
 import 'package:ecozyne_mobile/core/utils/validators.dart';
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/models/product.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/marketplace/widgets/product_checkout_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  final Product product;
+
+  const CheckoutScreen({super.key, required this.product});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -22,7 +26,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
+  int _quantity = 1;
+
   void _submitCheckout() {
+    if (widget.product.stock <= 0) {
+      showErrorTopSnackBar(
+        context,
+        "Stok produk habis",
+      );
+      return;
+    }
+
+    if (_quantity > widget.product.stock) {
+      showErrorTopSnackBar(
+        context,
+        "Jumlah melebihi stok tersedia",
+      );
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       showDialog(
         context: context,
@@ -30,6 +52,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           "Apakah anda yakin memesan produk ini?",
           onTap: () {
             Navigator.pop(context);
+
             showSuccessTopSnackBar(
               context,
               "Berhasil Membuat Order",
@@ -55,18 +78,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
       if (userProvider.user != null) {
         final community = userProvider.user!;
-
         _nameController.text = community.communityName;
         _phoneController.text = community.communityPhone;
         _addressController.text =
-        "${community.communityAddress}, "
-            "Kel. ${community.communityKelurahan}, "
-            "Kec. ${community.communityKecamatan}, "
-            "${community.communityPostalCode}";
+        "${community.communityAddress}, Kel. ${community.communityKelurahan}, "
+            "Kec. ${community.communityKecamatan}, ${community.communityPostalCode}";
       }
     });
   }
-
 
   @override
   void dispose() {
@@ -78,69 +97,223 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Checkout", fontWeight: FontWeight.bold),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CustomText(
-                "Informasi Pembeli",
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              const SizedBox(height: 16),
-              BuildFormField(
-                label: "Nama Lengkap",
-                controller: _nameController,
-                validator: Validators.name,
-                prefixIcon: Icons.person_outline,
-              ),
-              BuildFormField(
-                label: "Nomor WhatsApp",
-                controller: _phoneController,
-                validator: Validators.whatsapp,
-                keyboardType: TextInputType.phone,
-                prefixIcon: Icons.phone_outlined,
-              ),
-              BuildFormField(
-                label: "Alamat Lengkap",
-                controller: _addressController,
-                validator: Validators.address,
-                maxLines: 3,
-                prefixIcon: Icons.location_on_outlined,
-              ),
-              const SizedBox(height: 24),
-              ProductCheckoutDetail(),
-              const SizedBox(height: 60),
+    final isOutOfStock = widget.product.stock <= 0;
 
-              SafeArea(
-                top: false,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _submitCheckout();
-                    },
-                    child: const CustomText(
-                      "Buat Order",
+    return AppBackground(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF55C173),
+          elevation: 0,
+          title: const CustomText(
+            "Checkout",
+            fontWeight: FontWeight.bold,
+          ),
+          centerTitle: true,
+        ),
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF55C173).withValues(alpha: 0.1),
+                            const Color(0xFF55C173).withValues(alpha: 0.05),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF55C173),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.shopping_cart_outlined),
+                          ),
+                          const SizedBox(width: 16),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  "Checkout Produk",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                SizedBox(height: 4),
+                                CustomText(
+                                  "Lengkapi informasi untuk melanjutkan",
+                                  fontSize: 13,
+                                  color: Colors.black54,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+      
+                    const SizedBox(height: 28),
+      
+                    const CustomText(
+                      "Informasi Pembeli",
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                    ),
+                    const SizedBox(height: 16),
+      
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          BuildFormField(
+                            label: "Nama Lengkap",
+                            controller: _nameController,
+                            validator: Validators.name,
+                            prefixIcon: Icons.person_outline,
+                          ),
+                          const SizedBox(height: 8),
+                          BuildFormField(
+                            label: "Nomor WhatsApp",
+                            controller: _phoneController,
+                            validator: Validators.whatsapp,
+                            keyboardType: TextInputType.phone,
+                            prefixIcon: Icons.phone_outlined,
+                          ),
+                          const SizedBox(height: 8),
+                          BuildFormField(
+                            label: "Alamat Lengkap",
+                            controller: _addressController,
+                            validator: Validators.address,
+                            maxLines: 3,
+                            prefixIcon: Icons.location_on_outlined,
+                          ),
+                        ],
+                      ),
+                    ),
+      
+                    const SizedBox(height: 28),
+      
+                    ProductCheckoutDetail(
+                      product: widget.product,
+                      quantity: _quantity,
+                      onIncrease: () {
+                        if (_quantity < widget.product.stock) {
+                          setState(() => _quantity++);
+                        }
+                      },
+                      onDecrease: () {
+                        if (_quantity > 1) {
+                          setState(() => _quantity--);
+                        }
+                      },
+                    ),
+      
+                    const SizedBox(height: 15),
+      
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.blue.shade200,
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.blue.shade700,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  "Metode Pembayaran",
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blue.shade900,
+                                ),
+                                const SizedBox(height: 4),
+                                CustomText(
+                                  "Cash on Delivery (COD)\nBayar langsung saat barang diterima",
+                                  fontSize: 12,
+                                  color: Colors.blue.shade800,
+                                  height: 1.4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+      
+                    const SizedBox(height: 100),
+                  ],
+                ),
+              ),
+            ),
+      
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black12,
+                      offset: Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: isOutOfStock ? null : _submitCheckout,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          isOutOfStock
+                              ? Icons.error_outline
+                              : Icons.check_circle_outline,
+                        ),
+                        const SizedBox(width: 10),
+                        CustomText(
+                          isOutOfStock ? "Stok Habis" : "Buat Order",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

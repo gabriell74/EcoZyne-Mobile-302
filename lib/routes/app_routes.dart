@@ -72,7 +72,6 @@ class AppRoutes {
     manageProduct: (context) => ManageProductScreen(),
     ecoEnzymeTracking: (context) => EcoEnzymeTrackingScreen(),
     ecoEnzymeTrackingForm: (context) => EcoEnzymeTrackingFormScreen(),
-    checkout: (context) => CheckoutScreen(),
     marketplace: (context) => MarketplaceScreen(),
     history: (context) => HistoryScreen(),
     splashScreen: (context) => SplashScreen(),
