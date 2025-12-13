@@ -1,8 +1,11 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/models/waste_bank.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_detail_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class WasteBankDetailScreen extends StatefulWidget {
   final WasteBank wasteBank;
@@ -13,6 +16,19 @@ class WasteBankDetailScreen extends StatefulWidget {
 }
 
 class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
+  late final MapController _mapController;
+  late final LatLng _bankLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+    _bankLocation = LatLng(
+      widget.wasteBank.latitude,
+      widget.wasteBank.longitude,
+    );
+  }
+
   void _showConfirmDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -73,24 +89,21 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(16),
-                      image: const DecorationImage(
-                        image: AssetImage(''),
-                        fit: BoxFit.cover,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: MapSelectionWidget(
+                      mapController: _mapController,
+                      defaultCenter: _bankLocation,
+                      defaultZoom: 15,
+                      batamBounds: LatLngBounds(
+                        LatLng(0.91, 103.50),
+                        LatLng(1.30, 104.20),
                       ),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.location_on,
-                        color: Colors.black,
-                        size: 40,
-                      ),
+                      selectedLocation: _bankLocation,
+                      onLocationSelected: (_) {},
                     ),
                   ),
+
                   const SizedBox(height: 16),
 
                   WasteBankDetailCard(
