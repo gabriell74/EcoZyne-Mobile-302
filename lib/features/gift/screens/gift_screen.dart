@@ -187,22 +187,17 @@ class _GiftScreenState extends State<GiftScreen> {
                       itemBuilder: (context, index) {
                         final reward = filtered[index];
 
-                        return SlideFadeIn(
-                          delayMilliseconds: index * 100,
-                          child: GiftCard(
-                            reward: reward,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => GiftExchangeScreen(
-                                    reward: reward,
-                                    onPressed: (quantity) => _showConfirmDialog(context, quantity, reward),
-                                  ),
+                        return GiftCard(
+                          reward: reward,
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GiftExchangeScreen(
+                                  reward: reward,
+                                  onPressed: (quantity) => _showConfirmDialog(context, quantity, reward),
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            ),
                         );
                       },
                     );

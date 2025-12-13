@@ -235,9 +235,6 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
                               padding: const EdgeInsets.symmetric(
                                 vertical: 14,
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
                             ),
                             child: const CustomText(
                               "Kirim Pendaftaran",

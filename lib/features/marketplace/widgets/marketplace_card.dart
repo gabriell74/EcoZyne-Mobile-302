@@ -1,11 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/utils/price_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/models/product.dart';
 import 'package:ecozyne_mobile/features/marketplace/screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class MarketplaceCard extends StatelessWidget {
-  final Map<String, String> item;
+  final Product product;
+  // final Future<void> Function() onPressed;
 
-  const MarketplaceCard({super.key, required this.item});
+  const MarketplaceCard({super.key, required this.product, /* required this.onPressed */});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,7 @@ class MarketplaceCard extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) {
-                return ProductDetailScreen();
+                return ProductDetailScreen(product: product);
               },
             )
           );
@@ -30,16 +34,34 @@ class MarketplaceCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              item["image"]!,
-              fit: BoxFit.cover,
+            SizedBox(
               width: double.infinity,
+              child: Hero(
+                tag: 'product-photo-tag-${product.id}',
+                child: CachedNetworkImage(
+                  imageUrl: product.photo,
+                  fit: BoxFit.cover,
+                  fadeInDuration: const Duration(milliseconds: 400),
+                  placeholder: (context, url) =>  const SizedBox(height: 150),
+                  errorWidget: (context, url, error) => Container(
+                    height: 150,
+                    color: Colors.grey.shade100,
+                    child: const Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        color: Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               child: CustomText(
-                item["name"]!,
+                product.productName,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 maxLines: 2,
@@ -49,12 +71,12 @@ class MarketplaceCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: CustomText(
-                item["price"]!,
+                product.price.toCurrency,
                 fontSize: 16,
                 maxLines: 2,
                 fontWeight: FontWeight.bold,
                 textOverflow: TextOverflow.ellipsis,
-                color: Colors.black87,
+                color: Colors.pink,
               ),
             ),
             Padding(
@@ -62,10 +84,10 @@ class MarketplaceCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Icon(Icons.location_on, color: Colors.green,),
+                  Icon(Icons.recycling_outlined, color: Colors.green,),
                   SizedBox(width: 5,),
                   Expanded(
-                    child: CustomText("Bank Sampah Poltek",
+                    child: CustomText(product.wasteBankName ?? 'Bank Sampah',
                       textOverflow: TextOverflow.ellipsis,
                       fontSize: 12,
                     ),

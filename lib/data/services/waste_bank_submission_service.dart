@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:ecozyne_mobile/data/api_client.dart';
-import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
+import 'package:ecozyne_mobile/data/models/waste_bank.dart';
 
 class WasteBankSubmissionService {
   final Dio _dio = ApiClient.dio;
@@ -33,7 +33,7 @@ class WasteBankSubmissionService {
 
       if (response.data["success"] == true &&
           response.statusCode == 201) {
-        final newSubmission = WasteBankSubmission.fromJson(response.data["data"]);
+        final newSubmission = WasteBank.fromJson(response.data["data"]);
 
         return {
           "success": true,
@@ -74,7 +74,7 @@ class WasteBankSubmissionService {
 
       if (response.statusCode == 200 && success) {
         final List data = response.data["data"] ?? [];
-        final questions = data.map((json) => WasteBankSubmission.fromJson(json)).toList();
+        final questions = data.map((json) => WasteBank.fromJson(json)).toList();
 
         return {
           "success": true,
@@ -88,7 +88,7 @@ class WasteBankSubmissionService {
         "success": false,
         "message": response.data["message"] ?? "Gagal memuat riwayat pengajuan",
         "connected": true,
-        "data": <WasteBankSubmission>[],
+        "data": <WasteBank>[],
       };
     } on DioException catch (e) {
       if (e.response != null) {
@@ -96,7 +96,7 @@ class WasteBankSubmissionService {
           "success": false,
           "message": e.response?.data["message"] ?? "Gagal memuat riwayat pengajuan",
           "connected": true,
-          "data": <WasteBankSubmission>[],
+          "data": <WasteBank>[],
         };
       }
 
@@ -104,7 +104,7 @@ class WasteBankSubmissionService {
         "success": false,
         "message": "Tidak ada koneksi",
         "connected": false,
-        "data": <WasteBankSubmission>[],
+        "data": <WasteBank>[],
       };
     }
   }

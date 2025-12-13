@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 class GiftCard extends StatelessWidget {
   final Reward reward;
-  final VoidCallback onPressed;
+  final Future<void> Function() onPressed;
 
   const GiftCard({
     super.key,
@@ -35,13 +35,7 @@ class GiftCard extends StatelessWidget {
               imageUrl: reward.photo,
               fit: BoxFit.cover,
               fadeInDuration: const Duration(milliseconds: 400),
-              placeholder: (context, url) => Container(
-                height: 150,
-                color: Colors.grey.shade200,
-                child: const Center(
-                  child: LoadingWidget(width: 60,),
-                ),
-              ),
+              placeholder: (context, url) =>  const SizedBox(height: 150),
               errorWidget: (context, url, error) => Container(
                 height: 150,
                 color: Colors.grey.shade100,
@@ -87,7 +81,7 @@ class GiftCard extends StatelessWidget {
 
                 ElevatedButton(
                   onPressed: reward.stock > 0
-                      ? () {
+                      ? () async {
                     final userProvider = context.read<UserProvider>();
                     if (userProvider.isGuest || userProvider.user == null) {
                       showDialog(
@@ -95,7 +89,7 @@ class GiftCard extends StatelessWidget {
                         builder: (context) => const LoginRequiredDialog(),
                       );
                     } else {
-                      onPressed();
+                      await onPressed();
                     }
                   } : null,
                   style: ElevatedButton.styleFrom(

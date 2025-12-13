@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
-import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
+import 'package:ecozyne_mobile/data/models/waste_bank.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 
 class WasteBankCard extends StatelessWidget {
-  final WasteBankSubmission wasteBank;
+  final WasteBank wasteBank;
   const WasteBankCard({super.key, required this.wasteBank});
 
   @override

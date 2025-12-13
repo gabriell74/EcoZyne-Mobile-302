@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/models/activity.dart';
@@ -82,7 +83,7 @@ class FavoriteActivity extends StatelessWidget {
                           const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                           const SizedBox(width: 4),
                           CustomText(
-                            activity?.startDate ?? '',
+                            DateFormatter.formatDate(activity?.startDate ?? ''),
                             fontSize: 12,
                             color: Colors.grey,
                           ),

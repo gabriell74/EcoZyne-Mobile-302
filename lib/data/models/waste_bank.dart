@@ -1,4 +1,4 @@
-class WasteBankSubmission {
+class WasteBank {
   final int id;
   final int communityId;
   final String wasteBankName;
@@ -12,7 +12,7 @@ class WasteBankSubmission {
   final String createdAt;
   final String updatedAt;
 
-  WasteBankSubmission({
+  WasteBank({
     required this.id,
     required this.communityId,
     required this.wasteBankName,
@@ -27,8 +27,8 @@ class WasteBankSubmission {
     required this.updatedAt,
   });
 
-  factory WasteBankSubmission.fromJson(Map<String, dynamic> json) {
-    return WasteBankSubmission(
+  factory WasteBank.fromJson(Map<String, dynamic> json) {
+    return WasteBank(
       id: json["id"] ?? 0,
       communityId: json["community_id"] ?? 0,
       wasteBankName: json["waste_bank_name"] ?? "",

@@ -265,11 +265,6 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                       height: 55,
                       child: ElevatedButton(
                         onPressed: null,
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
                         child: const LoadingWidget(height: 40, width: 40),
                       ),
                     );
@@ -277,6 +272,11 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
 
                   final bool isCompleted = DateTime.now().isAfter(DateTime.parse(activity.dueDate));
                   final bool isFull = activity.currentQuota == activity.quota;
+                  final DateTime? regisStartDate =
+                  DateTime.tryParse(activity.regisStartDate);
+
+                  final bool registrationNotOpened =
+                      regisStartDate != null && regisStartDate.isAfter(DateTime.now());
 
                   String buttonText;
                   VoidCallback? action;
@@ -288,6 +288,12 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                     action = null;
                     buttonColor = Colors.grey.shade400;
                     buttonIcon = Icons.event_busy;
+                  }
+                  else if (registrationNotOpened) {
+                    buttonText = "Pendaftaran Belum Dibuka";
+                    action = null;
+                    buttonColor =  Colors.grey.shade400;
+                    buttonIcon = Icons.event_note;
                   }
                   else if (isFull) {
                     buttonText = "Kuota Penuh";
@@ -325,9 +331,6 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                       onPressed: action,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: buttonColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                         elevation: action != null ? 2 : 0,
                       ),
                       child: Row(
