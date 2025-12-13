@@ -3,6 +3,7 @@ import 'package:ecozyne_mobile/core/utils/history_helper.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/providers/point_out_history_provider.dart';
+import 'package:ecozyne_mobile/features/history/widgets/date_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/history_item.dart';
@@ -47,7 +48,6 @@ class _PointOutScreenState extends State<PointOutScreen>
           );
         }
 
-        // langsung pakai groupedHistory dari provider
         final grouped = prov.groupedHistory;
 
         return RefreshIndicator.adaptive(
@@ -66,14 +66,9 @@ class _PointOutScreenState extends State<PointOutScreen>
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    dateLabel,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                  DateHeader(date: dateLabel),
+
+                  const SizedBox(height: 12),
 
                   ListView.builder(
                     shrinkWrap: true,

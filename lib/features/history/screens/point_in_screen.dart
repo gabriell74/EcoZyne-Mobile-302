@@ -4,6 +4,7 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/providers/point_income_history_provider.dart';
+import 'package:ecozyne_mobile/features/history/widgets/date_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/history_item.dart';
@@ -69,12 +70,8 @@ class _PointInScreenState extends State<PointInScreen>
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomText(
-                    dateLabel,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(height: 8),
+                  DateHeader(date: dateLabel),
+                  const SizedBox(height: 12),
                   ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,

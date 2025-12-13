@@ -23,65 +23,75 @@ class HistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(
+                  title,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+                const SizedBox(height: 4),
+                CustomText(
+                  subtitle,
+                  color: subtitleColor.withValues(alpha: 0.6),
+                  fontSize: 14,
+                ),
+                if (description != null) ...[
+                  const SizedBox(height: 4),
+                  CustomText(
+                    description!,
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
                   ),
-                  padding: const EdgeInsets.all(10),
-                  child: Icon(icon, color: color),
-                ),
-
-              const SizedBox(width: 12),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                      title,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    CustomText(
-                      subtitle,
-                      color: subtitleColor.withValues(alpha: 0.5),
-                    ),
-                    if (description != null)
-                      CustomText(
-                        description!,
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
-                  ],
-                ),
-              ),
-
-              if (time != null)
-                SizedBox(width: 10,),
+                ],
+              ],
+            ),
+          ),
+          if (time != null) ...[
+            const SizedBox(width: 10),
+            Column(
+              children: [
+                Icon(Icons.access_time_rounded, size: 12, color: Colors.grey.shade600),
+                const SizedBox(height: 4),
                 CustomText(
                   time!,
-                  color: Colors.grey,
+                  color: Colors.grey.shade600,
                   fontSize: 12,
                 ),
-            ],
-          ),
-        ),
-
-        Divider(
-          color: Colors.grey.withValues(alpha: 0.4),
-          thickness: 1,
-          height: 0,
-        ),
-      ],
+              ],
+            ),
+          ],
+        ],
+      ),
     );
-
   }
-
 }

@@ -20,6 +20,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/theme.dart';
 import 'data/providers/eco_enzyme_tracking_provider.dart';
+import 'data/providers/order_history_provider.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +44,8 @@ void main() async{
         ChangeNotifierProvider(create: (_) => WasteBankSubmissionProvider()),
         ChangeNotifierProvider(create: (_) => WasteBankProductProvider()),
         ChangeNotifierProvider(create: (_) => WasteBankListProvider()),
-        ChangeNotifierProvider(create: (_) => MarketplaceProvider())
+        ChangeNotifierProvider(create: (_) => MarketplaceProvider()),
+        ChangeNotifierProvider(create: (_) => OrderHistoryProvider())
       ],
       child: EcoApp(),
     ),

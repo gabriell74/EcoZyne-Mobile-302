@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:ecozyne_mobile/data/api_client.dart';
 import 'package:ecozyne_mobile/data/models/exchange_history.dart';
+import 'package:ecozyne_mobile/data/models/order.dart';
 import 'package:ecozyne_mobile/data/models/point_income_history.dart';
 
 class HistoryService {
@@ -90,6 +91,51 @@ class HistoryService {
         "message": "Tidak ada koneksi",
         "connected": false,
         "data": <ExchangeHistory>[],
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchProductOrderHistory() async {
+    try {
+      final response = await _dio.get("/product/order/history");
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        final List data = response.data["data"] ?? [];
+        final orderHistory = data
+            .map((item) => Order.fromJson(item as Map<String, dynamic>))
+            .toList();
+
+        return {
+          "success": true,
+          "message": response.data["message"],
+          "connected": true,
+          "data": orderHistory,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal memuat riwayat pemesanan produk",
+        "connected": true,
+        "data": <Order>[],
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal memuat riwayat pemesanan produk",
+          "connected": true,
+          "data": <Order>[],
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+        "data": <Order>[],
       };
     }
   }

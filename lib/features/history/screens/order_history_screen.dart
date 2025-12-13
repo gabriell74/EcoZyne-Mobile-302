@@ -1,5 +1,12 @@
+import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/data/providers/order_history_provider.dart';
+import 'package:ecozyne_mobile/features/history/widgets/date_header.dart';
 import 'package:flutter/material.dart';
-import '../widgets/history_item.dart';
+import 'package:provider/provider.dart';
+
+import '../widgets/order_card.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -13,51 +20,64 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   @override
   bool get wantKeepAlive => true;
 
-  // Dummy data sementara
-  final List<Map<String, dynamic>> dummyData = [
-    {
-      "label": "KEMARIN",
-      "items": [
-        HistoryItem(
-          icon: Icons.shopping_bag_outlined,
-          color: Color.fromARGB(255, 152, 85, 193),
-          title: "Pembelian Berhasil",
-          subtitle: "Pupuk, 12, COD\n900.000",
-          time: "1d",
-        ),
-      ],
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<OrderHistoryProvider>(context, listen: false)
+          .getProductOrderHistory();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: dummyData.length,
-      itemBuilder: (context, index) {
-        final group = dummyData[index];
+    return Consumer<OrderHistoryProvider>(builder: (context, prov, _) {
+      if (prov.isLoading) {
+        return const Center(child: LoadingWidget());
+      }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              group["label"],
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            ...group["items"],
-
-            const SizedBox(height: 20),
-          ],
+      if (prov.orderHistory.isEmpty) {
+        return Center(
+          child: EmptyState(
+            connected: prov.connected,
+            message: prov.message,
+          ),
         );
-      },
-    );
+      }
+
+      final grouped = prov.groupedHistory;
+
+      return RefreshIndicator.adaptive(
+        onRefresh: () async => await prov.getProductOrderHistory(),
+        color: Colors.black,
+        backgroundColor: const Color(0xFF55C173),
+        child: ListView.builder(
+          key: const PageStorageKey('order_history_list'),
+          padding: const EdgeInsets.all(16),
+          itemCount: grouped.length,
+          itemBuilder: (context, index) {
+            final dateKey = grouped.keys.elementAt(index);
+            final items = grouped[dateKey]!;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DateHeader(date: DateFormatter.formatDate(dateKey)),
+                const SizedBox(height: 12),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: items.length,
+                  itemBuilder: (_, index) => OrderCard(order: items[index]),
+                ),
+                const SizedBox(height: 8),
+              ],
+            );
+          },
+        ),
+      );
+    });
   }
 }
