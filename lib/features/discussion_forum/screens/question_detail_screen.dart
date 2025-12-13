@@ -131,12 +131,12 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                   GestureDetector(
-                    onTap: () async{
+                    onTap: () async {
                       final isLoggedIn = UserHelper.isLoggedIn(context);
                       if (!isLoggedIn) {
                         showDialog(
                           context: context,
-                          builder: (context) => LoginRequiredDialog()
+                          builder: (context) => LoginRequiredDialog(),
                         );
                       } else {
                         await questionProvider.toggleLike(widget.question.id);
@@ -175,10 +175,16 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                 child: answerProvider.isLoading
                     ? const Center(child: LoadingWidget(height: 80))
                     : answerProvider.answers.isEmpty
-                    ? Center(
-                        child: EmptyState(
-                          connected: answerProvider.connected,
-                          message: answerProvider.message,
+                    ? SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 40),
+                            child: EmptyState(
+                              connected: answerProvider.connected,
+                              message: answerProvider.message,
+                            ),
+                          ),
                         ),
                       )
                     : ListView.builder(
