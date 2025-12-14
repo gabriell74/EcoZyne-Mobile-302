@@ -17,8 +17,8 @@ class ProductCheckoutDetail extends StatelessWidget {
     required this.onDecrease,
   });
 
-  double get price => product.price;
-  double get total => price * quantity;
+  int get price => product.price;
+  int get total => price * quantity;
 
   bool get isOutOfStock => product.stock <= 0;
   bool get isMaxStock => quantity >= product.stock;

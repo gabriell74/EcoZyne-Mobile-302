@@ -43,6 +43,7 @@ class GetStartedScreen extends StatelessWidget {
                 child: const CustomText(
                   "Mulai Sekarang",
                   fontSize: 20,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),

@@ -39,7 +39,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Kegiatan"),
+        title: const Text("Kegiatan"),
         centerTitle: true,
       ),
       body: AppBackground(

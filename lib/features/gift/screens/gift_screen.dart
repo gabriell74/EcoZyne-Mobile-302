@@ -3,7 +3,6 @@ import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
-import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/reward.dart';
 import 'package:ecozyne_mobile/data/providers/reward_provider.dart';

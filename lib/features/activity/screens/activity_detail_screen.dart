@@ -76,7 +76,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const CustomText(
+        title: const Text(
           'Detail Kegiatan',
         ),
         backgroundColor: const Color(0xFF55C173),
@@ -219,7 +219,6 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                                   const SizedBox(height: 12),
                                   CustomText(
                                     currentActivity.description,
-                                    fontSize: 14,
                                     color: Colors.grey.shade700,
                                     height: 1.5,
                                   ),
@@ -342,7 +341,6 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                           ],
                           CustomText(
                             buttonText,
-                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ],

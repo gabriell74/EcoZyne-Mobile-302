@@ -277,7 +277,7 @@ class _GiftExchangeScreenState extends State<GiftExchangeScreen> {
                                 ),
                                 CustomText(
                                   "${reward.unitPoint * _quantity} Poin",
-                                  fontSize: 24,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: const Color(0xFF55C173),
                                 ),
@@ -373,7 +373,6 @@ class _GiftExchangeScreenState extends State<GiftExchangeScreen> {
                                     CustomText(
                                       stock > 0 ? "Tukar Hadiah" : "Stok Habis",
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
                                     ),
                                   ],
                                 ),

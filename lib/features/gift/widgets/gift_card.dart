@@ -29,21 +29,24 @@ class GiftCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: CachedNetworkImage(
-              imageUrl: reward.photo,
-              fit: BoxFit.cover,
-              fadeInDuration: const Duration(milliseconds: 400),
-              placeholder: (context, url) =>  const SizedBox(height: 150),
-              errorWidget: (context, url, error) => Container(
-                height: 150,
-                color: Colors.grey.shade100,
-                child: const Center(
-                  child: Icon(
-                    Icons.broken_image,
-                    color: Colors.grey,
-                    size: 50,
+          Hero(
+            tag: 'reward-photo-tag-${reward.id}',
+            child: SizedBox(
+              width: double.infinity,
+              child: CachedNetworkImage(
+                imageUrl: reward.photo,
+                fit: BoxFit.cover,
+                fadeInDuration: const Duration(milliseconds: 400),
+                placeholder: (context, url) =>  const SizedBox(height: 150),
+                errorWidget: (context, url, error) => Container(
+                  height: 150,
+                  color: Colors.grey.shade100,
+                  child: const Center(
+                    child: Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 50,
+                    ),
                   ),
                 ),
               ),

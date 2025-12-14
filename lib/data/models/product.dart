@@ -4,7 +4,7 @@ class Product {
   final String? wasteBankName;
   final String productName;
   final String description;
-  final double price;
+  final int price;
   final int stock;
   final String photo;
   final String? createdAt;
@@ -30,7 +30,7 @@ class Product {
       wasteBankName: json['waste_bank_name'],
       productName: json['product_name'],
       description: json['description'],
-      price: (json['price'] as num).toDouble(),
+      price: json['price'],
       stock: json['stock'],
       photo: json['photo'],
       createdAt: json['created_at'],

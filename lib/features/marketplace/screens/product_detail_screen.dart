@@ -1,22 +1,126 @@
 import 'package:ecozyne_mobile/core/utils/price_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/build_image_section.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/product.dart';
+import 'package:ecozyne_mobile/data/providers/product_detail_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/marketplace/screens/checkout_screen.dart';
 import 'package:ecozyne_mobile/features/marketplace/widgets/feature_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends StatefulWidget {
   final Product product;
 
-  const ProductDetailScreen({super.key, required this.product});
+  const ProductDetailScreen({
+    super.key,
+    required this.product,
+  });
+
+  @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    /// silent fetch detail (harga & stok saja)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context
+          .read<ProductDetailProvider>()
+          .fetchProductDetail(widget.product.id);
+    });
+  }
+
+  @override
+  void dispose() {
+    /// bersihkan state biar ga nyasar ke produk lain
+    context.read<ProductDetailProvider>().clear();
+    super.dispose();
+  }
+
+  Future<void> _showConfirmDialog(
+      BuildContext context, {
+        required int productId,
+        required String customerName,
+        required String phoneNumber,
+        required String orderAddress,
+        required int amount,
+      }) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => ConfirmationDialog(
+        "Apakah anda yakin membeli produk ini?",
+        onTap: () => Navigator.pop(context, true),
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const LoadingWidget(height: 100),
+    );
+
+    final detailProvider = context.read<ProductDetailProvider>();
+
+    final success = await detailProvider.placeOrder(
+      productId: productId,
+      customerName: customerName,
+      phoneNumber: phoneNumber,
+      orderAddress: orderAddress,
+      amount: amount,
+    );
+
+    if (!mounted) return;
+    Navigator.pop(context); // close loading
+
+    if (success) {
+      showSuccessTopSnackBar(
+        context,
+        "Pesanan Sedang Diproses",
+        icon: const Icon(Icons.shopping_bag),
+      );
+
+      /// refresh stok & harga setelah order
+      detailProvider.fetchProductDetail(productId);
+
+      Navigator.pop(context);
+    } else {
+      showErrorTopSnackBar(context, detailProvider.message);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    /// 🔑 ambil product dari constructor (SELALU AMAN)
+    final Product baseProduct = widget.product;
+
+    /// ambil data API (bisa null / bisa produk lain)
+    final Product? apiProduct =
+        context.watch<ProductDetailProvider>().product;
+
+    /// 🔥 VALIDASI ID (INI KUNCI UTAMA)
+    final bool isSameProduct =
+        apiProduct != null && apiProduct.id == baseProduct.id;
+
+    /// source of truth
+    final int stock =
+    isSameProduct ? apiProduct.stock : baseProduct.stock;
+
+    final int price =
+    isSameProduct ? apiProduct.price : baseProduct.price;
+
+    final bool isOutOfStock = stock <= 0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
@@ -27,18 +131,25 @@ class ProductDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                 BuildImageSection(id: product.id, photo: product.photo, tagPrefix: 'product'),
+                  /// GAMBAR: selalu dari constructor (anti blink)
+                  BuildImageSection(
+                    id: baseProduct.id,
+                    photo: baseProduct.photo,
+                    tagPrefix: 'product',
+                  ),
 
-                  Container(
+                  Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        /// PRICE & STOCK
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
                           children: [
                             CustomText(
-                              product.price.toCurrency,
+                              price.toCurrency,
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                               color: Colors.pink,
@@ -50,12 +161,18 @@ class ProductDetailScreen extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF55C173),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius:
+                                BorderRadius.circular(20),
                               ),
-                              child: CustomText(
-                                "Stok: ${product.stock.toString()}",
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                              child: AnimatedSwitcher(
+                                duration: const Duration(
+                                    milliseconds: 250),
+                                child: CustomText(
+                                  "Stok: $stock",
+                                  key: ValueKey(stock),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ],
@@ -63,18 +180,20 @@ class ProductDetailScreen extends StatelessWidget {
 
                         const SizedBox(height: 24),
 
-                        FeatureCard(
+                        const FeatureCard(
                           icon: Icons.local_shipping_outlined,
                           title: "Cash on Delivery",
-                          subtitle: "Pembayaran langsung saat barang diterima",
-                          color: const Color(0xFF55C173),
+                          subtitle:
+                          "Pembayaran langsung saat barang diterima",
+                          color: Color(0xFF55C173),
                         ),
 
                         const SizedBox(height: 12),
 
                         FeatureCard(
                           icon: Icons.recycling_outlined,
-                          title: product.wasteBankName ?? "Bank Sampah",
+                          title: baseProduct.wasteBankName ??
+                              "Bank Sampah",
                           color: const Color(0xFF55C173),
                         ),
 
@@ -92,45 +211,45 @@ class ProductDetailScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius:
+                            BorderRadius.circular(16),
                             border: Border.all(
                               color: Colors.grey.shade200,
-                              width: 1,
                             ),
                           ),
                           child: CustomText(
-                            product.description,
+                            baseProduct.description,
                             fontSize: 15,
-                            color: Colors.black87,
                             height: 1.6,
                           ),
                         ),
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 100),
                 ],
               ),
             ),
 
+            /// BACK BUTTON
             Positioned(
               top: MediaQuery.of(context).padding.top + 12,
               left: 16,
               child: Material(
                 color: Colors.black12.withValues(alpha: 0.5),
                 shape: const CircleBorder(),
-                elevation: 4,
                 child: IconButton(
                   icon: const Icon(
                     Icons.arrow_back_rounded,
                     color: Colors.white,
-                    size: 20,
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
             ),
 
+            /// CTA BUTTON
             Positioned(
               left: 0,
               right: 0,
@@ -140,7 +259,8 @@ class ProductDetailScreen extends StatelessWidget {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
+                      color:
+                      Colors.black.withValues(alpha: 0.08),
                       blurRadius: 20,
                       offset: const Offset(0, -4),
                     ),
@@ -150,44 +270,68 @@ class ProductDetailScreen extends StatelessWidget {
                   top: false,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                final userProvider = context.read<UserProvider>();
+                    child: SizedBox(
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: isOutOfStock
+                            ? null
+                            : () {
+                          final userProvider =
+                          context.read<UserProvider>();
 
-                                if (userProvider.isGuest || userProvider.user == null) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => const LoginRequiredDialog(),
+                          if (userProvider.isGuest ||
+                              userProvider.user == null) {
+                            showDialog(
+                              context: context,
+                              builder: (_) =>
+                              const LoginRequiredDialog(),
+                            );
+                            return;
+                          }
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CheckoutScreen(
+                                product: baseProduct,
+                                onPressed: ({
+                                  required String customerName,
+                                  required String phoneNumber,
+                                  required String orderAddress,
+                                  required int amount,
+                                }) {
+                                  return _showConfirmDialog(
+                                    context,
+                                    productId: baseProduct.id,
+                                    customerName: customerName,
+                                    phoneNumber: phoneNumber,
+                                    orderAddress: orderAddress,
+                                    amount: amount,
                                   );
-                                } else {
-                                  Navigator.push(
-                                    context, 
-                                    MaterialPageRoute(
-                                      builder: (context) => CheckoutScreen(product: product),
-                                  ));
-                                }
-                              },
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.shopping_bag_outlined, size: 20),
-                                  SizedBox(width: 8),
-                                  CustomText(
-                                    "Beli Sekarang",
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ],
+                                },
                               ),
                             ),
-                          ),
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              isOutOfStock
+                                  ? Icons.error_outline
+                                  : Icons.shopping_bag_outlined,
+                            ),
+                            const SizedBox(width: 8),
+                            CustomText(
+                              isOutOfStock
+                                  ? "Stok Habis"
+                                  : "Beli Sekarang",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

@@ -7,6 +7,7 @@ import 'package:ecozyne_mobile/data/providers/marketplace_provider.dart';
 import 'package:ecozyne_mobile/data/providers/point_income_history_provider.dart';
 import 'package:ecozyne_mobile/data/providers/point_out_history_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
+import 'package:ecozyne_mobile/data/providers/product_detail_provider.dart';
 import 'package:ecozyne_mobile/data/providers/question_provider.dart';
 import 'package:ecozyne_mobile/data/providers/region_provider.dart';
 import 'package:ecozyne_mobile/data/providers/reward_provider.dart';
@@ -45,6 +46,7 @@ void main() async{
         ChangeNotifierProvider(create: (_) => WasteBankProductProvider()),
         ChangeNotifierProvider(create: (_) => WasteBankListProvider()),
         ChangeNotifierProvider(create: (_) => MarketplaceProvider()),
+        ChangeNotifierProvider(create: (_) => ProductDetailProvider()),
         ChangeNotifierProvider(create: (_) => OrderHistoryProvider())
       ],
       child: EcoApp(),

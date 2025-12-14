@@ -12,8 +12,15 @@ import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final Product product;
+  final Future<void> Function({
+  required String customerName,
+  required String phoneNumber,
+  required String orderAddress,
+  required int amount,
+  }) onPressed;
 
-  const CheckoutScreen({super.key, required this.product});
+
+  const CheckoutScreen({super.key, required this.product, required this.onPressed});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -28,43 +35,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   int _quantity = 1;
 
-  void _submitCheckout() {
+  Future<void> _submitCheckout() async {
     if (widget.product.stock <= 0) {
-      showErrorTopSnackBar(
-        context,
-        "Stok produk habis",
-      );
+      showErrorTopSnackBar(context, "Stok produk habis");
       return;
     }
 
     if (_quantity > widget.product.stock) {
-      showErrorTopSnackBar(
-        context,
-        "Jumlah melebihi stok tersedia",
-      );
+      showErrorTopSnackBar(context, "Jumlah melebihi stok tersedia");
       return;
     }
 
     if (_formKey.currentState!.validate()) {
-      showDialog(
-        context: context,
-        builder: (context) => ConfirmationDialog(
-          "Apakah anda yakin memesan produk ini?",
-          onTap: () {
-            Navigator.pop(context);
-
-            showSuccessTopSnackBar(
-              context,
-              "Berhasil Membuat Order",
-              icon: const Icon(Icons.shopping_bag),
-            );
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            });
-          },
-        ),
+      await widget.onPressed(
+        customerName: _nameController.text,
+        phoneNumber: _phoneController.text,
+        orderAddress: _addressController.text,
+        amount: _quantity,
       );
     }
   }
@@ -104,10 +91,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF55C173),
           elevation: 0,
-          title: const CustomText(
-            "Checkout",
-            fontWeight: FontWeight.bold,
-          ),
+          title: const Text("Checkout",),
           centerTitle: true,
         ),
         body: Stack(
@@ -153,7 +137,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 SizedBox(height: 4),
                                 CustomText(
                                   "Lengkapi informasi untuk melanjutkan",
-                                  fontSize: 13,
+                                  fontSize: 12,
                                   color: Colors.black54,
                                 ),
                               ],
@@ -249,7 +233,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               children: [
                                 CustomText(
                                   "Metode Pembayaran",
-                                  fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.blue.shade900,
                                 ),
@@ -305,7 +288,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         CustomText(
                           isOutOfStock ? "Stok Habis" : "Buat Order",
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
                         ),
                       ],
                     ),
