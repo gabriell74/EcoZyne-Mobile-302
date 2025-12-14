@@ -32,11 +32,7 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        elevation: 0,
-        title: const CustomText(
-          "Bank Sampah",
-          fontWeight: FontWeight.w600,
-        ),
+        title: const CustomText("Bank Sampah", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: AppBackground(

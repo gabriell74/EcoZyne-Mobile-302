@@ -1,11 +1,14 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/models/waste_bank.dart';
+import 'package:ecozyne_mobile/data/providers/trash_submission_provider.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_detail_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 class WasteBankDetailScreen extends StatefulWidget {
   final WasteBank wasteBank;
@@ -29,47 +32,93 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
     );
   }
 
-  void _showConfirmDialog(BuildContext context) {
-    showDialog(
+  Future<void> _showConfirmDialog(BuildContext context, int wasteBankId) async{
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => ConfirmationDialog(
+      builder: (_) => ConfirmationDialog(
         "Anda yakin memilih Bank Sampah ini?",
-        onTap: () {
-          Navigator.pop(context);
-
-          showDialog(
-            context: context,
-            builder: (context) => Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.green,
-                      size: 60,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      "Berhasil memilih\nBank Sampah",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+        onTap: () => Navigator.pop(context, true),
       ),
     );
+
+    if (confirmed != true) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const LoadingWidget(height: 100),
+    );
+
+    final provider = context.read<TrashSubmissionsProvider>();
+
+    final success = await provider.submitTrashSubmissions(wasteBankId);
+
+    if (!mounted) return;
+    Navigator.pop(context);
+
+    if (success) {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.green,
+                  size: 60,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  "Berhasil memilih\nBank Sampah",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.red,
+                  size: 60,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  provider.message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -78,7 +127,7 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Bank Sampah", fontWeight: FontWeight.bold),
+        title: const CustomText("Bank Sampah", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: Column(
@@ -123,7 +172,7 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                   SizedBox(height: 12),
 
                   CustomText(
-                    "Bank Sampah Oke menerima berbagai jenis sampah organik seperti dun kering, sisa buah dan sisa sayur. Setiap sampah yang disetorkan akan ditimbang dan dicatat sebagai poin yang dapat ditukar barang kebutuhan sehari-hari.",
+                    widget.wasteBank.notes,
                     textAlign: TextAlign.start,
                   ),
                 ],
@@ -137,14 +186,10 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: () => _showConfirmDialog(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFB9F5C6),
-                ),
+                onPressed: () => _showConfirmDialog(context, widget.wasteBank.id),
                 child: const CustomText(
                   "Setor Sampah",
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),

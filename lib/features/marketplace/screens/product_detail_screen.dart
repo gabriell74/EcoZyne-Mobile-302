@@ -31,7 +31,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void initState() {
     super.initState();
 
-    /// silent fetch detail (harga & stok saja)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context
           .read<ProductDetailProvider>()
@@ -41,7 +40,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   void dispose() {
-    /// bersihkan state biar ga nyasar ke produk lain
     context.read<ProductDetailProvider>().clear();
     super.dispose();
   }
@@ -81,7 +79,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
 
     if (!mounted) return;
-    Navigator.pop(context); // close loading
+    Navigator.pop(context);
 
     if (success) {
       showSuccessTopSnackBar(
@@ -90,7 +88,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         icon: const Icon(Icons.shopping_bag),
       );
 
-      /// refresh stok & harga setelah order
       detailProvider.fetchProductDetail(productId);
 
       Navigator.pop(context);
@@ -101,18 +98,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    /// 🔑 ambil product dari constructor (SELALU AMAN)
     final Product baseProduct = widget.product;
 
-    /// ambil data API (bisa null / bisa produk lain)
     final Product? apiProduct =
         context.watch<ProductDetailProvider>().product;
 
-    /// 🔥 VALIDASI ID (INI KUNCI UTAMA)
     final bool isSameProduct =
         apiProduct != null && apiProduct.id == baseProduct.id;
 
-    /// source of truth
     final int stock =
     isSameProduct ? apiProduct.stock : baseProduct.stock;
 
@@ -131,7 +124,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// GAMBAR: selalu dari constructor (anti blink)
                   BuildImageSection(
                     id: baseProduct.id,
                     photo: baseProduct.photo,
@@ -143,7 +135,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        /// PRICE & STOCK
                         Row(
                           mainAxisAlignment:
                           MainAxisAlignment.spaceBetween,
@@ -232,7 +223,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
 
-            /// BACK BUTTON
             Positioned(
               top: MediaQuery.of(context).padding.top + 12,
               left: 16,
@@ -249,7 +239,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
 
-            /// CTA BUTTON
             Positioned(
               left: 0,
               right: 0,

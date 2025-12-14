@@ -57,7 +57,6 @@ class WasteBankDetailCard extends StatelessWidget {
                 ),
               ),
 
-              // Informasi
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -91,7 +90,6 @@ class WasteBankDetailCard extends StatelessWidget {
                               color: Colors.grey,
                               fontSize: 14,
                             ),
-                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
