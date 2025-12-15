@@ -9,8 +9,10 @@ class WasteBankSubmissionProvider with ChangeNotifier {
   bool _isLoading = false;
   String _message = "";
   bool _connected = true;
+  bool _hasPending = false;
 
   List<WasteBank> get submissions => _submissions;
+  bool get hasPending => _hasPending;
   bool get isLoading => _isLoading;
   String get message => _message;
   bool get connected => _connected;
@@ -29,8 +31,8 @@ class WasteBankSubmissionProvider with ChangeNotifier {
 
       _submissions.insert(0, newSubmission);
       _message = result["message"];
+      _hasPending = true;
       success = true;
-
     } else {
       _message = result["message"];
     }
@@ -66,6 +68,29 @@ class WasteBankSubmissionProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<bool> checkPendingSubmission() async {
+    notifyListeners();
+
+    final result = await _submissionService.checkSubmissionStatus();
+
+    _connected = result["connected"] ?? false;
+
+    if (result["success"] == true) {
+      _hasPending = result["has_pending"] == true;
+    } else {
+      _hasPending = false;
+      _message = result["message"] ?? "Gagal mengecek status pengajuan";
+    }
+
+    notifyListeners();
+
+    return _hasPending;
+  }
+
+  void clearHasPending() {
+    _hasPending = false;
   }
 }
 

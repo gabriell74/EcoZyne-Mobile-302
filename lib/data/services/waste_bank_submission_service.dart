@@ -108,5 +108,47 @@ class WasteBankSubmissionService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> checkSubmissionStatus() async {
+    try {
+      final response = await _dio.get(
+        "/waste-bank-submissions/check-status",
+      );
+
+      if (response.statusCode == 200) {
+        return {
+          "success": true,
+          "connected": true,
+          "has_pending": response.data["has_pending"] ?? false,
+        };
+      }
+
+      return {
+        "success": false,
+        "connected": true,
+        "has_pending": false,
+        "message": "Gagal mengecek status pengajuan",
+      };
+
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "connected": true,
+          "has_pending": false,
+          "message": e.response?.data["message"] ??
+              "Gagal mengecek status pengajuan",
+        };
+      }
+
+      return {
+        "success": false,
+        "connected": false,
+        "has_pending": false,
+        "message": "Tidak ada koneksi",
+      };
+    }
+  }
+
 }
 

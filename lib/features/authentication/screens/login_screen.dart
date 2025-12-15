@@ -8,6 +8,7 @@ import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
 import 'package:ecozyne_mobile/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -63,6 +64,16 @@ class _LoginScreenState extends State<LoginScreen> {
           icon: const Icon(Icons.waving_hand),
         );
       });
+
+      final user = userProvider.user;
+      final role = user?.role;
+
+      if (role == 'community') {
+        final submissionProvider =
+        context.read<WasteBankSubmissionProvider>();
+
+        await submissionProvider.checkPendingSubmission();
+      }
 
       return true;
     } else {

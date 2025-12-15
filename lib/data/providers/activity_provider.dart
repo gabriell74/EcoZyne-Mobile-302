@@ -17,7 +17,7 @@ class ActivityProvider with ChangeNotifier {
   String _completedMessage = '';
   bool _connected = true;
 
-  Map<int, bool> _registrationStatus = {};
+  final Map<int, bool> _registrationStatus = {};
   bool _isCheckingStatus = false;
 
   Map<int, bool> get registrationStatus => _registrationStatus;

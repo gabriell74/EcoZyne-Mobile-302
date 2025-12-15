@@ -1,7 +1,7 @@
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
-import 'package:ecozyne_mobile/data/models/user.dart';
 import 'package:ecozyne_mobile/data/providers/navigation_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
 import 'package:ecozyne_mobile/features/profile/screens/edit_account_screen.dart';
 import 'package:ecozyne_mobile/features/profile/widgets/profile_menu_item.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_register_screen.dart';
@@ -14,13 +14,14 @@ class ProfileMenuList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String userRole = context.read<UserProvider>().user!.role;
+    String userRole = context.watch<UserProvider>().user!.role;
+    bool hasWasteBankSubmissions = context.watch<WasteBankSubmissionProvider>().hasPending;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
 
-        if (userRole == "community")
+        if (userRole == "community" && !hasWasteBankSubmissions)
           ProfileMenuItem(
             icon: Icons.recycling_outlined,
             label: "Daftar Menjadi Bank Sampah",
@@ -88,6 +89,7 @@ class ProfileMenuList extends StatelessWidget {
   void _showConfirmDialog(BuildContext context) {
     final userProvider = context.read<UserProvider>();
     final navProvider = context.read<NavigationProvider>();
+    final submissionsProvider = context.read<WasteBankSubmissionProvider>();
 
     showDialog(
       context: context,
@@ -97,6 +99,7 @@ class ProfileMenuList extends StatelessWidget {
           Navigator.of(context).pop();
           await userProvider.logout();
           navProvider.setIndex(0);
+          submissionsProvider.clearHasPending();
           Navigator.pushNamedAndRemoveUntil(
             context,
             '/get_started',

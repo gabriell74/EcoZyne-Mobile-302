@@ -1,5 +1,6 @@
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
 import 'package:ecozyne_mobile/features/no_connection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    // Tidak ada koneksi
+    // ================= NO CONNECTION =================
     if (userProvider.message == "NO_CONNECTION") {
       Navigator.pushReplacement(
         context,
@@ -54,20 +55,30 @@ class _SplashScreenState extends State<SplashScreen>
       return;
     }
 
-    // Token tidak ada -> Guest Mode
+    // ================= GUEST =================
     if (userProvider.user == null && userProvider.isGuest) {
       Navigator.pushReplacementNamed(context, '/get_started');
       return;
     }
 
-    // Token invalid -> Login
+    // ================= TOKEN INVALID =================
     if (userProvider.isGuest &&
         userProvider.message.contains("Token tidak valid")) {
       Navigator.pushReplacementNamed(context, '/login');
       return;
     }
 
-    // User valid -> Masuk Get Started
+    // ================= USER VALID =================
+    final user = userProvider.user;
+    final role = user?.role;
+
+    if (role == 'community') {
+      final submissionProvider =
+      context.read<WasteBankSubmissionProvider>();
+
+      await submissionProvider.checkPendingSubmission();
+    }
+
     Navigator.pushReplacementNamed(context, '/get_started');
   }
 

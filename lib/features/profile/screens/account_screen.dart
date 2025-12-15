@@ -21,6 +21,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final userProvider = context.watch<UserProvider>();
     final String userName = userProvider.user?.username ?? "Guest";
     final bool isGuest = !UserHelper.isLoggedIn(context);
+    final String userRole = userProvider.user?.role ?? "Tamu";
 
     return RefreshIndicator.adaptive(
       onRefresh: () async {
@@ -72,7 +73,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   const SizedBox(height: 8),
                   CustomText(
-                    isGuest ? 'Tamu' : 'Komunitas',
+                    isGuest ? 'Tamu' : roleText(userRole),
                     fontSize: 14,
                     color: Colors.grey[700],
                   ),
@@ -199,5 +200,16 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       ),
     );
+  }
+}
+
+String roleText(String role) {
+  switch (role) {
+    case 'community':
+      return "Komunitas";
+    case 'waste_bank':
+      return "Bank Sampah";
+    default:
+      return "Tamu";
   }
 }

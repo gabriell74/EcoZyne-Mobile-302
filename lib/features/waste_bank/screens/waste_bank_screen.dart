@@ -1,8 +1,12 @@
+import 'package:ecozyne_mobile/core/utils/user_helper.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/data/providers/waste_bank_list_provider.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_register_screen.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_search.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +32,9 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isWasteBank = context.watch<UserProvider>().user?.role == 'waste_bank';
+    bool hasWasteBankSubmissions = context.watch<WasteBankSubmissionProvider>().hasPending;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
@@ -48,7 +55,6 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                     CustomText(
                       "Memuat...",
                       color: Colors.grey.shade600,
-                      fontSize: 14,
                     ),
                   ],
                 ),
@@ -97,7 +103,7 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: const Icon(
-                                      Icons.store_rounded,
+                                      Icons.recycling_outlined,
                                       color: Color(0xFF55C173),
                                       size: 24,
                                     ),
@@ -131,62 +137,76 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                     ),
                   ),
 
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-                      child: Material(
-                        elevation: 2,
-                        shadowColor: const Color(0xFF55C173).withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(12),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const WasteBankRegisterScreen(),
-                              ),
-                            );
-                          },
+                  if (!isWasteBank && !hasWasteBankSubmissions)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                        child: Material(
+                          elevation: 2,
+                          shadowColor: const Color(0xFF55C173).withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFB9F5C6), Color(0xFF9AE8B0)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                          child: InkWell(
+                            onTap: () {
+                              final isLoggedIn = UserHelper.isLoggedIn(context);
+                              if (!isLoggedIn) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => LoginRequiredDialog(),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (
+                                        context) => const WasteBankRegisterScreen(),
+                                  ),
+                                );
+                              }
+                            },
+
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFB9F5C6),
+                                    Color(0xFF9AE8B0),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.add_business_rounded,
+                                      color: Color(0xFF55C173),
+                                      size: 20,
+                                    ),
                                   ),
-                                  child: const Icon(
-                                    Icons.add_business_rounded,
-                                    color: Color(0xFF55C173),
-                                    size: 20,
+                                  const SizedBox(width: 12),
+                                  const CustomText(
+                                    "Daftar sebagai Bank Sampah",
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                const CustomText(
-                                  "Daftar sebagai Bank Sampah",
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15,
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
                   if (provider.wasteBanks.isEmpty)
                     SliverFillRemaining(
@@ -201,7 +221,7 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                   else ...[
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
                         child: CustomText(
                           "Daftar Bank Sampah",
                           fontWeight: FontWeight.bold,
@@ -211,14 +231,14 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                       ),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                               (context, index) {
                             final wasteBank = provider.wasteBanks[index];
 
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.only(bottom: 5),
                               child: SlideFadeIn(
                                 delayMilliseconds: index * 100,
                                 child: WasteBankCard(
@@ -231,6 +251,7 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                         ),
                       ),
                     ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 11,))
                   ],
                 ],
               ),

@@ -1,6 +1,8 @@
+import 'package:ecozyne_mobile/core/utils/user_helper.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/data/models/waste_bank.dart';
 import 'package:ecozyne_mobile/data/providers/trash_submission_provider.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
@@ -186,7 +188,17 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: () => _showConfirmDialog(context, widget.wasteBank.id),
+                onPressed: () async {
+                  final isLoggedIn = UserHelper.isLoggedIn(context);
+                  if (!isLoggedIn) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => LoginRequiredDialog(),
+                    );
+                  } else {
+                    await _showConfirmDialog(context, widget.wasteBank.id);
+                  }
+                },
                 child: const CustomText(
                   "Setor Sampah",
                   fontWeight: FontWeight.bold,
