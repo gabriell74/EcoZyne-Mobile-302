@@ -29,7 +29,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold),
+        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
 

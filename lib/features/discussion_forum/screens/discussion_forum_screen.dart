@@ -67,9 +67,9 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Forum Diskusi", color: Colors.black),
-        centerTitle: true,
+      backgroundColor: const Color(0xFF55C173),
+      title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold, fontSize: 18),
+      centerTitle: true,
         actions: [
           IconButton(
             padding: const EdgeInsets.only(right: 18),

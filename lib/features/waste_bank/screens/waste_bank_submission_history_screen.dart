@@ -54,12 +54,8 @@ class _WasteBankSubmissionHistoryScreenState
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.3,
-        title: const CustomText(
-          'Riwayat Pengajuan',
-          color: Colors.black, fontWeight: FontWeight.bold,
-        ),
+        backgroundColor: const Color(0xFFFFFFFF),
+        title: const CustomText("Riwayat Pengajuan", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: AppBackground(

@@ -76,10 +76,8 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text(
-          'Detail Kegiatan',
-        ),
         backgroundColor: const Color(0xFF55C173),
+        title: const CustomText("Detail Kegiatan", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: Column(

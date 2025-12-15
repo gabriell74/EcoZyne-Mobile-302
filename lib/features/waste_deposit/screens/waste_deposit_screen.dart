@@ -95,7 +95,7 @@ class _WasteDepositScreenState extends State<WasteDepositScreen>
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText('Setoran Sampah'),
+        title: const CustomText("Setoran Sampah", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,

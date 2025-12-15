@@ -50,9 +50,7 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText(
-          "Kalkulator Eco Enzyme",
-        ),
+        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: AppBackground(
@@ -97,19 +95,8 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: _hitungEcoEnzyme,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF55C173),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
                   child: const CustomText(
                     "Hitung Takaran",
-                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

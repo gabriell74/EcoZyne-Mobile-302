@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/providers/comic_provider.dart';
@@ -50,11 +51,9 @@ class _ComicScreenState extends State<ComicScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Komik'),
-        centerTitle: true,
         backgroundColor: const Color(0xFF55C173),
-        foregroundColor: Colors.black,
-        elevation: 0,
+        title: const CustomText("Komik", fontWeight: FontWeight.bold, fontSize: 18),
+        centerTitle: true,
       ),
       body: AppBackground(
         child: Consumer<ComicProvider>(

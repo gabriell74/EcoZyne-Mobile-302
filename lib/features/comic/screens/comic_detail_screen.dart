@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/data/providers/comic_provider.dart';
@@ -51,11 +52,9 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(widget.title, style: const TextStyle(color: Colors.black)),
-        centerTitle: true,
         backgroundColor: const Color(0xFF55C173),
-        foregroundColor: Colors.black,
-        elevation: 0,
+        title: CustomText(widget.title, fontWeight: FontWeight.bold, fontSize: 18),
+        centerTitle: true,
       ),
       body: Consumer<ComicProvider>(
         builder: (context, provider, _) {

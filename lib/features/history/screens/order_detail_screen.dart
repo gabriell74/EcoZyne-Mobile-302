@@ -71,10 +71,9 @@ class OrderDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Detail Pesanan"),
+        backgroundColor: const Color(0xFF55C173),
+        title: const CustomText("Detail Pesanan", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
-        backgroundColor: Color(0xFF55C173),
-        foregroundColor: Colors.black,
       ),
       body: AppBackground(
         child: Column(

@@ -80,7 +80,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Forum Diskusi"),
+        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: AppBackground(

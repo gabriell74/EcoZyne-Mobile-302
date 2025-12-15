@@ -148,8 +148,8 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const CustomText("Daftar Bank Sampah"),
+        backgroundColor: const Color(0xFFFFFFFF),
+        title: const CustomText("Daftar Bank Sampah", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: AppBackground(

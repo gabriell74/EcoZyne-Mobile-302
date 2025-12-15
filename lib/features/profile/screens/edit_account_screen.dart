@@ -144,16 +144,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.3,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const CustomText(
-          'Edit Akun',
-          color: Colors.black, fontWeight: FontWeight.bold,
-        ),
+        backgroundColor: const Color(0xFFFFFFFF),
+        title: const CustomText("Edit Akun", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
@@ -282,16 +274,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                             postalCode: _postalCodeController.text,
                           );
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF55C173),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
                         child: const CustomText(
                           'Simpan',
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
                       ),
                     ),

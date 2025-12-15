@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/history/screens/order_history_screen.dart';
 import 'package:ecozyne_mobile/features/history/screens/point_in_screen.dart';
 import 'package:ecozyne_mobile/features/history/screens/point_out_screen.dart';
@@ -29,9 +30,9 @@ class _HistoryScreenState extends State<HistoryScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Riwayat'),
-        centerTitle: true,
         backgroundColor: const Color(0xFF55C173),
+        title: const CustomText("Riwayat", fontWeight: FontWeight.bold, fontSize: 18),
+        centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.black,

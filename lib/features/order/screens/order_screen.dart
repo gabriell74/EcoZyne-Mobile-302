@@ -1,4 +1,5 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'order_current_tab.dart';
 import 'order_accepted_tab.dart';
@@ -26,14 +27,9 @@ class OrderScreenState extends State<OrderScreen>
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Pesanan', style: TextStyle(color: Colors.black)),
+        backgroundColor: const Color(0xFF55C173),
+        title: const CustomText("Pesanan", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
-        backgroundColor: Color(0xFF55C173),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.black,

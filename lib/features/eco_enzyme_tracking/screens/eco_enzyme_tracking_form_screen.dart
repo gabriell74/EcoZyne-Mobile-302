@@ -95,7 +95,7 @@ class _EcoEnzymeTrackingFormScreenState extends State<EcoEnzymeTrackingFormScree
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Pembuatan Eco Enzyme", fontWeight: FontWeight.bold),
+        title: const CustomText("Pembuatan Eco Enzyme", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: AppBackground(

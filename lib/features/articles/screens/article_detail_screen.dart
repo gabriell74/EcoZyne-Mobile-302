@@ -18,7 +18,8 @@ class ArticleDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: CustomText("Artikel", fontWeight: FontWeight.bold,),
+        backgroundColor: const Color(0xFFFFFFFF),
+        title: const CustomText("Artikel", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: SafeArea(

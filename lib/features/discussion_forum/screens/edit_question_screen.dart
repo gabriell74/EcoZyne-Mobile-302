@@ -38,7 +38,7 @@ class _EditQuestionScreenState extends State<EditQuestionScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Edit Pertanyaan", fontWeight: FontWeight.bold),
+        title: const CustomText("Edit Pertanyaan", fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: AppBackground(

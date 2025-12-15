@@ -64,9 +64,9 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText('Kelola Produk'),
+        title: const CustomText("Kelola Produk", fontWeight: FontWeight.bold, fontSize: 18),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_bag_outlined),
