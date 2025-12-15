@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:ecozyne_mobile/features/dashboard/screens/video_player_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,7 @@ class CarouselVideo extends StatefulWidget {
 
 class _CarouselVideoState extends State<CarouselVideo> {
   late PageController _controller;
+  late Timer _timer;
   int _currentPage = 0;
 
   final List<Map<String, String>> _items = [
@@ -19,7 +21,7 @@ class _CarouselVideoState extends State<CarouselVideo> {
       "title": "Apa itu Eco Enzym?",
       "appBarTitle": "Eco Enzym",
       "description":
-          "Kalian pernah dengar eco enzyme? Atau masih penasaran sebenarnya apa sih eco enzyme itu? Di video ini kamu bakal diajak kenalan mulai dari apa itu eco enzyme, bagaimana proses fermentasinya terbentuk, sampai alasan kenapa cairan alami ini makin banyak digunakan. Yuk kenalan lebih dekat dengan eco enzyme!",
+      "Kalian pernah dengar eco enzyme? Atau masih penasaran sebenarnya apa sih eco enzyme itu? Di video ini kamu bakal diajak kenalan mulai dari apa itu eco enzyme, bagaimana proses fermentasinya terbentuk, sampai alasan kenapa cairan alami ini makin banyak digunakan. Yuk kenalan lebih dekat dengan eco enzyme!",
     },
     {
       "image": "assets/images/cover3.png",
@@ -27,35 +29,56 @@ class _CarouselVideoState extends State<CarouselVideo> {
       "title": "Manfaat Eco Enzym",
       "appBarTitle": "Eco Enzym",
       "description":
-          "Eco enzyme itu ternyata bukan cuma cairan biasa, lho! Di video ini kamu akan melihat berbagai manfaat dan penggunaan eco enzyme di kehidupan sehari-hari, mulai dari bersih-bersih rumah, merawat tanaman, sampai membantu mengurangi limbah. Praktis, bermanfaat, dan mudah dipakai di rumah. Ayo cari tahu selengkapnya di video ini!",
+      "Eco enzyme itu ternyata bukan cuma cairan biasa, lho! Di video ini kamu akan melihat berbagai manfaat dan penggunaan eco enzyme di kehidupan sehari-hari, mulai dari bersih-bersih rumah, merawat tanaman, sampai membantu mengurangi limbah. Praktis, bermanfaat, dan mudah dipakai di rumah. Ayo cari tahu selengkapnya di video ini!",
     },
   ];
 
   @override
   void initState() {
     super.initState();
-    _controller = PageController(initialPage: 0, viewportFraction: 1);
+    _controller = PageController(initialPage: 0);
+
+    _startAutoSlide();
+  }
+
+  void _startAutoSlide() {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!_controller.hasClients) return;
+
+      int nextPage = _currentPage + 1;
+      if (nextPage >= _items.length) {
+        nextPage = 0;
+      }
+
+      _controller.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   @override
   void dispose() {
+    _timer.cancel();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final _screenSize = MediaQuery.sizeOf(context);
+    final screenSize = MediaQuery.sizeOf(context);
+
     return Column(
       children: [
         SizedBox(
-          height: _screenSize.height * 0.25,
+          height: screenSize.height * 0.25,
           child: PageView.builder(
             controller: _controller,
+            itemCount: _items.length,
             onPageChanged: (index) {
               setState(() => _currentPage = index);
             },
-            itemCount: _items.length,
             itemBuilder: (context, index) {
               final item = _items[index];
               return GestureDetector(
@@ -91,7 +114,7 @@ class _CarouselVideoState extends State<CarouselVideo> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
             _items.length,
-            (index) => AnimatedContainer(
+                (index) => AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               margin: const EdgeInsets.symmetric(horizontal: 4),
               width: _currentPage == index ? 10 : 6,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -96,7 +97,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: Text(widget.appBarTitle),
+        title: CustomText(widget.title, fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
       body: _isInitialized
