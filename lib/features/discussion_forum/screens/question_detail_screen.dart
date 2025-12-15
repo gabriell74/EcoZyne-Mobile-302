@@ -213,90 +213,92 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          top: 6,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _replyController,
-                decoration: InputDecoration(
-                  hintText: "Tulis balasan...",
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade400,
-                      width: 1.2,
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            top: 6,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _replyController,
+                  decoration: InputDecoration(
+                    hintText: "Tulis balasan...",
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
                     ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade700,
-                      width: 1.2,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade400,
+                        width: 1.2,
+                      ),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade700,
+                        width: 1.2,
+                      ),
+                    ),
+                    filled: false,
                   ),
-                  filled: false,
                 ),
               ),
-            ),
-            const SizedBox(width: 10),
-            IconButton(
-              icon: const Icon(Icons.send, color: Color(0xFF55C173)),
-              onPressed: () async {
-                final userProvider = context.read<UserProvider>();
-
-                if (userProvider.isGuest || userProvider.user == null) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => const LoginRequiredDialog(),
-                  );
-                } else {
-                  final text = _replyController.text.trim();
-                  if (text.isEmpty) return;
-
-                  bool success = await context
-                      .read<AnswerProvider>()
-                      .createAnswer(widget.question.id, text);
-
-                  if (success) {
-                    if (!mounted) return;
-                    _replyController.clear();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: CustomText(
-                          "Mengirim jawaban...",
-                          color: Colors.black,
-                        ),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.white,
-                      ),
+              const SizedBox(width: 10),
+              IconButton(
+                icon: const Icon(Icons.send, color: Color(0xFF55C173)),
+                onPressed: () async {
+                  final userProvider = context.read<UserProvider>();
+        
+                  if (userProvider.isGuest || userProvider.user == null) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const LoginRequiredDialog(),
                     );
                   } else {
-                    if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: CustomText(
-                          context.read<AnswerProvider>().message,
-                          color: Colors.white,
+                    final text = _replyController.text.trim();
+                    if (text.isEmpty) return;
+        
+                    bool success = await context
+                        .read<AnswerProvider>()
+                        .createAnswer(widget.question.id, text);
+        
+                    if (success) {
+                      if (!mounted) return;
+                      _replyController.clear();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: CustomText(
+                            "Mengirim jawaban...",
+                            color: Colors.black,
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.white,
                         ),
-                        backgroundColor: Colors.redAccent,
-                      ),
-                    );
+                      );
+                    } else {
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: CustomText(
+                            context.read<AnswerProvider>().message,
+                            color: Colors.white,
+                          ),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                    }
                   }
-                }
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

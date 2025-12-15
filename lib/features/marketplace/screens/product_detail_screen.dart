@@ -38,11 +38,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    context.read<ProductDetailProvider>().clear();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   context.read<ProductDetailProvider>().clear();
+  //   super.dispose();
+  // }
 
   Future<void> _showConfirmDialog(
       BuildContext context, {

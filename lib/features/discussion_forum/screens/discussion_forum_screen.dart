@@ -200,6 +200,7 @@ class _DiscussionForumScreenState extends State<DiscussionForumScreen> {
                   );
                 },
               ),
+              const SliverToBoxAdapter(child: SizedBox(height: 30,),)
             ],
           ),
         ),

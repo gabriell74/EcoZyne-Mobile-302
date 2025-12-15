@@ -182,26 +182,28 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
             ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final isLoggedIn = UserHelper.isLoggedIn(context);
-                  if (!isLoggedIn) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => LoginRequiredDialog(),
-                    );
-                  } else {
-                    await _showConfirmDialog(context, widget.wasteBank.id);
-                  }
-                },
-                child: const CustomText(
-                  "Setor Sampah",
-                  fontWeight: FontWeight.bold,
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final isLoggedIn = UserHelper.isLoggedIn(context);
+                    if (!isLoggedIn) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => LoginRequiredDialog(),
+                      );
+                    } else {
+                      await _showConfirmDialog(context, widget.wasteBank.id);
+                    }
+                  },
+                  child: const CustomText(
+                    "Setor Sampah",
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

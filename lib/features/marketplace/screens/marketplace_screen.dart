@@ -99,7 +99,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(8),
                     child: CustomText(
-                      "Marketplace",
+                      "Katalog Produk",
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),

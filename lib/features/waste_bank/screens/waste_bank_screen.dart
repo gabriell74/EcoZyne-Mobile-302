@@ -251,7 +251,7 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                         ),
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 11,))
+                    const SliverToBoxAdapter(child: SizedBox(height: 30,))
                   ],
                 ],
               ),

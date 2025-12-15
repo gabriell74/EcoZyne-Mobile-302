@@ -56,68 +56,70 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
         title: CustomText(widget.title, fontWeight: FontWeight.bold, fontSize: 18),
         centerTitle: true,
       ),
-      body: Consumer<ComicProvider>(
-        builder: (context, provider, _) {
-          if (provider.isLoadingDetail) {
-            return const Center(child: LoadingWidget());
-          }
-
-          if (!provider.connectedDetail) {
-            return Center(
-              child: EmptyState(
-                connected: false,
-                message: provider.messageDetail,
-              ),
-            );
-          }
-
-          if (provider.comicDetail == null) {
-            return const Center(child: LoadingWidget());
-          }
-
-          if (provider.comicDetail!.photos.isEmpty) {
-            return Center(
-              child: EmptyState(
-                connected: provider.connectedDetail,
-                message: "Tidak ada halaman komik",
-              ),
-            );
-          }
-
-          final photos = provider.comicDetail!.photos;
-
-          return ListView.builder(
-            controller: _scrollController,
-            padding: EdgeInsets.zero,
-            physics: const ClampingScrollPhysics(),
-            itemCount: photos.length,
-            itemBuilder: (context, index) {
-              final imgUrl = photos[index];
-
-              return CachedNetworkImage(
-                imageUrl: imgUrl,
-                memCacheWidth: optimalWidth,
-                width: double.infinity,
-                fit: BoxFit.fitWidth,
-
-                fadeInDuration: const Duration(milliseconds: 80),
-                fadeOutDuration: const Duration(milliseconds: 80),
-
-                placeholder: (context, url) => Container(
-                  height: 260,
-                  color: Colors.grey[300],
-                ),
-
-                errorWidget: (context, url, error) => Container(
-                  height: 260,
-                  color: Colors.grey[300],
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.broken_image, size: 48),
+      body: SafeArea(
+        child: Consumer<ComicProvider>(
+          builder: (context, provider, _) {
+            if (provider.isLoadingDetail) {
+              return const Center(child: LoadingWidget());
+            }
+        
+            if (!provider.connectedDetail) {
+              return Center(
+                child: EmptyState(
+                  connected: false,
+                  message: provider.messageDetail,
                 ),
               );
-            },
-          );
-        },
+            }
+        
+            if (provider.comicDetail == null) {
+              return const Center(child: LoadingWidget());
+            }
+        
+            if (provider.comicDetail!.photos.isEmpty) {
+              return Center(
+                child: EmptyState(
+                  connected: provider.connectedDetail,
+                  message: "Tidak ada halaman komik",
+                ),
+              );
+            }
+        
+            final photos = provider.comicDetail!.photos;
+        
+            return ListView.builder(
+              controller: _scrollController,
+              padding: EdgeInsets.zero,
+              physics: const ClampingScrollPhysics(),
+              itemCount: photos.length,
+              itemBuilder: (context, index) {
+                final imgUrl = photos[index];
+        
+                return CachedNetworkImage(
+                  imageUrl: imgUrl,
+                  memCacheWidth: optimalWidth,
+                  width: double.infinity,
+                  fit: BoxFit.fitWidth,
+        
+                  fadeInDuration: const Duration(milliseconds: 80),
+                  fadeOutDuration: const Duration(milliseconds: 80),
+        
+                  placeholder: (context, url) => Container(
+                    height: 260,
+                    color: Colors.grey[300],
+                  ),
+        
+                  errorWidget: (context, url, error) => Container(
+                    height: 260,
+                    color: Colors.grey[300],
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image, size: 48),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

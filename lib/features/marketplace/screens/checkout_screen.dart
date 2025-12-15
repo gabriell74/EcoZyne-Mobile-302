@@ -261,35 +261,41 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               right: 0,
               bottom: 0,
               child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
+                      color:
+                      Colors.black.withValues(alpha: 0.08),
                       blurRadius: 20,
-                      color: Colors.black12,
                       offset: Offset(0, -4),
                     ),
                   ],
                 ),
-                child: SizedBox(
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: isOutOfStock ? null : _submitCheckout,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          isOutOfStock
-                              ? Icons.error_outline
-                              : Icons.check_circle_outline,
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: isOutOfStock ? null : _submitCheckout,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              isOutOfStock
+                                  ? Icons.error_outline
+                                  : Icons.check_circle_outline,
+                            ),
+                            const SizedBox(width: 10),
+                            CustomText(
+                              isOutOfStock ? "Stok Habis" : "Buat Order",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 10),
-                        CustomText(
-                          isOutOfStock ? "Stok Habis" : "Buat Order",
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

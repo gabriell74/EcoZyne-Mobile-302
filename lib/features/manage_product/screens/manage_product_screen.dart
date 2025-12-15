@@ -213,7 +213,7 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
 
               // Bottom Spacing
               const SliverToBoxAdapter(
-                child: SizedBox(height: 20),
+                child: SizedBox(height: 30),
               ),
             ],
           ),

@@ -189,6 +189,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                 );
               },
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 15))
           ],
         ),
       ),

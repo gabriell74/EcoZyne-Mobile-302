@@ -183,6 +183,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   return _buildActivityRegistrationSection(provider);
                 },
               ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 30,))
             ],
           ),
         ),
