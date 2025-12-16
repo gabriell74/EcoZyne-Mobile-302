@@ -75,6 +75,8 @@ class OrderHistoryProvider with ChangeNotifier {
       return true;
     }
 
+    _message = result["message"];
+
     _isLoading = false;
     notifyListeners();
     return false;

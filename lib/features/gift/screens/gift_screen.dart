@@ -126,7 +126,7 @@ class _GiftScreenState extends State<GiftScreen> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: CustomText(
-                      "Temukan hadiah menarik",
+                      "Tukarkan hadiah menarik",
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
