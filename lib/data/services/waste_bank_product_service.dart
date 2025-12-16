@@ -105,7 +105,7 @@ class WasteBankProductService {
   Future<Map<String, dynamic>> updateProduct(int id, Map<String, dynamic> product) async {
     try {
       final mapData = {
-        "_method": "PUT",    // <-- wajib
+        "_method": "PUT",
         "product_name": product["product_name"],
         "description": product["description"],
         "price": product["price"],

@@ -7,8 +7,8 @@ class Order {
   final String orderCustomer;
   final String orderPhoneNumber;
   final String orderAddress;
-  final String statusOrder;
-  final String statusPayment;
+  String statusOrder;
+  String statusPayment;
   final String createdAt;
   final String updatedAt;
   final List<ProductTransaction> productTransactions;

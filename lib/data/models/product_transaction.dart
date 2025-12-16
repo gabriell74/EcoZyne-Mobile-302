@@ -1,12 +1,12 @@
 class ProductTransaction {
-  final int productId;
+  final int? productId;
   final String productName;
   final int productPrice;
   final int amount;
   final int totalPrice;
 
   ProductTransaction({
-    required this.productId,
+    this.productId,
     required this.productName,
     required this.productPrice,
     required this.amount,

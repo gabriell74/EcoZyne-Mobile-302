@@ -140,4 +140,44 @@ class MarketplaceService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> cancelOrder(int orderId, String cancellationReason) async {
+    try {
+      final response = await ApiClient.dio.put(
+        "/orders/community/$orderId/cancel",
+        data: {"cancellation_reason": cancellationReason},
+      );
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        return {
+          "success": true,
+          "message": response.data["message"],
+          "data": response.data["data"],
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal membatalkan pesanan",
+        "connected": true,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal membatalkan pesanan",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
+    }
+  }
 }

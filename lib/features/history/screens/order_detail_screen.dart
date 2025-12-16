@@ -1,14 +1,33 @@
 import 'package:ecozyne_mobile/core/utils/price_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/cancellation_bottom_sheet.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/data/models/order.dart';
+import 'package:ecozyne_mobile/data/providers/order_history_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class OrderDetailScreen extends StatelessWidget {
-  final dynamic order;
+class OrderDetailScreen extends StatefulWidget {
+  final Order order;
 
   const OrderDetailScreen({super.key, required this.order});
+
+  @override
+  State<OrderDetailScreen> createState() => _OrderDetailScreenState();
+}
+
+class _OrderDetailScreenState extends State<OrderDetailScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _cancelReasonCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _cancelReasonCtrl.dispose();
+    super.dispose();
+  }
 
   Color _paymentStatusColor(String status) {
     switch (status.toLowerCase()) {
@@ -49,24 +68,56 @@ class OrderDetailScreen extends StatelessWidget {
   }
 
   void _cancelOrder(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => ConfirmationDialog(
-        "Batalkan pesanan ini?",
-        onTap: () {
-          Navigator.pop(context);
-          showSuccessTopSnackBar(context, "Pesanan dibatalkan");
-          Navigator.pop(context);
-        },
-      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return CancellationBottomSheet(
+          formKey: _formKey,
+          cancelReasonCtrl: _cancelReasonCtrl,
+          onPressed: (context) => _cancelDialog(context));
+      },
     );
+  }
+
+  Future<void> _cancelDialog(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
+    final provider = context.read<OrderHistoryProvider>();
+
+    Navigator.pop(context);
+
+    showDialog(
+      context: this.context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: LoadingWidget()),
+    );
+
+    final success = await provider.cancelOrder(
+      widget.order.id,
+      _cancelReasonCtrl.text.trim(),
+    );
+
+    if (mounted) Navigator.pop(this.context);
+
+    if (success) {
+      showSuccessTopSnackBar(
+        this.context,
+        provider.message,
+        icon: const Icon(Icons.check_circle_rounded),
+      );
+
+      Navigator.pop(this.context);
+    } else {
+      showErrorTopSnackBar(this.context, provider.message);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final trx = order.productTransactions.first;
-    final showCancelButton = order.statusOrder == "pending" &&
-        order.statusPayment == "pending";
+    final trx = widget.order.productTransactions.first;
+    final showCancelButton = widget.order.statusOrder == "pending" &&
+        widget.order.statusPayment == "pending";
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -92,27 +143,27 @@ class OrderDetailScreen extends StatelessWidget {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              Icon(Icons.payment, color: _paymentStatusColor(order.statusPayment)),
+                              Icon(Icons.payment, color: _paymentStatusColor(widget.order.statusPayment)),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text("Pembayaran", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                    Text(_paymentStatusText(order.statusPayment),
-                                        style: TextStyle(color: _paymentStatusColor(order.statusPayment), fontWeight: FontWeight.bold)),
+                                    Text(_paymentStatusText(widget.order.statusPayment),
+                                        style: TextStyle(color: _paymentStatusColor(widget.order.statusPayment), fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                               ),
-                              Icon(Icons.shopping_bag, color: _orderStatusColor(order.statusOrder)),
+                              Icon(Icons.shopping_bag, color: _orderStatusColor(widget.order.statusOrder)),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text("Pesanan", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                    Text(_orderStatusText(order.statusOrder),
-                                        style: TextStyle(color: _orderStatusColor(order.statusOrder), fontWeight: FontWeight.bold)),
+                                    Text(_orderStatusText(widget.order.statusOrder),
+                                        style: TextStyle(color: _orderStatusColor(widget.order.statusOrder), fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                               ),
@@ -122,9 +173,9 @@ class OrderDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-        
+
                   const SizedBox(height: 16),
-        
+
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -158,11 +209,11 @@ class OrderDetailScreen extends StatelessWidget {
                             ),
                             child: Column(
                               children: [
-                                _buildInfoRowWithIcon(Icons.person_outline, "Nama", order.orderCustomer),
+                                _buildInfoRowWithIcon(Icons.person_outline, "Nama", widget.order.orderCustomer),
                                 const SizedBox(height: 12),
-                                _buildInfoRowWithIcon(Icons.phone, "Telepon", order.orderPhoneNumber),
+                                _buildInfoRowWithIcon(Icons.phone, "Telepon", widget.order.orderPhoneNumber),
                                 const SizedBox(height: 12),
-                                _buildInfoRowWithIcon(Icons.location_on, "Alamat", order.orderAddress),
+                                _buildInfoRowWithIcon(Icons.location_on, "Alamat", widget.order.orderAddress),
                               ],
                             ),
                           ),
@@ -170,9 +221,9 @@ class OrderDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-        
+
                   const SizedBox(height: 16),
-        
+
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -220,9 +271,9 @@ class OrderDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-        
+
                   const SizedBox(height: 16),
-        
+
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -251,12 +302,12 @@ class OrderDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-        
+
                   const SizedBox(height: 15),
                 ],
               ),
             ),
-        
+
             if (showCancelButton)
               Container(
                 padding: const EdgeInsets.all(16),
