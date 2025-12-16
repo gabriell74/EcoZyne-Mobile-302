@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Image.asset("assets/images/logo.png", width: 40),
             ),
             AnimatedGradientText(
-              "Eco Enzyne",
+              "Ecozyne",
               colors: [Colors.green, Colors.blue],
               style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
             ),
