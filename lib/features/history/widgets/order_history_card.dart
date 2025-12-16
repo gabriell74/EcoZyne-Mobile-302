@@ -3,10 +3,10 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/history/screens/order_detail_screen.dart';
 import 'package:flutter/material.dart';
 
-class OrderCard extends StatelessWidget {
+class OrderHisoryCard extends StatelessWidget {
   final dynamic order;
 
-  const OrderCard({super.key, required this.order});
+  const OrderHisoryCard({super.key, required this.order});
 
   Color _statusColor(String status) {
     switch (status) {
@@ -33,6 +33,8 @@ class OrderCard extends StatelessWidget {
         return "Selesai";
       case "cancelled":
         return "Dibatalkan";
+      case "rejected":
+        return "Ditolak";
       default:
         return "Unknown";
     }
@@ -46,6 +48,8 @@ class OrderCard extends StatelessWidget {
         return Icons.local_shipping_rounded;
       case "delivered":
         return Icons.check_circle_rounded;
+      case "rejected":
+        return Icons.block_rounded;
       case "cancelled":
         return Icons.cancel_rounded;
       default:

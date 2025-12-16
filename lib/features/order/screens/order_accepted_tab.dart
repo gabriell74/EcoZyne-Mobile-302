@@ -1,50 +1,44 @@
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_order_provider.dart';
 import 'package:ecozyne_mobile/features/order/widgets/order_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OrderAcceptedTab extends StatelessWidget {
   const OrderAcceptedTab({super.key});
 
-  final List<Map<String, dynamic>> acceptedOrders = const [
-    {
-      'tanggal': 'May 22, 2023',
-      'produk': 'Pupuk',
-      'jumlah': 12,
-      'metode': 'COD',
-      'bankSampah': 'Bank Sampah Maju Jaya',
-      'status': 'Selesai',
-      'reason': null,
-    },
-    {
-      'tanggal': 'June 14, 2023',
-      'produk': 'Pupuk',
-      'jumlah': 3,
-      'metode': 'COD',
-      'bankSampah': 'Bank Sampah Berkah',
-      'status': 'Selesai',
-      'reason': null,
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
-    if (acceptedOrders.isEmpty) {
-      return const Center(child: Text('Belum ada pesanan diterima'));
-    }
+    return Consumer<WasteBankOrderProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
+          return const Center(
+            child: LoadingWidget(),
+          );
+        }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: acceptedOrders.length,
-      itemBuilder: (context, index) {
-        final item = acceptedOrders[index];
-        return OrderCard(
-          tanggal: item['tanggal'],
-          produk: item['produk'],
-          jumlah: item['jumlah'],
-          metode: item['metode'],
-          bankSampah: item['bankSampah'],
-          showButtons: false,
-          status: item['status'],
-          reason: item['reason'],
+        final acceptedOrders = provider.acceptedOrders;
+
+        if (acceptedOrders.isEmpty) {
+          return Center(
+            child: EmptyState(
+              connected: provider.connected,
+              message: "Belum ada pesanan yang dikirimkan",
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: acceptedOrders.length,
+          itemBuilder: (context, index) {
+            final order = acceptedOrders[index];
+
+            return OrderCard(
+              order: order,
+            );
+          },
         );
       },
     );

@@ -6,7 +6,7 @@ import 'package:ecozyne_mobile/features/history/widgets/date_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/order_card.dart';
+import '../widgets/order_history_card.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -70,7 +70,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: items.length,
-                  itemBuilder: (_, index) => OrderCard(order: items[index]),
+                  itemBuilder: (_, index) => OrderHisoryCard(order: items[index]),
                 ),
                 const SizedBox(height: 8),
               ],

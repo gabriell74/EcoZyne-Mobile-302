@@ -1,6 +1,8 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_order_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'order_current_tab.dart';
 import 'order_accepted_tab.dart';
 import 'order_rejected_tab.dart';
@@ -20,10 +22,15 @@ class OrderScreenState extends State<OrderScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WasteBankOrderProvider>().getWasteBankOrders();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<WasteBankOrderProvider>();
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
