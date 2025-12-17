@@ -12,6 +12,8 @@ class WasteBankOrderProvider with ChangeNotifier {
 
   bool _isLoadingAccepted = false;
   String _messageAccepted = "";
+  bool _isLoadingRejected = false;
+  String _messageRejected = "";
 
   List<WasteBankOrder> get order => _orders;
   bool get isLoading => _isLoading;
@@ -19,16 +21,20 @@ class WasteBankOrderProvider with ChangeNotifier {
   String get message => _message;
   String get messageAccepted => _messageAccepted;
   bool get connected => _connected;
+  bool get isLoadingRejected => _isLoadingRejected;
+  String get messageRejected => _messageRejected;
 
   List<WasteBankOrder> get currentOrders =>
       _orders.where((e) => e.statusOrder == 'pending').toList();
 
-  List<WasteBankOrder> get acceptedOrders =>
-      _orders.where((e) => e.statusOrder == 'processed' || e.statusOrder == 'delivered').toList();
+  List<WasteBankOrder> get acceptedOrders => _orders
+      .where(
+        (e) => e.statusOrder == 'processed' || e.statusOrder == 'delivered',
+      )
+      .toList();
 
   List<WasteBankOrder> get rejectedOrders =>
-      _orders.where((e) =>
-      e.statusOrder == 'cancelled').toList();
+      _orders.where((e) => e.statusOrder == 'cancelled').toList();
 
   Future<void> getWasteBankOrders() async {
     _isLoading = true;
@@ -70,7 +76,6 @@ class WasteBankOrderProvider with ChangeNotifier {
     final result = await _wasteBankOrderService.acceptOrder(orderId);
 
     if (result["success"] == true) {
-
       _orders[index] = result["data"];
       _messageAccepted = result["message"];
       _isLoadingAccepted = false;
@@ -80,6 +85,34 @@ class WasteBankOrderProvider with ChangeNotifier {
 
     _messageAccepted = result["message"] ?? "Gagal menerima pesanan";
     _isLoadingAccepted = false;
+    notifyListeners();
+    return false;
+  }
+
+  
+  Future<bool> rejectOrder(int orderId, String cancellationReason) async {
+    _isLoadingRejected = true;
+    notifyListeners();
+
+    final index = _orders.indexWhere((o) => o.id == orderId);
+    if (index == -1) {
+      _isLoadingRejected = false;
+      notifyListeners();
+      return false;
+    }
+
+    final result = await _wasteBankOrderService.rejectOrder(orderId, cancellationReason);
+
+    if (result["success"] == true) {
+      _orders[index] = result["data"];
+      _messageRejected = result["message"];
+      _isLoadingRejected = false;
+      notifyListeners();
+      return true;
+    }
+
+    _messageRejected = result["message"] ?? "Gagal menolak pesanan";
+    _isLoadingRejected = false;
     notifyListeners();
     return false;
   }

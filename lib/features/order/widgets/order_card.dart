@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
 import 'package:ecozyne_mobile/core/utils/price_formatter.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
@@ -11,7 +13,7 @@ class OrderCard extends StatelessWidget {
   final bool showCompleteButton;
 
   final Future<void> Function()? onAccepted;
-  final Future<void> Function()? onRejected;
+  final VoidCallback? onRejected;
   final Future<void> Function()? onCompleted;
 
   const OrderCard({
@@ -154,9 +156,7 @@ class OrderCard extends StatelessWidget {
         children: [
           if (showActionButtons) ...[
             OutlinedButton.icon(
-              onPressed: () async {
-                await onRejected?.call();
-              },
+              onPressed: onRejected,
               icon: const Icon(Icons.cancel_outlined),
               label: const CustomText("Tolak", color: Colors.red),
               style: OutlinedButton.styleFrom(

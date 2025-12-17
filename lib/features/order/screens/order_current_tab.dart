@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/cancellation_bottom_sheet.dart';
 import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
@@ -7,10 +8,21 @@ import 'package:ecozyne_mobile/features/order/widgets/order_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class OrderCurrentTab extends StatelessWidget {
+class OrderCurrentTab extends StatefulWidget {
   const OrderCurrentTab({super.key});
 
-  Future<void> _showConfirmationAcceptedDialog(BuildContext context, int orderId) async {
+  @override
+  State<OrderCurrentTab> createState() => _OrderCurrentTabState();
+}
+
+class _OrderCurrentTabState extends State<OrderCurrentTab> {
+  final TextEditingController _rejectReasonCtrl = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  Future<void> _showConfirmationAcceptedDialog(
+    BuildContext context,
+    int orderId,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => ConfirmationDialog(
@@ -29,8 +41,7 @@ class OrderCurrentTab extends StatelessWidget {
       builder: (loadingContext) => const LoadingWidget(height: 100),
     );
 
-    final success =
-    await provider.acceptOrder(orderId);
+    final success = await provider.acceptOrder(orderId);
 
     if (context.mounted) Navigator.pop(context);
 
@@ -45,14 +56,59 @@ class OrderCurrentTab extends StatelessWidget {
     }
   }
 
+  void _rejectOrder(BuildContext context, int orderId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return CancellationBottomSheet(
+          formKey: _formKey,
+          cancelReasonCtrl: _rejectReasonCtrl,
+          onPressed: (context) => _rejectDialog(context, orderId),
+        );
+      },
+    );
+  }
+
+  Future<void> _rejectDialog(BuildContext context, int orderId) async {
+    if (!_formKey.currentState!.validate()) return;
+    final provider = context.read<WasteBankOrderProvider>();
+
+    Navigator.pop(context);
+
+    showDialog(
+      context: this.context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: LoadingWidget()),
+    );
+
+    final success = await provider.rejectOrder(
+      orderId,
+      _rejectReasonCtrl.text.trim(),
+    );
+
+    if (mounted) Navigator.pop(this.context);
+
+    if (success) {
+      showSuccessTopSnackBar(
+        this.context,
+        provider.message,
+        icon: const Icon(Icons.check_circle_rounded),
+      );
+
+      Navigator.pop(this.context);
+    } else {
+      showErrorTopSnackBar(this.context, provider.message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<WasteBankOrderProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading) {
-          return const Center(
-            child: LoadingWidget(),
-          );
+          return const Center(child: LoadingWidget());
         }
 
         if (provider.currentOrders.isEmpty) {
@@ -73,7 +129,9 @@ class OrderCurrentTab extends StatelessWidget {
             return OrderCard(
               order: order,
               showActionButtons: true,
-              onAccepted: () => _showConfirmationAcceptedDialog(context, order.id),
+              onAccepted: () =>
+                  _showConfirmationAcceptedDialog(context, order.id),
+              onRejected: () => _rejectOrder(context, order.id),
             );
           },
         );

@@ -7,6 +7,7 @@ import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/data/providers/waste_bank_list_provider.dart';
 import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
+import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_exchange_history_screen.dart';
 import 'package:ecozyne_mobile/features/waste_bank/screens/waste_bank_register_screen.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_search.dart';
 import 'package:flutter/material.dart';
@@ -33,13 +34,19 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
   @override
   Widget build(BuildContext context) {
     bool isWasteBank = context.watch<UserProvider>().user?.role == 'waste_bank';
-    bool hasWasteBankSubmissions = context.watch<WasteBankSubmissionProvider>().hasPending;
+    bool hasWasteBankSubmissions = context
+        .watch<WasteBankSubmissionProvider>()
+        .hasPending;
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Bank Sampah", fontWeight: FontWeight.bold, fontSize: 18),
+        title: const CustomText(
+          "Bank Sampah",
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
         centerTitle: true,
       ),
       body: AppBackground(
@@ -52,10 +59,7 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                   children: [
                     const LoadingWidget(),
                     const SizedBox(height: 16),
-                    CustomText(
-                      "Memuat...",
-                      color: Colors.grey.shade600,
-                    ),
+                    CustomText("Memuat...", color: Colors.grey.shade600),
                   ],
                 ),
               );
@@ -110,22 +114,44 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        CustomText(
-                                          "${provider.wasteBanks.length} Bank Sampah",
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                        const SizedBox(height: 2),
-                                        CustomText(
-                                          "Terdaftar di aplikasi",
-                                          color: Colors.white.withValues(alpha: 0.9),
-                                          fontSize: 12,
-                                        ),
-                                      ],
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const WasteBankExchangeHistoryScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              CustomText(
+                                                "Riwayat Tukar Sampah",
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                              ),
+                                              const SizedBox(height: 2),
+                                              CustomText(
+                                                "Lihat semua riwayat penukaran",
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ],
+                                          ),
+                                          const Spacer(),
+                                          const Icon(
+                                            Icons.arrow_forward_ios_rounded,
+                                            size: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -143,7 +169,9 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
                         child: Material(
                           elevation: 2,
-                          shadowColor: const Color(0xFF55C173).withValues(alpha: 0.3),
+                          shadowColor: const Color(
+                            0xFF55C173,
+                          ).withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(12),
                           child: InkWell(
                             onTap: () {
@@ -157,8 +185,8 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (
-                                        context) => const WasteBankRegisterScreen(),
+                                    builder: (context) =>
+                                        const WasteBankRegisterScreen(),
                                   ),
                                 );
                               }
@@ -233,25 +261,20 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                            final wasteBank = provider.wasteBanks[index];
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final wasteBank = provider.wasteBanks[index];
 
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 5),
-                              child: SlideFadeIn(
-                                delayMilliseconds: index * 100,
-                                child: WasteBankCard(
-                                  wasteBank: wasteBank,
-                                ),
-                              ),
-                            );
-                          },
-                          childCount: provider.wasteBanks.length,
-                        ),
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: SlideFadeIn(
+                              delayMilliseconds: index * 100,
+                              child: WasteBankCard(wasteBank: wasteBank),
+                            ),
+                          );
+                        }, childCount: provider.wasteBanks.length),
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 30,))
+                    const SliverToBoxAdapter(child: SizedBox(height: 30)),
                   ],
                 ],
               ),

@@ -90,4 +90,47 @@ class WasteBankOrderService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> rejectOrder(int orderId, String cancellationReason) async {
+    try {
+      final response = await _dio.put(
+        "/waste-bank/orders/$orderId/reject",
+        data: {"cancellation_reason": cancellationReason}
+      );
+
+      final isSuccess = response.statusCode == 200 &&
+          response.data["success"] == true;
+
+      final updatedOrder = WasteBankOrder.fromJson(response.data["data"]);
+
+      if (isSuccess) {
+        return {
+          "success": true,
+          "message": response.data["message"],
+          "connected": true,
+          "data": updatedOrder,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal menolak pesanan",
+        "connected": true,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal menolak pesanan",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
+    }
+  }
 }
