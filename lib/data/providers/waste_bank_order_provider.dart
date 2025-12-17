@@ -14,6 +14,8 @@ class WasteBankOrderProvider with ChangeNotifier {
   String _messageAccepted = "";
   bool _isLoadingRejected = false;
   String _messageRejected = "";
+  bool _isLoadingCompleted = false;
+  String _messageCompleted = "";
 
   List<WasteBankOrder> get order => _orders;
   bool get isLoading => _isLoading;
@@ -23,6 +25,8 @@ class WasteBankOrderProvider with ChangeNotifier {
   bool get connected => _connected;
   bool get isLoadingRejected => _isLoadingRejected;
   String get messageRejected => _messageRejected;
+  bool get isLoadingCompleted => _isLoadingCompleted;
+  String get messageCompleted => _messageCompleted;
 
   List<WasteBankOrder> get currentOrders =>
       _orders.where((e) => e.statusOrder == 'pending').toList();
@@ -113,6 +117,33 @@ class WasteBankOrderProvider with ChangeNotifier {
 
     _messageRejected = result["message"] ?? "Gagal menolak pesanan";
     _isLoadingRejected = false;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> completeOrder(int orderId) async {
+    _isLoadingCompleted = true;
+    notifyListeners();
+
+    final index = _orders.indexWhere((o) => o.id == orderId);
+    if (index == -1) {
+      _isLoadingCompleted = false;
+      notifyListeners();
+      return false;
+    }
+
+    final result = await _wasteBankOrderService.acceptOrder(orderId);
+
+    if (result["success"] == true) {
+      _orders[index] = result["data"];
+      _messageCompleted = result["message"];
+      _isLoadingCompleted = false;
+      notifyListeners();
+      return true;
+    }
+
+    _messageCompleted = result["message"] ?? "Gagal menandai pesanan selesai";
+    _isLoadingCompleted = false;
     notifyListeners();
     return false;
   }
