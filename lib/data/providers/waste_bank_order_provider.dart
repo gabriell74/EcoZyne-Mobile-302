@@ -34,7 +34,7 @@ class WasteBankOrderProvider with ChangeNotifier {
       .toList();
 
   List<WasteBankOrder> get rejectedOrders =>
-      _orders.where((e) => e.statusOrder == 'cancelled').toList();
+      _orders.where((e) => e.statusOrder == 'cancelled' || e.statusOrder == 'rejected').toList();
 
   Future<void> getWasteBankOrders() async {
     _isLoading = true;

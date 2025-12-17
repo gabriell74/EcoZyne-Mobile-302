@@ -93,13 +93,11 @@ class _OrderCurrentTabState extends State<OrderCurrentTab> {
     if (success) {
       showSuccessTopSnackBar(
         this.context,
-        provider.message,
+        provider.messageRejected,
         icon: const Icon(Icons.check_circle_rounded),
       );
-
-      Navigator.pop(this.context);
     } else {
-      showErrorTopSnackBar(this.context, provider.message);
+      showErrorTopSnackBar(this.context, provider.messageRejected);
     }
   }
 
