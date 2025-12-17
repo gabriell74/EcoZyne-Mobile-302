@@ -52,7 +52,7 @@ void showErrorTopSnackBar(BuildContext context, String message) {
       icon: const Icon(
             Icons.error,
             color: Colors.white,
-            size: 80,
+            size: 50,
           ),
       message: message,
       textStyle: const TextStyle(

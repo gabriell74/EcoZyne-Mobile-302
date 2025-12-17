@@ -10,9 +10,14 @@ class WasteBankOrderProvider with ChangeNotifier {
   String _message = "";
   bool _connected = true;
 
+  bool _isLoadingAccepted = false;
+  String _messageAccepted = "";
+
   List<WasteBankOrder> get order => _orders;
   bool get isLoading => _isLoading;
+  bool get isLoadingAccepted => _isLoadingAccepted;
   String get message => _message;
+  String get messageAccepted => _messageAccepted;
   bool get connected => _connected;
 
   List<WasteBankOrder> get currentOrders =>
@@ -49,5 +54,33 @@ class WasteBankOrderProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<bool> acceptOrder(int orderId) async {
+    _isLoadingAccepted = true;
+    notifyListeners();
+
+    final index = _orders.indexWhere((o) => o.id == orderId);
+    if (index == -1) {
+      _isLoadingAccepted = false;
+      notifyListeners();
+      return false;
+    }
+
+    final result = await _wasteBankOrderService.acceptOrder(orderId);
+
+    if (result["success"] == true) {
+
+      _orders[index] = result["data"];
+      _messageAccepted = result["message"];
+      _isLoadingAccepted = false;
+      notifyListeners();
+      return true;
+    }
+
+    _messageAccepted = result["message"] ?? "Gagal menerima pesanan";
+    _isLoadingAccepted = false;
+    notifyListeners();
+    return false;
   }
 }

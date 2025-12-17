@@ -3,10 +3,10 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/features/history/screens/order_detail_screen.dart';
 import 'package:flutter/material.dart';
 
-class OrderHisoryCard extends StatelessWidget {
+class OrderHistoryCard extends StatelessWidget {
   final dynamic order;
 
-  const OrderHisoryCard({super.key, required this.order});
+  const OrderHistoryCard({super.key, required this.order});
 
   Color _statusColor(String status) {
     switch (status) {

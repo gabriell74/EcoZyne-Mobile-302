@@ -63,7 +63,6 @@ class NoConnectionScreen extends StatelessWidget {
                         : const CustomText(
                       "Coba Lagi",
                       fontSize: 16,
-                      color: Colors.white,
                     ),
                   ),
                 ),

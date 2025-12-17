@@ -6,9 +6,9 @@ class WasteBankOrder {
   final int totalPrice;
   final int amount;
   final String productName;
-  final String statusOrder;
-  final String statusPayment;
-  final String? cancellationReason;
+  String statusOrder;
+  String statusPayment;
+  String? cancellationReason;
   final String createdAt;
 
   WasteBankOrder({

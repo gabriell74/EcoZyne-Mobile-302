@@ -37,6 +37,7 @@ class OrderAcceptedTab extends StatelessWidget {
 
             return OrderCard(
               order: order,
+              showCompleteButton: true,
             );
           },
         );

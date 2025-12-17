@@ -70,7 +70,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: items.length,
-                  itemBuilder: (_, index) => OrderHisoryCard(order: items[index]),
+                  itemBuilder: (_, index) => OrderHistoryCard(order: items[index]),
                 ),
                 const SizedBox(height: 8),
               ],
