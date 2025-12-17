@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
@@ -19,6 +20,78 @@ import 'package:ecozyne_mobile/core/utils/validators.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:ecozyne_mobile/data/models/region.dart';
+import 'package:http/http.dart' as http;
+
+// =============== SERVICE UNTUK OPENSTREETMAP ===============
+class OpenStreetMapService {
+  static const String _baseUrl = 'https://nominatim.openstreetmap.org';
+  
+  /// Reverse Geocoding: Dapatkan alamat dari koordinat
+  static Future<Map<String, dynamic>?> reverseGeocode(double lat, double lon) async {
+    final url = Uri.parse(
+      '$_baseUrl/reverse?format=json&lat=$lat&lon=$lon&addressdetails=1&zoom=18'
+    );
+    
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'User-Agent': 'EcoZyneMobileApp/1.0',
+          'Accept-Language': 'id',
+          'Referer': 'ecozyne.app',
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data;
+      }
+    } catch (e) {
+      print('OpenStreetMap Reverse Geocode Error: $e');
+    }
+    
+    return null;
+  }
+  
+  /// Ambil kode pos dari hasil reverse geocode
+  static Future<String?> getPostalCode(double lat, double lon) async {
+    final data = await reverseGeocode(lat, lon);
+    
+    if (data != null && data['address'] != null) {
+      final address = data['address'] as Map<String, dynamic>;
+      
+      // Coba berbagai key untuk kode pos
+      return address['postcode'] ?? 
+             address['postal_code'] ?? 
+             address['postalcode'];
+    }
+    
+    return null;
+  }
+  
+  /// Ambil alamat lengkap
+  static Future<Map<String, String>?> getFullAddress(double lat, double lon) async {
+    final data = await reverseGeocode(lat, lon);
+    
+    if (data != null && data['address'] != null) {
+      final address = data['address'] as Map<String, dynamic>;
+      
+      return {
+        'jalan': address['road'] ?? '',
+        'kelurahan': address['village'] ?? address['suburb'] ?? '',
+        'kecamatan': address['subdistrict'] ?? address['county'] ?? '',
+        'kota': address['city'] ?? address['town'] ?? '',
+        'provinsi': address['state'] ?? '',
+        'kode_pos': address['postcode'] ?? address['postal_code'] ?? '',
+        'negara': address['country'] ?? '',
+        'display_name': data['display_name'] ?? '',
+      };
+    }
+    
+    return null;
+  }
+}
+// ===========================================================
 
 class WasteBankRegisterScreen extends StatefulWidget {
   const WasteBankRegisterScreen({super.key});
@@ -39,10 +112,12 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
   final TextEditingController _rwController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _postalCodeController = TextEditingController(); // TAMBAH
 
   LatLng? _selectedLocation;
   String? _selectedImagePath;
   String? _selectedPdfPath;
+  bool _isFetchingAddress = false; // TAMBAH
 
   final LatLng defaultCenter = const LatLng(1.0456, 104.0305);
   final double defaultZoom = 12.0;
@@ -68,6 +143,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     _rwController.dispose();
     _whatsappController.dispose();
     _descriptionController.dispose();
+    _postalCodeController.dispose(); // TAMBAH
     super.dispose();
   }
 
@@ -93,11 +169,46 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     }
   }
 
+  // TAMBAH: Method untuk fetch alamat dari koordinat
+Future<void> _fetchAddressFromCoordinates() async {
+  if (_selectedLocation == null) return;
+  
+  // Reset dulu
+  setState(() {
+    _postalCodeController.clear();
+  });
+  
+  try {
+    final postalCode = await OpenStreetMapService.getPostalCode(
+      _selectedLocation!.latitude,
+      _selectedLocation!.longitude,
+    );
+    
+    if (mounted && postalCode != null) {
+      setState(() {
+        _postalCodeController.text = postalCode;
+      });
+    }
+  } catch (e) {
+    print('Error fetching postal code: $e');
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Gagal mendeteksi kode pos'),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+}
+
   String _buildFullAddress(RegionProvider regionProvider) {
     return "${_addressController.text.trim()}\n"
         "RT ${_rtController.text.trim()} / RW ${_rwController.text.trim()}\n"
-        "Kelurahan ${regionProvider.selectedKelurahan?.kelurahan ?? ''}\n" // GANTI: .kelurahan
-        "Kecamatan ${regionProvider.selectedKecamatan?.kecamatan ?? ''}\n" // GANTI: .kecamatan
+        "Kelurahan ${regionProvider.selectedKelurahan?.kelurahan ?? ''}\n"
+        "Kecamatan ${regionProvider.selectedKecamatan?.kecamatan ?? ''}\n"
+        "Kode Pos ${_postalCodeController.text.trim()}\n" // TAMBAH KODE POS
         "Kota Batam\n"
         "Provinsi Kepulauan Riau";
   }
@@ -132,6 +243,12 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
 
     if (_selectedLocation == null) {
       showErrorTopSnackBar(context, "Pilih lokasi di peta dulu");
+      return;
+    }
+
+    // TAMBAH: Validasi kode pos
+    if (_postalCodeController.text.isEmpty) {
+      showErrorTopSnackBar(context, "Kode pos wajib diisi");
       return;
     }
 
@@ -170,8 +287,9 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
       "rw": _rwController.text.trim(),
       "kelurahan_id": selectedKelurahan.id,
       "kecamatan_id": selectedKecamatan.id,
-      "kelurahan_name": selectedKelurahan.kelurahan, // GANTI: .kelurahan
-      "kecamatan_name": selectedKecamatan.kecamatan, // GANTI: .kecamatan
+      "kelurahan_name": selectedKelurahan.kelurahan,
+      "kecamatan_name": selectedKecamatan.kecamatan,
+      "postal_code": _postalCodeController.text.trim(), // TAMBAH
     });
 
     if (context.mounted) Navigator.pop(context);
@@ -268,17 +386,17 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
   }
 
   Widget _buildMapSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CustomText(
-            "Pilih Lokasi di Peta",
-            fontSize: 14,
-            color: Colors.black54,
-          ),
-          const SizedBox(height: 8),
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const CustomText(
+          "Pilih Lokasi di Peta",
+          fontSize: 14,
+          color: Colors.black54,
+        ),
+        const SizedBox(height: 8),
           MapSelectionWidget(
             mapController: _mapController,
             defaultCenter: defaultCenter,
@@ -287,369 +405,388 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
             selectedLocation: _selectedLocation,
             onLocationSelected: (loc) {
               setState(() => _selectedLocation = loc);
+              _fetchAddressFromCoordinates(); // AUTO FETCH
             },
           ),
-          const SizedBox(height: 12),
-          if (_selectedLocation != null) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const CustomText(
-                        "Latitude",
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                      CustomText(
-                        _selectedLocation!.latitude.toStringAsFixed(6),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const CustomText(
-                        "Longitude",
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                      CustomText(
-                        _selectedLocation!.longitude.toStringAsFixed(6),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailAlamatSection(BuildContext context, RegionProvider regionProvider) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        const CustomText(
-          "Alamat Lengkap",
-          fontSize: 14,
-          color: Colors.black54,
-        ),
-        const SizedBox(height: 8),
-        BuildFormField(
-          label: "Nama jalan, nomor rumah, patokan...",
-          controller: _addressController,
-          validator: Validators.address,
-        ),
-
-        const SizedBox(height: 16),
-        
-        // RT DAN RW DENGAN TAMPILAN YANG SAMA
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CustomText(
-                    "RT",
-                    fontSize: 14,
-                    color: Colors.black54,
-                  ),
-                  const SizedBox(height: 4),
-                  BuildFormField( // GUNAKAN BuildFormField JUGA
-                    label: "001",
-                    controller: _rtController,
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'RT wajib diisi';
-                      }
-                      if (!RegExp(r'^\d{3}$').hasMatch(value)) {
-                        return 'RT harus 3 digit';
-                      }
-                      return null;
-                    },
-                    prefixIcon: null, 
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CustomText(
-                    "RW",
-                    fontSize: 14,
-                    color: Colors.black54,
-                  ),
-                  const SizedBox(height: 4),
-                  BuildFormField( // GUNAKAN BuildFormField JUGA
-                    label: "005",
-                    controller: _rwController,
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'RW wajib diisi';
-                      }
-                      if (!RegExp(r'^\d{3}$').hasMatch(value)) {
-                        return 'RW harus 3 digit';
-                      }
-                      return null;
-                    },
-                    prefixIcon: null,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 16),
-
-        // KECAMATAN DROPDOWN - TAMPILAN YANG LEBIH BAIK
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CustomText(
-              "Kecamatan",
-              fontSize: 14,
-              color: Colors.black54,
-            ),
-            const SizedBox(height: 4),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: DropdownButtonHideUnderline( // HILANGKAN GARIS BAWAH
-                child: DropdownButton<Kecamatan>(
-                  value: regionProvider.selectedKecamatan,
-                  hint: const Text(
-                    "Pilih Kecamatan",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  isExpanded: true,
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  items: regionProvider.kecamatanList.map((kecamatan) {
-                    return DropdownMenuItem<Kecamatan>(
-                      value: kecamatan,
-                      child: Text(
-                        kecamatan.kecamatan,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    regionProvider.selectKecamatan(value);
-                  },
-                ),
-              ),
-            ),
-            // TAMBAHKAN VALIDATOR TEXT DI BAWAH
-            if (regionProvider.selectedKecamatan != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green[100]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Colors.green[600], size: 18),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          regionProvider.selectedKecamatan!.kecamatan,
-                          style: TextStyle(
-                            color: Colors.green[800],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        ),
-
-        const SizedBox(height: 16),
-
-        // KELURAHAN DROPDOWN - TAMPILAN YANG LEBIH BAIK
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CustomText(
-              "Kelurahan",
-              fontSize: 14,
-              color: Colors.black54,
-            ),
-            const SizedBox(height: 4),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: DropdownButtonHideUnderline( // HILANGKAN GARIS BAWAH
-                child: DropdownButton<Kelurahan>(
-                  value: regionProvider.selectedKelurahan,
-                  hint: const Text(
-                    "Pilih Kelurahan",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  isExpanded: true,
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  items: regionProvider.kelurahanList.map((kelurahan) {
-                    return DropdownMenuItem<Kelurahan>(
-                      value: kelurahan,
-                      child: Text(
-                        kelurahan.kelurahan,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: regionProvider.selectedKecamatan != null
-                      ? (value) {
-                          regionProvider.selectKelurahan(value);
-                        }
-                      : null,
-                ),
-              ),
-            ),
-            // TAMBAHKAN VALIDATOR TEXT DI BAWAH
-            if (regionProvider.selectedKelurahan != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green[100]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Colors.green[600], size: 18),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          regionProvider.selectedKelurahan!.kelurahan,
-                          style: TextStyle(
-                            color: Colors.green[800],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        ),
-
-        const SizedBox(height: 16),
-        // WILAYAH ADMINISTRATIF - PERBAIKI LAYOUT
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        const SizedBox(height: 12),
+        if (_selectedLocation != null) ...[
+          Row(
             children: [
-              const CustomText(
-                "WILAYAH ADMINISTRATIF",
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomText(
+                      "Latitude",
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                    CustomText(
+                      _selectedLocation!.latitude.toStringAsFixed(6),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8),
-              const Divider(height: 1, color: Colors.grey),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Kota",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "Batam",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomText(
+                      "Longitude",
+                      fontSize: 12,
+                      color: Colors.grey,
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Provinsi",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "Kepulauan Riau",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      ],
+                    CustomText(
+                      _selectedLocation!.longitude.toStringAsFixed(6),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
-        ),
+          // HAPUS loading indicator
+        ],
       ],
     ),
   );
 }
+
+  Widget _buildDetailAlamatSection(BuildContext context, RegionProvider regionProvider) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          const CustomText(
+            "Alamat Lengkap",
+            fontSize: 14,
+            color: Colors.black54,
+          ),
+          const SizedBox(height: 8),
+          BuildFormField(
+            label: "Nama jalan, nomor rumah, patokan...",
+            controller: _addressController,
+            validator: Validators.address,
+          ),
+
+          const SizedBox(height: 16),
+          
+          // RT DAN RW
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomText(
+                      "RT",
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                    const SizedBox(height: 4),
+                    BuildFormField(
+                      label: "001",
+                      controller: _rtController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'RT wajib diisi';
+                        }
+                        if (!RegExp(r'^\d{3}$').hasMatch(value)) {
+                          return 'RT harus 3 digit';
+                        }
+                        return null;
+                      },
+                      prefixIcon: null,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomText(
+                      "RW",
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                    const SizedBox(height: 4),
+                    BuildFormField(
+                      label: "005",
+                      controller: _rwController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'RW wajib diisi';
+                        }
+                        if (!RegExp(r'^\d{3}$').hasMatch(value)) {
+                          return 'RW harus 3 digit';
+                        }
+                        return null;
+                      },
+                      prefixIcon: null,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // KODE POS - AUTO DETECT (READONLY)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const CustomText(
+                "Kode Pos",
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+              const SizedBox(height: 4),
+              TextFormField(
+                controller: _postalCodeController,
+                keyboardType: TextInputType.number,
+                readOnly: true, // TIDAK BISA DIEDIT
+                decoration: InputDecoration(
+                  hintText: _selectedLocation == null 
+                      ? "Pilih lokasi di peta dulu" 
+                      : "Mendeteksi kode pos...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  prefixIcon: const Icon(Icons.local_post_office, size: 20),
+                  suffixIcon: _postalCodeController.text.isNotEmpty
+                      ? Icon(Icons.check_circle, color: Colors.green[600], size: 20)
+                      : _selectedLocation != null
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Icon(Icons.location_on, color: Colors.grey[600], size: 20),
+                  filled: true,
+                  fillColor: _postalCodeController.text.isNotEmpty
+                      ? Colors.green[50]
+                      : Colors.grey[50],
+                ),
+                validator: (value) {
+                  if (_selectedLocation == null) {
+                    return 'Pilih lokasi di peta terlebih dahulu';
+                  }
+                  if (value == null || value.isEmpty) {
+                    return 'Sedang mendeteksi kode pos...';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 6),
+              if (_selectedLocation != null && _postalCodeController.text.isEmpty)
+                Text(
+                  "Mendeteksi kode pos...",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue[700],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              if (_postalCodeController.text.isNotEmpty)
+                Text(
+                  "Kode pos otomatis terdeteksi dari peta",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.green[700],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // KECAMATAN DROPDOWN
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const CustomText(
+                "Kecamatan",
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+              const SizedBox(height: 4),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<Kecamatan>(
+                    value: regionProvider.selectedKecamatan,
+                    hint: const Text(
+                      "Pilih Kecamatan",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    isExpanded: true,
+                    icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                    items: regionProvider.kecamatanList.map((kecamatan) {
+                      return DropdownMenuItem<Kecamatan>(
+                        value: kecamatan,
+                        child: Text(
+                          kecamatan.kecamatan,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      regionProvider.selectKecamatan(value);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // KELURAHAN DROPDOWN
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const CustomText(
+                "Kelurahan",
+                fontSize: 14,
+                color: Colors.black54,
+              ),
+              const SizedBox(height: 4),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<Kelurahan>(
+                    value: regionProvider.selectedKelurahan,
+                    hint: const Text(
+                      "Pilih Kelurahan",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    isExpanded: true,
+                    icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                    items: regionProvider.kelurahanList.map((kelurahan) {
+                      return DropdownMenuItem<Kelurahan>(
+                        value: kelurahan,
+                        child: Text(
+                          kelurahan.kelurahan,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: regionProvider.selectedKecamatan != null
+                        ? (value) {
+                            regionProvider.selectKelurahan(value);
+                          }
+                        : null,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+          
+          // WILAYAH ADMINISTRATIF
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CustomText(
+                  "WILAYAH ADMINISTRATIF",
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+                const SizedBox(height: 8),
+                const Divider(height: 1, color: Colors.grey),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Kota",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Batam",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Provinsi",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Kepulauan Riau",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildKontakSection() {
     return Padding(
