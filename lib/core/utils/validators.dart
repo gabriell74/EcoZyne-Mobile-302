@@ -74,6 +74,27 @@ class Validators {
     return null;
   }
 
+  
+  static String? rtValidator(String? value) {
+      if (value == null || value.isEmpty) {
+        return 'RT wajib diisi';
+      }
+      if (!RegExp(r'^\d{3}$').hasMatch(value)) {
+        return 'RT harus 3 digit angka';
+      }
+      return null;
+  } 
+
+  static String? rwValidator(String? value) {
+      if (value == null || value.isEmpty) {
+        return 'RW wajib diisi';
+      }
+      if (!RegExp(r'^\d{3}$').hasMatch(value)) {
+        return 'RW harus 3 digit angka';
+      }
+      return null;
+  }
+
   static String? username(String? value) {
     value = value?.trim();
     if (value == null || value.isEmpty) return "Nama pengguna wajib diisi";
