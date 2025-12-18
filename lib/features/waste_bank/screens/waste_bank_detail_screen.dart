@@ -4,7 +4,7 @@ import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/data/models/waste_bank.dart';
-import 'package:ecozyne_mobile/data/providers/trash_submission_provider.dart';
+import 'package:ecozyne_mobile/data/providers/trash_transaction_provider.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_detail_card.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +51,7 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
       builder: (_) => const LoadingWidget(height: 100),
     );
 
-    final provider = context.read<TrashSubmissionsProvider>();
+    final provider = context.read<TrashTransactionProvider>();
 
     final success = await provider.submitTrashSubmissions(wasteBankId);
 

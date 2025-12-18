@@ -53,13 +53,18 @@ class WasteBankOrderProvider with ChangeNotifier {
       if (data != null && data.isNotEmpty) {
         _orders = data;
         _message = result["message"];
-      } else {
+      }
+      else {
         _orders = [];
         _message = "Belum ada pesanan produk";
       }
     } else {
       _orders = [];
       _message = result["message"] ?? "Gagal memuat pesanan produk";
+    }
+
+    if (_orders.isNotEmpty && currentOrders.isEmpty) {
+      _message = "Belum ada pesanan produk";
     }
 
     _isLoading = false;
@@ -93,7 +98,6 @@ class WasteBankOrderProvider with ChangeNotifier {
     return false;
   }
 
-  
   Future<bool> rejectOrder(int orderId, String cancellationReason) async {
     _isLoadingRejected = true;
     notifyListeners();

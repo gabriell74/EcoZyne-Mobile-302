@@ -16,6 +16,13 @@ class OrderCurrentTab extends StatefulWidget {
 }
 
 class _OrderCurrentTabState extends State<OrderCurrentTab> {
+
+  @override
+  void dispose() {
+    _rejectReasonCtrl.dispose();
+    super.dispose();
+  }
+
   final TextEditingController _rejectReasonCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 

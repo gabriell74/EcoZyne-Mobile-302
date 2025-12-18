@@ -1,57 +1,45 @@
-import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/data/providers/trash_transaction_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'trash_submission_card.dart';
 
 class AcceptedWasteDeliveryTab extends StatelessWidget {
-  final List<Map<String, dynamic>> acceptedWaste;
 
-  const AcceptedWasteDeliveryTab({super.key, required this.acceptedWaste});
+  const AcceptedWasteDeliveryTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: acceptedWaste.length,
-      separatorBuilder: (context, index) => const Divider(height: 20),
-      itemBuilder: (context, index) {
-        final data = acceptedWaste[index];
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.circular(10),
+    return Consumer<TrashTransactionProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoadingAccepted) {
+            return const Center(child: LoadingWidget());
+          }
+
+          if (provider.acceptedSubmissions.isEmpty) {
+            return Center(
+              child: EmptyState(
+                connected: provider.connected,
+                message: provider.messageAccepted,
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(
-                    data['username'],
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  const SizedBox(height: 4),
-                  CustomText(
-                    '${data['weight']}, ${data['description']}',
-                    color: Colors.black54,
-                    fontSize: 13,
-                  ),
-                ],
-              ),
-            ),
-            CustomText(
-              data['point'],
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ],
-        );
-      },
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: provider.acceptedSubmissions.length,
+            itemBuilder: (context, index) {
+              final acceptedSubmission = provider.acceptedSubmissions[index];
+              final bool showCompleteButton = acceptedSubmission.status == 'approved';
+              return TrashSubmissionsCard(
+                submission: acceptedSubmission,
+                showCompleteButton: showCompleteButton,
+              );
+            },
+          );
+        }
     );
   }
 }

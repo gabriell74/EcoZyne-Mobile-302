@@ -30,7 +30,6 @@ class OrderScreenState extends State<OrderScreen>
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<WasteBankOrderProvider>();
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(

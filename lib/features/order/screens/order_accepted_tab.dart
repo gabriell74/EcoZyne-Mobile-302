@@ -73,10 +73,10 @@ class OrderAcceptedTab extends StatelessWidget {
           itemCount: acceptedOrders.length,
           itemBuilder: (context, index) {
             final order = acceptedOrders[index];
-
+            final bool showCompleteButton = order.statusOrder == "processed";
             return OrderCard(
               order: order,
-              showCompleteButton: true,
+              showCompleteButton: showCompleteButton,
               onCompleted: () => _showConfirmationCompleteDialog(context, order.id),              
             );
           },
