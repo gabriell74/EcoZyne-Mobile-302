@@ -132,7 +132,7 @@ class WasteBankOrderProvider with ChangeNotifier {
       return false;
     }
 
-    final result = await _wasteBankOrderService.acceptOrder(orderId);
+    final result = await _wasteBankOrderService.completeOrder(orderId);
 
     if (result["success"] == true) {
       _orders[index] = result["data"];
