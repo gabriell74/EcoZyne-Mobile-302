@@ -3,15 +3,18 @@ import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/waste_bank.dart';
 import 'package:ecozyne_mobile/data/providers/trash_transaction_provider.dart';
 import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_detail_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WasteBankDetailScreen extends StatefulWidget {
   final WasteBank wasteBank;
@@ -34,6 +37,84 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
       widget.wasteBank.longitude,
     );
   }
+
+  Future<void> _openGoogleMaps() async {
+    try {
+      final destinationLat = widget.wasteBank.latitude;
+      final destinationLng = widget.wasteBank.longitude;
+
+      final url = Uri.parse(
+          'https://www.google.com/maps/dir/?api=1&destination=$destinationLat,$destinationLng&travelmode=driving'
+      );
+
+      await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+
+      showInfoTopSnackBar(context, 'Tidak dapat membuka Google Maps');
+    }
+  }
+
+
+  void _showCoordinateDialog(String lat, String lng) {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Gagal Membuka Peta'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Silakan salin koordinat di bawah dan buka secara manual:'),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SelectableText(
+                '$lat, $lng',
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Cara manual:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            const Text('1. Buka Google Maps'),
+            const Text('2. Tempelkan koordinat di search box'),
+            const Text('3. Tekan "Rute" untuk navigasi'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+          TextButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: '$lat, $lng'));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Koordinat disalin!')),
+              );
+              Navigator.pop(context);
+            },
+            child: const Text('Salin'),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Future<void> _showConfirmDialog(BuildContext context, int wasteBankId) async {
     final userProvider = context.read<UserProvider>();
@@ -164,10 +245,8 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
-
     final bool isMyWasteBank = widget.wasteBank.id == userProvider.user?.wasteBank?.id;
     final bool isLoggedIn = UserHelper.isLoggedIn(context);
-
     final bool isButtonEnabled = !isMyWasteBank;
 
     return Scaffold(
@@ -201,24 +280,43 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                     ),
                   ),
 
+                  const SizedBox(height: 12),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton.icon(
+                      onPressed: _openGoogleMaps,
+                      icon: const Icon(Icons.navigation_outlined),
+                      label: const Text("Navigasi ke Bank Sampah"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+
                   const SizedBox(height: 16),
 
                   WasteBankDetailCard(
                     name: widget.wasteBank.wasteBankName,
                     location: widget.wasteBank.wasteBankLocation,
                     imageUrl: widget.wasteBank.photo,
-                    isMyBank: isMyWasteBank
+                    isMyBank: isMyWasteBank,
                   ),
 
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-                  CustomText(
+                  const CustomText(
                     "Tentang Bank Sampah",
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
 
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
                   CustomText(
                     widget.wasteBank.notes,
@@ -226,9 +324,9 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                   ),
 
                   if (isMyWasteBank) ...[
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Container(
-                      padding: EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.orange.shade50,
                         borderRadius: BorderRadius.circular(12),
@@ -237,7 +335,7 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                       child: Row(
                         children: [
                           Icon(Icons.info_outline, color: Colors.orange.shade700),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               "Ini adalah bank sampah Anda. "
@@ -265,9 +363,7 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _getButtonColor(
-                      isMyWasteBank: isMyWasteBank,
-                    ),
+                    backgroundColor: _getButtonColor(isMyWasteBank: isMyWasteBank),
                   ),
                   onPressed: !isButtonEnabled
                       ? null
@@ -279,20 +375,15 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                       );
                       return;
                     }
-
                     await _showConfirmDialog(context, widget.wasteBank.id);
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(_getButtonIcon(
-                        isMyWasteBank: isMyWasteBank,
-                      )),
-                      SizedBox(width: 8),
+                      Icon(_getButtonIcon(isMyWasteBank: isMyWasteBank)),
+                      const SizedBox(width: 8),
                       CustomText(
-                        _getButtonText(
-                          isMyWasteBank: isMyWasteBank,
-                        ),
+                        _getButtonText(isMyWasteBank: isMyWasteBank),
                         fontWeight: FontWeight.bold,
                       ),
                     ],
@@ -306,23 +397,17 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
     );
   }
 
-  Color _getButtonColor({
-    required bool isMyWasteBank,
-  }) {
+  Color _getButtonColor({required bool isMyWasteBank}) {
     if (isMyWasteBank) return Colors.orange.shade700;
     return const Color(0xFF55C173);
   }
 
-  IconData _getButtonIcon({
-    required bool isMyWasteBank,
-  }) {
+  IconData _getButtonIcon({required bool isMyWasteBank}) {
     if (isMyWasteBank) return Icons.business_outlined;
     return Icons.recycling_outlined;
   }
 
-  String _getButtonText({
-    required bool isMyWasteBank,
-  }) {
+  String _getButtonText({required bool isMyWasteBank}) {
     if (isMyWasteBank) return "Bank Sampah Anda";
     return "Setor Sampah";
   }
