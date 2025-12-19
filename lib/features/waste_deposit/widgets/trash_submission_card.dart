@@ -7,7 +7,7 @@ class TrashSubmissionsCard extends StatelessWidget {
   final TrashTransaction submission;
   final Future<void> Function()? onAccepted;
   final VoidCallback? onRejected;
-  final Future<void> Function()? onCompleted;
+  final VoidCallback? onCompleted;
   final bool showActionButtons;
   final bool showCompleteButton;
 
@@ -94,6 +94,86 @@ class TrashSubmissionsCard extends StatelessWidget {
     );
   }
 
+  void _showCompletedDetail(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade400,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              const CustomText(
+                "Detail Pengantaran Sampah",
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+
+              const SizedBox(height: 16),
+
+              if (submission.trashImage != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    submission.trashImage!,
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              Row(
+                children: [
+                  const Icon(Icons.scale_rounded),
+                  const SizedBox(width: 8),
+                  CustomText(
+                    "Berat Sampah: ${submission.trashWeight} kg",
+                    fontSize: 14,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              Row(
+                children: [
+                  const Icon(Icons.star_rounded, color: Colors.amber),
+                  const SizedBox(width: 8),
+                  CustomText(
+                    "Poin Diperoleh: ${submission.pointEarned}",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildActionButtons() {
     if (!showActionButtons && !showCompleteButton) {
       return const SizedBox.shrink();
@@ -107,28 +187,22 @@ class TrashSubmissionsCard extends StatelessWidget {
           if (showActionButtons) ...[
             OutlinedButton.icon(
               onPressed: onRejected,
-              icon: const Icon(Icons.cancel_outlined, color: Colors.red,),
+              icon: const Icon(Icons.cancel_outlined, color: Colors.red),
               label: const CustomText("Tolak", color: Colors.red),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.red,
                 side: const BorderSide(color: Colors.red),
               ),
             ),
             const SizedBox(width: 8),
             ElevatedButton.icon(
-              onPressed: () async {
-                await onAccepted?.call();
-              },
+              onPressed: () async => onAccepted?.call(),
               icon: const Icon(Icons.check_circle_outline),
               label: const CustomText("Terima"),
             ),
           ],
-
           if (showCompleteButton) ...[
             ElevatedButton.icon(
-              onPressed: () async {
-                await onCompleted?.call();
-              },
+              onPressed: onCompleted,
               icon: const Icon(Icons.upload),
               label: const CustomText("Setor sampah"),
               style: ElevatedButton.styleFrom(
@@ -141,161 +215,135 @@ class TrashSubmissionsCard extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final status = submission.status;
-    final statusText = _statusText(status);
-    final statusColor = _statusColor(status);
-
+  Widget _buildCompletedHint() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+        color: const Color(0xFF55C173).withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFF55C173).withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: 16,
+            color: const Color(0xFF55C173),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: CustomText(
+              "Ketuk untuk melihat detail penyetoran",
+              fontSize: 12,
+              color: const Color(0xFF55C173),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Icon(
+            Icons.chevron_right_rounded,
+            size: 18,
+            color: const Color(0xFF55C173),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomText(
-                  DateFormatter.formatDate(submission.createdAt),
-                  fontWeight: FontWeight.bold,
-                ),
-                _statusBadge(
-                  text: statusText,
-                  color: statusColor,
-                  icon: _statusIcon(status),
-                ),
-              ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final status = submission.status;
+
+    return InkWell(
+      onTap: status == 'completed'
+          ? () => _showCompletedDetail(context)
+          : null,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF55C173).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.person_rounded,
-                    color: Color(0xFF55C173),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        "${submission.communityName} (${submission.username})",
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.phone, size: 13,),
-                          const SizedBox(width: 8,),
-                          CustomText(
-                            submission.phoneNumber.toString(),
-                            fontSize: 13,
-                            color: Colors.grey.shade600,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            if (submission.pointEarned != null &&
-                submission.trashWeight != null) ...[
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      'Detail Sampah',
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black54,
-                    ),
-                    const SizedBox(height: 6),
-                    if (submission.trashWeight != null) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.scale_rounded,
-                              size: 16, color: Colors.grey.shade600),
-                          const SizedBox(width: 6),
-                          CustomText(
-                            'Berat: ${submission.trashWeight} kg',
-                            fontSize: 13,
-                            color: Colors.grey.shade700,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-
-            if (status == 'rejected') ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.shade100),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.info_rounded,
-                        size: 16, color: Colors.red.shade700),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: CustomText(
-                        'Alasan Penolakan: ${submission.rejectionReason}',
-                        fontSize: 12,
-                        color: Colors.red.shade700,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-
-            _buildActionButtons(),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomText(
+                    DateFormatter.formatDate(submission.createdAt),
+                    fontWeight: FontWeight.bold,
+                  ),
+                  _statusBadge(
+                    text: _statusText(status),
+                    color: _statusColor(status),
+                    icon: _statusIcon(status),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF55C173)
+                          .withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.person_rounded,
+                      color: Color(0xFF55C173),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          "${submission.communityName} (${submission.username})",
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.phone, size: 13),
+                            const SizedBox(width: 8),
+                            CustomText(
+                              submission.phoneNumber.toString(),
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              _buildActionButtons(),
+
+              if (status == 'completed') _buildCompletedHint(),
+            ],
+          ),
         ),
       ),
     );

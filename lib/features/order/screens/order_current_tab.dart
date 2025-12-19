@@ -73,6 +73,11 @@ class _OrderCurrentTabState extends State<OrderCurrentTab> {
           formKey: _formKey,
           cancelReasonCtrl: _rejectReasonCtrl,
           onPressed: (context) => _rejectDialog(context, orderId),
+          title: "Tolak Pesanan",
+          subtitle: "Beri tahu alasan pembatalan",
+          hintText: "Contoh: stok tidak ada, dll",
+          buttonText: "Tolak Pesanan",
+          validationText: "Alasan penolakan wajib diisi",
         );
       },
     );

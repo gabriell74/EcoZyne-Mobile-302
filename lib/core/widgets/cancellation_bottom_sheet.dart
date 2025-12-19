@@ -4,12 +4,22 @@ class CancellationBottomSheet extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController cancelReasonCtrl;
   final Future<void> Function(BuildContext context) onPressed;
+  final String title;
+  final String subtitle;
+  final String hintText;
+  final String buttonText;
+  final String validationText;
 
   const CancellationBottomSheet({
     super.key,
     required this.formKey,
     required this.cancelReasonCtrl,
     required this.onPressed,
+    required this.title,
+    required this.subtitle,
+    required this.hintText,
+    required this.buttonText,
+    required this.validationText,
   });
 
   @override
@@ -59,20 +69,20 @@ class CancellationBottomSheet extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Batalkan Pesanan",
+                          title,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          "Beri tahu kami alasan pembatalan",
+                          subtitle,
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.grey,
@@ -90,7 +100,7 @@ class CancellationBottomSheet extends StatelessWidget {
                 controller: cancelReasonCtrl,
                 maxLines: 4,
                 decoration: InputDecoration(
-                  hintText: "Contoh: Ingin mengubah pesanan, salah pilih produk, dll",
+                  hintText: hintText,
                   hintStyle: TextStyle(
                     color: Colors.grey.shade400,
                     fontSize: 14,
@@ -113,7 +123,7 @@ class CancellationBottomSheet extends StatelessWidget {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return "Alasan pembatalan wajib diisi";
+                    return validationText;
                   }
                   return null;
                 },
@@ -157,8 +167,8 @@ class CancellationBottomSheet extends StatelessWidget {
                         ),
                       ),
                       onPressed: () async => await onPressed(context),
-                      child: const Text(
-                        "Batalkan Pesanan",
+                      child: Text(
+                        buttonText,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,

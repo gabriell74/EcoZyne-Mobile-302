@@ -31,7 +31,7 @@ class TrashTransactionProvider with ChangeNotifier {
       _trashTransactions.where((e) => e.status == 'pending').toList();
 
   List<TrashTransaction> get acceptedSubmissions =>
-      _trashTransactions.where((e) => e.status == 'approved').toList();
+      _trashTransactions.where((e) => e.status == 'approved' || e.status == 'completed').toList();
 
   List<TrashTransaction> get rejectedSubmissions =>
       _trashTransactions.where((e) => e.status == 'rejected').toList();
@@ -89,18 +89,18 @@ class TrashTransactionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> acceptSubmissions(int orderId) async {
+  Future<bool> acceptSubmissions(int transactionId) async {
     _isLoadingAccepted = true;
     notifyListeners();
 
-    final index = _trashTransactions.indexWhere((o) => o.id == orderId);
+    final index = _trashTransactions.indexWhere((o) => o.id == transactionId);
     if (index == -1) {
       _isLoadingAccepted = false;
       notifyListeners();
       return false;
     }
 
-    final result = await _trashTransactionService.acceptSubmissions(orderId);
+    final result = await _trashTransactionService.acceptSubmissions(transactionId);
 
     if (result["success"] == true) {
       _trashTransactions[index] = result["data"];
@@ -116,18 +116,18 @@ class TrashTransactionProvider with ChangeNotifier {
     return false;
   }
 
-  Future<bool> rejectSubmissions(int orderId, String rejectionReason) async {
+  Future<bool> rejectSubmissions(int transactionId, String rejectionReason) async {
     _isLoadingRejected = true;
     notifyListeners();
 
-    final index = _trashTransactions.indexWhere((o) => o.id == orderId);
+    final index = _trashTransactions.indexWhere((o) => o.id == transactionId);
     if (index == -1) {
       _isLoadingRejected = false;
       notifyListeners();
       return false;
     }
 
-    final result = await _trashTransactionService.rejectSubmissions(orderId, rejectionReason);
+    final result = await _trashTransactionService.rejectSubmissions(transactionId, rejectionReason);
 
     if (result["success"] == true) {
       _trashTransactions[index] = result["data"];
@@ -139,6 +139,33 @@ class TrashTransactionProvider with ChangeNotifier {
 
     _messageRejected = result["message"] ?? "Gagal menolak pengantaran sampah";
     _isLoadingRejected = false;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> storeTrash(int transactionId, Map<String, dynamic> wasteDeposit) async {
+    _isLoadingCompleted = true;
+    notifyListeners();
+
+    final index = _trashTransactions.indexWhere((o) => o.id == transactionId);
+    if (index == -1) {
+      _isLoadingCompleted = false;
+      notifyListeners();
+      return false;
+    }
+
+    final result = await _trashTransactionService.storeTrash(transactionId, wasteDeposit);
+
+    if (result["success"] == true) {
+      _trashTransactions[index] = result["data"];
+      _messageCompleted = result["message"];
+      _isLoadingCompleted = false;
+      notifyListeners();
+      return true;
+    }
+
+    _messageCompleted = result["message"] ?? "Gagal menyetor sampah";
+    _isLoadingCompleted = false;
     notifyListeners();
     return false;
   }

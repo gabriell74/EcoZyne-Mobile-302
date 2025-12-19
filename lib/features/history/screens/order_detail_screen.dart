@@ -75,6 +75,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         return CancellationBottomSheet(
           formKey: _formKey,
           cancelReasonCtrl: _cancelReasonCtrl,
+          title: "Batalkan Pesanan",
+          subtitle: "Beri tahu alasan pembatalan",
+          hintText: "Contoh: Ingin mengubah pesanan, salah pilih produk, dll",
+          buttonText: "Batalkan Pesanan",
+          validationText: "Alasan pembatalan wajib diisi",
           onPressed: (context) => _cancelDialog(context));
       },
     );

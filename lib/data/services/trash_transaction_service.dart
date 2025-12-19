@@ -171,4 +171,57 @@ class TrashTransactionService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> storeTrash(int transactionId,Map<String, dynamic> wasteDeposit) async {
+    try {
+
+      final formData = FormData.fromMap({
+        "_method": "PUT",
+        "trash_weight": wasteDeposit["trash_weight"],
+        "trash_image": await MultipartFile.fromFile(
+          wasteDeposit["trash_image"],
+          filename: wasteDeposit["trash_image"].split('/').last,
+        ),
+      });
+
+      final response = await _dio.post(
+        "/trash-transactions/$transactionId/complete",
+        data: formData
+      );
+
+      final isSuccess = response.statusCode == 200 &&
+          response.data["success"] == true;
+
+      final updatedSubmission = TrashTransaction.fromJson(response.data["data"]);
+
+      if (isSuccess) {
+        return {
+          "success": true,
+          "message": response.data["message"],
+          "connected": true,
+          "data": updatedSubmission,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal menyetor sampah",
+        "connected": true,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal menyetor sampah",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
+    }
+  }
 }

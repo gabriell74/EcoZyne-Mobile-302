@@ -3,6 +3,7 @@ class TrashTransaction {
   final String status;
   final int? trashWeight;
   final int? pointEarned;
+  final String? trashImage;
   final String? rejectionReason;
   final String createdAt;
 
@@ -16,6 +17,7 @@ class TrashTransaction {
     required this.status,
     required this.trashWeight,
     required this.pointEarned,
+    required this.trashImage,
     required this.rejectionReason,
     required this.createdAt,
     required this.userId,
@@ -30,6 +32,7 @@ class TrashTransaction {
       status: json['status'],
       trashWeight: json['trash_weight'],
       pointEarned: json['point_earned'],
+      trashImage: json['trash_image'],
       rejectionReason: json['rejection_reason'],
       createdAt: json['created_at'],
 

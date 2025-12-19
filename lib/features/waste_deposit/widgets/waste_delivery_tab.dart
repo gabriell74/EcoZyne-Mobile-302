@@ -73,6 +73,11 @@ class _WasteDeliveryTabState extends State<WasteDeliveryTab> {
           formKey: _formKey,
           cancelReasonCtrl: _rejectReasonCtrl,
           onPressed: (context) => _rejectDialog(context, orderId),
+          title: "Tolak Pengantaran Sampah",
+          subtitle: "Beri tahu alasan pembatalan",
+          hintText: "Contoh: Sedang tidak menerima sampah, dll",
+          buttonText: "Tolak Pengantaran Sampah",
+          validationText: "Alasan penolakan wajib diisi",
         );
       },
     );
