@@ -1,3 +1,4 @@
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,6 +8,7 @@ class WasteBankDetailCard extends StatelessWidget {
   final String location;
   final String imageUrl;
   final VoidCallback? onTap;
+  final bool isMyBank;
 
   const WasteBankDetailCard({
     super.key,
@@ -14,6 +16,7 @@ class WasteBankDetailCard extends StatelessWidget {
     required this.location,
     required this.imageUrl,
     this.onTap,
+    this.isMyBank = false,
   });
 
   @override
@@ -33,28 +36,63 @@ class WasteBankDetailCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: screenSize.height * 0.22,
-                width: double.infinity,
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  fadeInDuration: const Duration(milliseconds: 400),
-                  placeholder: (context, url) => Container(
-                    color: Colors.grey.shade200,
-                    child: const Center(child: LoadingWidget()),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey.shade100,
-                    child: const Center(
-                      child: Icon(
-                        Icons.broken_image,
-                        color: Colors.grey,
-                        size: 50,
+              Stack(
+                children: [
+                  SizedBox(
+                    height: screenSize.height * 0.22,
+                    width: double.infinity,
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      fadeInDuration: const Duration(milliseconds: 400),
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey.shade200,
+                        child: const Center(child: LoadingWidget()),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey.shade100,
+                        child: const Center(
+                          child: Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
+                            size: 50,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+
+                  if (isMyBank)
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade700.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          "Bank Sampah Anda",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
 
               Padding(
@@ -84,13 +122,10 @@ class WasteBankDetailCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Expanded(
-                          child: Text(
+                          child: CustomText(
                             location,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                            color: Colors.grey,
+                            textOverflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

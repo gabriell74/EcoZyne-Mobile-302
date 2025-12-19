@@ -43,6 +43,7 @@ class MapSection extends StatelessWidget {
             defaultZoom: defaultZoom,
             batamBounds: batamBounds,
             selectedLocation: selectedLocation,
+            showInfoLocation: true,
             onLocationSelected: (loc) {
               onLocationSelected(loc);
               onFetchAddress?.call();

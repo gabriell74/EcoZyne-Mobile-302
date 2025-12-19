@@ -10,6 +10,7 @@ class MapSelectionWidget extends StatefulWidget {
   final double defaultZoom;
   final LatLngBounds batamBounds;
   final LatLng? selectedLocation;
+  final bool showInfoLocation;
   final Function(LatLng) onLocationSelected;
 
   const MapSelectionWidget({
@@ -19,7 +20,9 @@ class MapSelectionWidget extends StatefulWidget {
     required this.defaultZoom,
     required this.batamBounds,
     required this.selectedLocation,
+    required this.showInfoLocation,
     required this.onLocationSelected,
+    requ
   });
 
   @override
@@ -109,32 +112,34 @@ class _MapSelectionWidgetState extends State<MapSelectionWidget> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: CustomText(
-            "Pilih Lokasi di Peta",
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 6),
-        if (widget.selectedLocation != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomText(
-                  "Latitude: ${widget.selectedLocation!.latitude.toStringAsFixed(6)}",
-                  fontSize: 14,
-                ),
-                CustomText(
-                  "Longitude: ${widget.selectedLocation!.longitude.toStringAsFixed(6)}",
-                  fontSize: 14,
-                ),
-              ],
+        if (widget.showInfoLocation) ...[
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
+            child: CustomText(
+              "Pilih Lokasi di Peta",
+              fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(height: 6),
+          if (widget.selectedLocation != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    "Latitude: ${widget.selectedLocation!.latitude.toStringAsFixed(6)}",
+                    fontSize: 14,
+                  ),
+                  CustomText(
+                    "Longitude: ${widget.selectedLocation!.longitude.toStringAsFixed(6)}",
+                    fontSize: 14,
+                  ),
+                ],
+              ),
+            ),
+        ]
       ],
     );
   }

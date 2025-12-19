@@ -5,6 +5,7 @@ import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/login_required_dialog.dart';
 import 'package:ecozyne_mobile/data/models/waste_bank.dart';
 import 'package:ecozyne_mobile/data/providers/trash_transaction_provider.dart';
+import 'package:ecozyne_mobile/data/providers/user_provider.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
 import 'package:ecozyne_mobile/features/waste_bank/widgets/waste_bank_detail_card.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,44 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
     );
   }
 
-  Future<void> _showConfirmDialog(BuildContext context, int wasteBankId) async{
+  Future<void> _showConfirmDialog(BuildContext context, int wasteBankId) async {
+    final userProvider = context.read<UserProvider>();
+    final bool isMyWasteBank = widget.wasteBank.id == userProvider.user?.wasteBank?.id;
+
+    if (isMyWasteBank) {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.business_outlined,
+                  color: Colors.orange[700],
+                  size: 60,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  "Tidak dapat setor sampah\ndi bank sampah Anda sendiri",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => ConfirmationDialog(
@@ -125,6 +163,13 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+
+    final bool isMyWasteBank = widget.wasteBank.id == userProvider.user?.wasteBank?.id;
+    final bool isLoggedIn = UserHelper.isLoggedIn(context);
+
+    final bool isButtonEnabled = !isMyWasteBank;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
@@ -143,6 +188,7 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: MapSelectionWidget(
+                      showInfoLocation: false,
                       mapController: _mapController,
                       defaultCenter: _bankLocation,
                       defaultZoom: 15,
@@ -161,6 +207,7 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                     name: widget.wasteBank.wasteBankName,
                     location: widget.wasteBank.wasteBankLocation,
                     imageUrl: widget.wasteBank.photo,
+                    isMyBank: isMyWasteBank
                   ),
 
                   SizedBox(height: 12),
@@ -177,6 +224,34 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                     widget.wasteBank.notes,
                     textAlign: TextAlign.start,
                   ),
+
+                  if (isMyWasteBank) ...[
+                    SizedBox(height: 16),
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.orange.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.orange.shade700),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              "Ini adalah bank sampah Anda. "
+                                  "Anda tidak dapat setor sampah di sini.",
+                              style: TextStyle(
+                                color: Colors.orange.shade800,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -189,20 +264,38 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    final isLoggedIn = UserHelper.isLoggedIn(context);
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _getButtonColor(
+                      isMyWasteBank: isMyWasteBank,
+                    ),
+                  ),
+                  onPressed: !isButtonEnabled
+                      ? null
+                      : () async {
                     if (!isLoggedIn) {
                       showDialog(
                         context: context,
                         builder: (context) => LoginRequiredDialog(),
                       );
-                    } else {
-                      await _showConfirmDialog(context, widget.wasteBank.id);
+                      return;
                     }
+
+                    await _showConfirmDialog(context, widget.wasteBank.id);
                   },
-                  child: const CustomText(
-                    "Setor Sampah",
-                    fontWeight: FontWeight.bold,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(_getButtonIcon(
+                        isMyWasteBank: isMyWasteBank,
+                      )),
+                      SizedBox(width: 8),
+                      CustomText(
+                        _getButtonText(
+                          isMyWasteBank: isMyWasteBank,
+                        ),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -211,5 +304,26 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
         ],
       ),
     );
+  }
+
+  Color _getButtonColor({
+    required bool isMyWasteBank,
+  }) {
+    if (isMyWasteBank) return Colors.orange.shade700;
+    return const Color(0xFF55C173);
+  }
+
+  IconData _getButtonIcon({
+    required bool isMyWasteBank,
+  }) {
+    if (isMyWasteBank) return Icons.business_outlined;
+    return Icons.recycling_outlined;
+  }
+
+  String _getButtonText({
+    required bool isMyWasteBank,
+  }) {
+    if (isMyWasteBank) return "Bank Sampah Anda";
+    return "Setor Sampah";
   }
 }

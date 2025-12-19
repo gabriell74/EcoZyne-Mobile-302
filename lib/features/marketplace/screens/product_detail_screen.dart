@@ -38,12 +38,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     });
   }
 
-  // @override
-  // void dispose() {
-  //   context.read<ProductDetailProvider>().clear();
-  //   super.dispose();
-  // }
-
   Future<void> _showConfirmDialog(
       BuildContext context, {
         required int productId,
@@ -99,20 +93,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final Product baseProduct = widget.product;
+    final UserProvider userProvider = context.watch<UserProvider>();
+    final ProductDetailProvider detailProvider = context.watch<ProductDetailProvider>();
 
-    final Product? apiProduct =
-        context.watch<ProductDetailProvider>().product;
+    final Product? apiProduct = detailProvider.product;
+    final bool isSameProduct = apiProduct != null && apiProduct.id == baseProduct.id;
 
-    final bool isSameProduct =
-        apiProduct != null && apiProduct.id == baseProduct.id;
+    final Product displayProduct = isSameProduct ? apiProduct : baseProduct;
 
-    final int stock =
-    isSameProduct ? apiProduct.stock : baseProduct.stock;
+    final int stock = displayProduct.stock;
+    final int price = displayProduct.price;
 
-    final int price =
-    isSameProduct ? apiProduct.price : baseProduct.price;
-
+    final bool isMyProduct = displayProduct.wasteBankId == userProvider.user?.wasteBank?.id;
     final bool isOutOfStock = stock <= 0;
+    final bool isLoggedIn = userProvider.user != null && !userProvider.isGuest;
+
+    final bool isButtonEnabled = !isOutOfStock && !isMyProduct;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -125,8 +121,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BuildImageSection(
-                    id: baseProduct.id,
-                    photo: baseProduct.photo,
+                    id: displayProduct.id,
+                    photo: displayProduct.photo,
                     tagPrefix: 'product',
                   ),
 
@@ -183,7 +179,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                         FeatureCard(
                           icon: Icons.recycling_outlined,
-                          title: baseProduct.wasteBankName ??
+                          title: displayProduct.wasteBankName ??
                               "Bank Sampah",
                           color: const Color(0xFF55C173),
                         ),
@@ -209,7 +205,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                           child: CustomText(
-                            baseProduct.description,
+                            displayProduct.description,
                             fontSize: 15,
                             height: 1.6,
                           ),
@@ -262,18 +258,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: isOutOfStock
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _getButtonColor(
+                            isMyProduct: isMyProduct,
+                            isOutOfStock: isOutOfStock,
+                          ),
+                        ),
+                        onPressed: !isButtonEnabled
                             ? null
                             : () {
-                          final userProvider =
-                          context.read<UserProvider>();
-
-                          if (userProvider.isGuest ||
-                              userProvider.user == null) {
+                          if (!isLoggedIn) {
                             showDialog(
                               context: context,
-                              builder: (_) =>
-                              const LoginRequiredDialog(),
+                              builder: (_) => LoginRequiredDialog(),
                             );
                             return;
                           }
@@ -282,7 +279,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (_) => CheckoutScreen(
-                                product: baseProduct,
+                                product: displayProduct,
                                 onPressed: ({
                                   required String customerName,
                                   required String phoneNumber,
@@ -291,7 +288,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 }) {
                                   return _showConfirmDialog(
                                     context,
-                                    productId: baseProduct.id,
+                                    productId: displayProduct.id,
                                     customerName: customerName,
                                     phoneNumber: phoneNumber,
                                     orderAddress: orderAddress,
@@ -307,15 +304,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           MainAxisAlignment.center,
                           children: [
                             Icon(
-                              isOutOfStock
-                                  ? Icons.error_outline
-                                  : Icons.shopping_bag_outlined,
+                              _getButtonIcon(
+                                isMyProduct: isMyProduct,
+                                isOutOfStock: isOutOfStock,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             CustomText(
-                              isOutOfStock
-                                  ? "Stok Habis"
-                                  : "Beli Sekarang",
+                              _getButtonText(
+                                isMyProduct: isMyProduct,
+                                isOutOfStock: isOutOfStock,
+                              ),
                               fontWeight: FontWeight.bold,
                             ),
                           ],
@@ -330,5 +329,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
       ),
     );
+  }
+
+  Color _getButtonColor({
+    required bool isMyProduct,
+    required bool isOutOfStock,
+  }) {
+    if (isMyProduct) return Colors.orange.shade700;
+    if (isOutOfStock) return Colors.grey.shade400;
+    return const Color(0xFF55C173);
+  }
+
+  IconData _getButtonIcon({
+    required bool isMyProduct,
+    required bool isOutOfStock,
+  }) {
+    if (isMyProduct) return Icons.store_mall_directory_outlined;
+    if (isOutOfStock) return Icons.error_outline;
+    return Icons.shopping_bag_outlined;
+  }
+
+  String _getButtonText({
+    required bool isMyProduct,
+    required bool isOutOfStock,
+  }) {
+    if (isMyProduct) return "Produk Anda Sendiri";
+    if (isOutOfStock) return "Stok Habis";
+    return "Beli Sekarang";
   }
 }
