@@ -135,6 +135,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     _whatsappNumController.dispose();
     _addressController.dispose();
     _postalCodeController.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RegionProvider>().reset();
+    });
     super.dispose();
   }
 

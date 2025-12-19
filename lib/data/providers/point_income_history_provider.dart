@@ -19,17 +19,8 @@ class PointIncomeHistoryProvider with ChangeNotifier {
   String get message => _message;
   bool get connected => _connected;
 
-  DateTime? _lastFetchedPointIncome;
-  final Duration _cacheDuration = const Duration(minutes: 5);
 
-  Future<void> getPointIncomeHistory({bool forceRefresh = false}) async {
-    if (!forceRefresh &&
-        _pointIncomeHistory != null &&
-        _lastFetchedPointIncome != null &&
-        DateTime.now().difference(_lastFetchedPointIncome!) < _cacheDuration) {
-      return;
-    }
-
+  Future<void> getPointIncomeHistory() async {
     _isLoading = true;
     notifyListeners();
 
@@ -39,7 +30,6 @@ class PointIncomeHistoryProvider with ChangeNotifier {
 
     if (result["success"]) {
       _pointIncomeHistory = result["data"] as PointIncomeHistory?;
-      _lastFetchedPointIncome = DateTime.now();
 
       if (_pointIncomeHistory == null ||
           (_pointIncomeHistory!.rejectedReward.isEmpty && _pointIncomeHistory!.wasteSubmission.isEmpty)) {

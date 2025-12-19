@@ -1,6 +1,5 @@
 import 'package:ecozyne_mobile/core/utils/date_formatter.dart';
 import 'package:ecozyne_mobile/core/utils/history_helper.dart';
-import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/data/providers/point_income_history_provider.dart';
@@ -55,7 +54,7 @@ class _PointInScreenState extends State<PointInScreen>
 
         return RefreshIndicator.adaptive(
           onRefresh: () async =>
-              prov.getPointIncomeHistory(forceRefresh: true),
+              prov.getPointIncomeHistory(),
           color: Colors.black,
           backgroundColor: const Color(0xFF55C173),
           child: ListView.builder(
@@ -98,10 +97,12 @@ class _PointInScreenState extends State<PointInScreen>
                           icon: Icons.add_circle_outline,
                           color: Colors.blue,
                           title: "Poin Masuk (Setoran Sampah)",
-                          subtitle: "+${item.point ?? 0} Poin",
+                          subtitle: "+${item.pointEarned ?? 0} Poin",
                           subtitleColor: Colors.blue,
                           time: timeAgo(item.createdAt),
-                          description: "Riwayat sampah masuk",
+                          description: "Ketuk untuk melihat detail",
+                          trashImage: item.trashImage,
+                          trashWeight: item.trashWeight.toString(),
                         );
                       }
                     },

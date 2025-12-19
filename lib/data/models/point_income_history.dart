@@ -1,10 +1,11 @@
 
 import 'package:ecozyne_mobile/data/models/exchange_history.dart';
+import 'package:ecozyne_mobile/data/models/trash_transaction.dart';
 import 'package:ecozyne_mobile/data/models/waste_submission_history.dart';
 
 class PointIncomeHistory {
   final List<ExchangeHistory> rejectedReward;
-  final List<WasteSubmissionHistory> wasteSubmission;
+  final List<TrashTransaction> wasteSubmission;
 
   PointIncomeHistory({
     required this.rejectedReward,
@@ -18,7 +19,7 @@ class PointIncomeHistory {
           .toList(),
 
       wasteSubmission: (json["waste_submission"] as List)
-          .map((e) => WasteSubmissionHistory.fromJson(e))
+          .map((e) => TrashTransaction.fromJson(e))
           .toList(),
     );
   }

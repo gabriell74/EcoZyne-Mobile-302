@@ -1,97 +1,26 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:ecozyne_mobile/core/widgets/build_form_field.dart';
-import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
-import 'package:ecozyne_mobile/core/widgets/image_picker_field.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
-import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
-import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
-import 'package:ecozyne_mobile/data/providers/region_provider.dart';
-import 'package:ecozyne_mobile/features/waste_bank/widgets/map_selection_widget.dart';
-import 'package:ecozyne_mobile/features/waste_bank/widgets/pdf_upload_widget.dart';
+import 'package:ecozyne_mobile/data/models/waste_bank_submission.dart';
+import 'package:ecozyne_mobile/data/services/openstreetmap_service.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/address_section.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/contact_section.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/document_section.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/identitas_section.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/map_section.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/photo_section.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/section_header.dart';
+import 'package:ecozyne_mobile/features/waste_bank/widgets/submit_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
-import 'package:ecozyne_mobile/core/widgets/app_background.dart';
-import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
-import 'package:ecozyne_mobile/core/utils/validators.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import 'package:ecozyne_mobile/data/models/region.dart';
-import 'package:http/http.dart' as http;
-
-// =============== SERVICE UNTUK OPENSTREETMAP ===============
-class OpenStreetMapService {
-  static const String _baseUrl = 'https://nominatim.openstreetmap.org';
-  
-  /// Reverse Geocoding: Dapatkan alamat dari koordinat
-  static Future<Map<String, dynamic>?> reverseGeocode(double lat, double lon) async {
-    final url = Uri.parse(
-      '$_baseUrl/reverse?format=json&lat=$lat&lon=$lon&addressdetails=1&zoom=18'
-    );
-    
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'User-Agent': 'EcoZyneMobileApp/1.0',
-          'Accept-Language': 'id',
-          'Referer': 'ecozyne.app',
-        },
-      );
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data;
-      }
-    } catch (e) {
-      print('OpenStreetMap Reverse Geocode Error: $e');
-    }
-    
-    return null;
-  }
-  
-  /// Ambil kode pos dari hasil reverse geocode
-  static Future<String?> getPostalCode(double lat, double lon) async {
-    final data = await reverseGeocode(lat, lon);
-    
-    if (data != null && data['address'] != null) {
-      final address = data['address'] as Map<String, dynamic>;
-      
-      // Coba berbagai key untuk kode pos
-      return address['postcode'] ?? 
-             address['postal_code'] ?? 
-             address['postalcode'];
-    }
-    
-    return null;
-  }
-  
-  /// Ambil alamat lengkap
-  static Future<Map<String, String>?> getFullAddress(double lat, double lon) async {
-    final data = await reverseGeocode(lat, lon);
-    
-    if (data != null && data['address'] != null) {
-      final address = data['address'] as Map<String, dynamic>;
-      
-      return {
-        'jalan': address['road'] ?? '',
-        'kelurahan': address['village'] ?? address['suburb'] ?? '',
-        'kecamatan': address['subdistrict'] ?? address['county'] ?? '',
-        'kota': address['city'] ?? address['town'] ?? '',
-        'provinsi': address['state'] ?? '',
-        'kode_pos': address['postcode'] ?? address['postal_code'] ?? '',
-        'negara': address['country'] ?? '',
-        'display_name': data['display_name'] ?? '',
-      };
-    }
-    
-    return null;
-  }
-}
-// ===========================================================
+import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
+import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
+import 'package:ecozyne_mobile/data/providers/waste_bank_submission_provider.dart';
+import 'package:ecozyne_mobile/data/providers/region_provider.dart';
 
 class WasteBankRegisterScreen extends StatefulWidget {
   const WasteBankRegisterScreen({super.key});
@@ -105,20 +34,23 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final MapController _mapController = MapController();
 
-  // Controller
+  // Controllers
   final TextEditingController _bankNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _rtController = TextEditingController();
   final TextEditingController _rwController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _postalCodeController = TextEditingController(); // TAMBAH
+  final TextEditingController _postalCodeController = TextEditingController();
 
+  // State
   LatLng? _selectedLocation;
   String? _selectedImagePath;
   String? _selectedPdfPath;
-  bool _isFetchingAddress = false; // TAMBAH
+  bool _isFetchingAddress = false;
+  bool _isSubmitting = false;
 
+  // Constants
   final LatLng defaultCenter = const LatLng(1.0456, 104.0305);
   final double defaultZoom = 12.0;
   final LatLngBounds batamBounds = LatLngBounds(
@@ -126,12 +58,16 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     const LatLng(1.2100, 104.1750),
   );
 
+  // Services
+  final OpenStreetMapService _osmService = OpenStreetMapService();
+
   @override
   void initState() {
     super.initState();
-    // Load data region saat screen pertama kali muncul
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RegionProvider>().loadRegions();
+      final regionProvider = context.read<RegionProvider>();
+      regionProvider.reset();
+      regionProvider.loadRegions();
     });
   }
 
@@ -143,7 +79,7 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     _rwController.dispose();
     _whatsappController.dispose();
     _descriptionController.dispose();
-    _postalCodeController.dispose(); // TAMBAH
+    _postalCodeController.dispose();
     super.dispose();
   }
 
@@ -157,9 +93,8 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     if (result != null && result.files.single.path != null) {
       final file = result.files.first;
 
-      // Validasi ukuran file (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        if (context.mounted) {
+        if (mounted) {
           showErrorTopSnackBar(context, "File terlalu besar. Maksimal 5MB");
         }
         return;
@@ -169,46 +104,52 @@ class _WasteBankRegisterScreenState extends State<WasteBankRegisterScreen> {
     }
   }
 
-  // TAMBAH: Method untuk fetch alamat dari koordinat
-Future<void> _fetchAddressFromCoordinates() async {
-  if (_selectedLocation == null) return;
-  
-  // Reset dulu
-  setState(() {
-    _postalCodeController.clear();
-  });
-  
-  try {
-    final postalCode = await OpenStreetMapService.getPostalCode(
-      _selectedLocation!.latitude,
-      _selectedLocation!.longitude,
-    );
-    
-    if (mounted && postalCode != null) {
-      setState(() {
-        _postalCodeController.text = postalCode;
-      });
-    }
-  } catch (e) {
-    print('Error fetching postal code: $e');
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Gagal mendeteksi kode pos'),
-          backgroundColor: Colors.orange,
-          duration: const Duration(seconds: 2),
-        ),
+  Future<void> _fetchAddressFromCoordinates() async {
+    if (_selectedLocation == null) return;
+
+    setState(() {
+      _isFetchingAddress = true;
+      _postalCodeController.clear();
+    });
+
+    try {
+      final postalCode = await _osmService.getPostalCode(
+        _selectedLocation!.latitude,
+        _selectedLocation!.longitude,
       );
+
+      if (mounted && postalCode != null) {
+        setState(() {
+          _postalCodeController.text = postalCode;
+          _isFetchingAddress = false;
+        });
+      } else {
+        setState(() => _isFetchingAddress = false);
+      }
+    } catch (e) {
+      print('Error fetching postal code: $e');
+      if (mounted) {
+        setState(() => _isFetchingAddress = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Gagal mendeteksi kode pos'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
-}
 
   String _buildFullAddress(RegionProvider regionProvider) {
+    final selectedKecamatan = regionProvider.selectedKecamatan;
+    final selectedKelurahan = regionProvider.selectedKelurahan;
+
     return "${_addressController.text.trim()}\n"
         "RT ${_rtController.text.trim()} / RW ${_rwController.text.trim()}\n"
-        "Kelurahan ${regionProvider.selectedKelurahan?.kelurahan ?? ''}\n"
-        "Kecamatan ${regionProvider.selectedKecamatan?.kecamatan ?? ''}\n"
-        "Kode Pos ${_postalCodeController.text.trim()}\n" // TAMBAH KODE POS
+        "Kelurahan ${selectedKelurahan?.kelurahan ?? ''}\n"
+        "Kecamatan ${selectedKecamatan?.kecamatan ?? ''}\n"
+        "Kode Pos ${_postalCodeController.text.trim()}\n"
         "Kota Batam\n"
         "Provinsi Kepulauan Riau";
   }
@@ -221,6 +162,7 @@ Future<void> _fetchAddressFromCoordinates() async {
 
     final regionProvider = context.read<RegionProvider>();
 
+    // Validations
     if (regionProvider.selectedKecamatan == null) {
       showErrorTopSnackBar(context, "Pilih kecamatan terlebih dahulu");
       return;
@@ -246,7 +188,6 @@ Future<void> _fetchAddressFromCoordinates() async {
       return;
     }
 
-    // TAMBAH: Validasi kode pos
     if (_postalCodeController.text.isEmpty) {
       showErrorTopSnackBar(context, "Kode pos wajib diisi");
       return;
@@ -262,622 +203,40 @@ Future<void> _fetchAddressFromCoordinates() async {
 
     if (confirmed != true) return;
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const LoadingWidget(height: 100),
-    );
+    setState(() => _isSubmitting = true);
 
-    final provider = context.read<WasteBankSubmissionProvider>();
+    try {
+      final provider = context.read<WasteBankSubmissionProvider>();
 
-    // Simpan ke variabel lokal untuk menghindari null safety warning
-    final selectedKecamatan = regionProvider.selectedKecamatan!;
-    final selectedKelurahan = regionProvider.selectedKelurahan!;
-
-    final success = await provider.addSubmission({
-      "waste_bank_name": _bankNameController.text,
-      "waste_bank_location": _buildFullAddress(regionProvider),
-      "photo": _selectedImagePath!,
-      "latitude": _selectedLocation!.latitude,
-      "longitude": _selectedLocation!.longitude,
-      "file_document": _selectedPdfPath!,
-      "notes": _descriptionController.text,
-      "status": "pending",
-      "rt": _rtController.text.trim(),
-      "rw": _rwController.text.trim(),
-      "kelurahan_id": selectedKelurahan.id,
-      "kecamatan_id": selectedKecamatan.id,
-      "kelurahan_name": selectedKelurahan.kelurahan,
-      "kecamatan_name": selectedKecamatan.kecamatan,
-      "postal_code": _postalCodeController.text.trim(), // TAMBAH
-    });
-
-    if (context.mounted) Navigator.pop(context);
-
-    if (success) {
-      showSuccessTopSnackBar(
-        context,
-        "Pendaftaran sedang diproses",
-        icon: const Icon(Icons.pending_actions),
+      final submission = WasteBankSubmission(
+        wasteBankName: _bankNameController.text,
+        wasteBankLocation: _buildFullAddress(regionProvider),
+        photoPath: _selectedImagePath!,
+        latitude: _selectedLocation!.latitude,
+        longitude: _selectedLocation!.longitude,
+        fileDocumentPath: _selectedPdfPath!,
+        notes: _descriptionController.text,
       );
-      Navigator.pop(context);
-    } else {
-      showErrorTopSnackBar(context, provider.message);
+
+      final success = await provider.addSubmission(submission.toMap());
+
+      if (success) {
+        showSuccessTopSnackBar(
+          context,
+          "Pendaftaran sedang diproses",
+          icon: const Icon(Icons.pending_actions),
+        );
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      } else {
+        showErrorTopSnackBar(context, provider.message);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
-  }
-
-  // =============== HELPER WIDGETS ===============
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-      child: CustomText(
-        title,
-        fontWeight: FontWeight.bold,
-        fontSize: 16,
-        color: Colors.black87,
-      ),
-    );
-  }
-
-  Widget _buildIdentitasSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CustomText(
-            "Nama Bank Sampah",
-            fontSize: 14,
-            color: Colors.black54,
-          ),
-          const SizedBox(height: 4),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: TextFormField(
-              controller: _bankNameController,
-              decoration: const InputDecoration(
-                hintText: "Contoh: Bank Sampah Bersih Jaya",
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              ),
-              validator: Validators.bankName,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPhotoSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CustomText(
-            "Unggah foto lokasi bank sampah",
-            fontSize: 14,
-            color: Colors.black54,
-          ),
-          const SizedBox(height: 8),
-          ImagePickerField(
-            label: "Pilih Foto",
-            initialImage: _selectedImagePath != null ? File(_selectedImagePath!) : null,
-            onImageSelected: (file) {
-              setState(() {
-                _selectedImagePath = file?.path;
-              });
-            },
-          ),
-          const SizedBox(height: 4),
-          const CustomText(
-            "Format: JPG/PNG, Maks. 5MB",
-            fontSize: 12,
-            color: Colors.grey,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMapSection() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const CustomText(
-          "Pilih Lokasi di Peta",
-          fontSize: 14,
-          color: Colors.black54,
-        ),
-        const SizedBox(height: 8),
-          MapSelectionWidget(
-            mapController: _mapController,
-            defaultCenter: defaultCenter,
-            defaultZoom: defaultZoom,
-            batamBounds: batamBounds,
-            selectedLocation: _selectedLocation,
-            onLocationSelected: (loc) {
-              setState(() => _selectedLocation = loc);
-              _fetchAddressFromCoordinates(); // AUTO FETCH
-            },
-          ),
-        const SizedBox(height: 12),
-        if (_selectedLocation != null) ...[
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      "Latitude",
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                    CustomText(
-                      _selectedLocation!.latitude.toStringAsFixed(6),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      "Longitude",
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                    CustomText(
-                      _selectedLocation!.longitude.toStringAsFixed(6),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          // HAPUS loading indicator
-        ],
-      ],
-    ),
-  );
-}
-
-  Widget _buildDetailAlamatSection(BuildContext context, RegionProvider regionProvider) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          const CustomText(
-            "Alamat Lengkap",
-            fontSize: 14,
-            color: Colors.black54,
-          ),
-          const SizedBox(height: 8),
-          BuildFormField(
-            label: "Nama jalan, nomor rumah, patokan...",
-            controller: _addressController,
-            validator: Validators.address,
-          ),
-
-          const SizedBox(height: 16),
-          
-          // RT DAN RW
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      "RT",
-                      fontSize: 14,
-                      color: Colors.black54,
-                    ),
-                    const SizedBox(height: 4),
-                    BuildFormField(
-                      label: "001",
-                      controller: _rtController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'RT wajib diisi';
-                        }
-                        if (!RegExp(r'^\d{3}$').hasMatch(value)) {
-                          return 'RT harus 3 digit';
-                        }
-                        return null;
-                      },
-                      prefixIcon: null,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      "RW",
-                      fontSize: 14,
-                      color: Colors.black54,
-                    ),
-                    const SizedBox(height: 4),
-                    BuildFormField(
-                      label: "005",
-                      controller: _rwController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'RW wajib diisi';
-                        }
-                        if (!RegExp(r'^\d{3}$').hasMatch(value)) {
-                          return 'RW harus 3 digit';
-                        }
-                        return null;
-                      },
-                      prefixIcon: null,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // KODE POS - AUTO DETECT (READONLY)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CustomText(
-                "Kode Pos",
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-              const SizedBox(height: 4),
-              TextFormField(
-                controller: _postalCodeController,
-                keyboardType: TextInputType.number,
-                readOnly: true, // TIDAK BISA DIEDIT
-                decoration: InputDecoration(
-                  hintText: _selectedLocation == null 
-                      ? "Pilih lokasi di peta dulu" 
-                      : "Mendeteksi kode pos...",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                  prefixIcon: const Icon(Icons.local_post_office, size: 20),
-                  suffixIcon: _postalCodeController.text.isNotEmpty
-                      ? Icon(Icons.check_circle, color: Colors.green[600], size: 20)
-                      : _selectedLocation != null
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Icon(Icons.location_on, color: Colors.grey[600], size: 20),
-                  filled: true,
-                  fillColor: _postalCodeController.text.isNotEmpty
-                      ? Colors.green[50]
-                      : Colors.grey[50],
-                ),
-                validator: (value) {
-                  if (_selectedLocation == null) {
-                    return 'Pilih lokasi di peta terlebih dahulu';
-                  }
-                  if (value == null || value.isEmpty) {
-                    return 'Sedang mendeteksi kode pos...';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 6),
-              if (_selectedLocation != null && _postalCodeController.text.isEmpty)
-                Text(
-                  "Mendeteksi kode pos...",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.blue[700],
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              if (_postalCodeController.text.isNotEmpty)
-                Text(
-                  "Kode pos otomatis terdeteksi dari peta",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.green[700],
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // KECAMATAN DROPDOWN
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CustomText(
-                "Kecamatan",
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-              const SizedBox(height: 4),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<Kecamatan>(
-                    value: regionProvider.selectedKecamatan,
-                    hint: const Text(
-                      "Pilih Kecamatan",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    isExpanded: true,
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                    items: regionProvider.kecamatanList.map((kecamatan) {
-                      return DropdownMenuItem<Kecamatan>(
-                        value: kecamatan,
-                        child: Text(
-                          kecamatan.kecamatan,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      regionProvider.selectKecamatan(value);
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // KELURAHAN DROPDOWN
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CustomText(
-                "Kelurahan",
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-              const SizedBox(height: 4),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<Kelurahan>(
-                    value: regionProvider.selectedKelurahan,
-                    hint: const Text(
-                      "Pilih Kelurahan",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    isExpanded: true,
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                    items: regionProvider.kelurahanList.map((kelurahan) {
-                      return DropdownMenuItem<Kelurahan>(
-                        value: kelurahan,
-                        child: Text(
-                          kelurahan.kelurahan,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: regionProvider.selectedKecamatan != null
-                        ? (value) {
-                            regionProvider.selectKelurahan(value);
-                          }
-                        : null,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-          
-          // WILAYAH ADMINISTRATIF
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const CustomText(
-                  "WILAYAH ADMINISTRATIF",
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54,
-                ),
-                const SizedBox(height: 8),
-                const Divider(height: 1, color: Colors.grey),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Kota",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "Batam",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Provinsi",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "Kepulauan Riau",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildKontakSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CustomText(
-            "Nomor WhatsApp",
-            fontSize: 14,
-            color: Colors.black54,
-          ),
-          const SizedBox(height: 8),
-          BuildFormField(
-            label: "08xx-xxxx-xxxx",
-            controller: _whatsappController,
-            validator: Validators.whatsapp,
-            keyboardType: TextInputType.phone,
-            prefixIcon: Icons.phone,
-          ),
-
-          const SizedBox(height: 16),
-          const CustomText(
-            "Deskripsi Bank Sampah",
-            fontSize: 14,
-            color: Colors.black54,
-          ),
-          const SizedBox(height: 8),
-          BuildFormField(
-            label: "Jelaskan profil dan jenis sampah yang ditampung",
-            controller: _descriptionController,
-            maxLines: 4,
-            validator: Validators.description,
-            hintText: "Bank Sampah kami berfokus pada daur ulang plastik dan kertas...",
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDokumenSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CustomText(
-            "Surat Pengajuan (PDF)",
-            fontSize: 14,
-            color: Colors.black54,
-          ),
-          const SizedBox(height: 8),
-          PdfUploadWidget(
-            selectedPdfPath: _selectedPdfPath,
-            onPickPdf: _pickPDF,
-          ),
-          const SizedBox(height: 4),
-          const CustomText(
-            "Maksimal 5MB",
-            fontSize: 12,
-            color: Colors.grey,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSubmitButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: _submitForm,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF55C173),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 2,
-          ),
-          child: const CustomText(
-            "Kirim Pendaftaran",
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -893,7 +252,7 @@ Future<void> _fetchAddressFromCoordinates() async {
         builder: (context, regionProvider, _) {
           if (regionProvider.isLoading) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: LoadingWidget(),
             );
           }
 
@@ -907,30 +266,64 @@ Future<void> _fetchAddressFromCoordinates() async {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // IDENTITAS
-                      _buildSectionHeader("IDENTITAS"),
-                      _buildIdentitasSection(),
+                      const SectionHeader(title: "IDENTITAS"),
+                      IdentitasSection(bankNameController: _bankNameController),
 
                       // FOTO BANK SAMPAH
-                      _buildSectionHeader("Foto Bank Sampah"),
-                      _buildPhotoSection(),
+                      const SectionHeader(title: "Foto Bank Sampah"),
+                      PhotoSection(
+                        initialImagePath: _selectedImagePath,
+                        onImageSelected: (file) {
+                          setState(() {
+                            _selectedImagePath = file?.path;
+                          });
+                        },
+                      ),
 
                       // LOKASI & ALAMAT
-                      _buildSectionHeader("LOKASI & ALAMAT"),
-                      _buildMapSection(),
+                      const SectionHeader(title: "LOKASI & ALAMAT"),
+                      MapSection(
+                        mapController: _mapController,
+                        defaultCenter: defaultCenter,
+                        defaultZoom: defaultZoom,
+                        batamBounds: batamBounds,
+                        selectedLocation: _selectedLocation,
+                        onLocationSelected: (loc) {
+                          setState(() => _selectedLocation = loc);
+                          _fetchAddressFromCoordinates();
+                        },
+                        onFetchAddress: _fetchAddressFromCoordinates,
+                      ),
 
                       // DETAIL ALAMAT
-                      _buildDetailAlamatSection(context, regionProvider),
+                      AddressSection(
+                        addressController: _addressController,
+                        rtController: _rtController,
+                        rwController: _rwController,
+                        postalCodeController: _postalCodeController,
+                        selectedLocation: _selectedLocation,
+                        isFetchingAddress: _isFetchingAddress,
+                      ),
 
                       // KONTAK & OPERASIONAL
-                      _buildSectionHeader("KONTAK & OPERASIONAL"),
-                      _buildKontakSection(),
+                      const SectionHeader(title: "KONTAK & OPERASIONAL"),
+                      ContactSection(
+                        whatsappController: _whatsappController,
+                        descriptionController: _descriptionController,
+                      ),
 
                       // DOKUMEN LEGALITAS
-                      _buildSectionHeader("DOKUMEN LEGALITAS"),
-                      _buildDokumenSection(),
+                      const SectionHeader(title: "DOKUMEN LEGALITAS"),
+                      DocumentSection(
+                        selectedPdfPath: _selectedPdfPath,
+                        onPickPdf: _pickPDF,
+                      ),
 
                       // BUTTON SUBMIT
-                      _buildSubmitButton(),
+                      SubmitButton(
+                        onPressed: _submitForm,
+                        isLoading: _isSubmitting,
+                      ),
 
                       const SizedBox(height: 30),
                     ],

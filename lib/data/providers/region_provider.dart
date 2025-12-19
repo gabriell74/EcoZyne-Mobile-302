@@ -27,11 +27,22 @@ class RegionProvider with ChangeNotifier {
     try {
       _kecamatanList = await _regionService.fetchRegions();
     } catch (e) {
-      debugPrint('Gagal ambil region: $e');
+      // Error handling tanpa debugPrint
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void reset() {
+    _selectedKecamatan = null;
+    _selectedKelurahan = null;
+    notifyListeners();
+  }
+
+  Future<void> resetAndLoad() async {
+    reset();
+    await loadRegions();
   }
 
   void selectKecamatan(Kecamatan? kecamatan) {
