@@ -119,6 +119,106 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/register/verify-otp',
+        data: {
+          'email': email,
+          'otp': otp,
+        },
+      );
+
+      if (response.statusCode == 201 || response.data['success'] == true) {
+        return {
+          'success': true,
+          'message': response.data['message'],
+        };
+      }
+
+      return {
+        'success': false,
+        'message': response.data['message'] ?? 'Verifikasi gagal',
+      };
+    } on DioException catch (e) {
+      final res = e.response;
+
+      if (res?.statusCode == 429) {
+        return {
+          'success': false,
+          'message':
+          res?.data['message'] ??
+              'Terlalu banyak percobaan OTP. Silakan coba lagi nanti.',
+        };
+      }
+
+      if (res != null && res.data is Map<String, dynamic>) {
+        return {
+          'success': false,
+          'message': res.data['message'] ?? 'Verifikasi gagal',
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Tidak ada koneksi',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> resendOtp({
+    required String email,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/register/resend-otp',
+        data: {
+          'email': email,
+        },
+      );
+
+      if (response.statusCode == 200 || response.data['success'] == true) {
+        return {
+          'success': true,
+          'message': response.data['message'],
+        };
+      }
+
+      return {
+        'success': false,
+        'message': response.data['message'] ?? 'Gagal mengirim ulang OTP',
+      };
+    } on DioException catch (e) {
+      final res = e.response;
+
+      if (res?.statusCode == 429) {
+        return {
+          'success': false,
+          'message':
+          res?.data['message'] ??
+              'Terlalu banyak permintaan OTP. Silakan coba lagi nanti.',
+          'rate_limited': true,
+        };
+      }
+
+      if (res != null && res.data is Map<String, dynamic>) {
+        return {
+          'success': false,
+          'message': res.data['message'] ?? 'Gagal mengirim ulang OTP',
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Tidak ada koneksi',
+      };
+    }
+  }
+
+
   Future<void> logout() async {
     await SecureStorageService.deleteToken();
   }

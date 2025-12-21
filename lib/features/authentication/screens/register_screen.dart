@@ -8,6 +8,7 @@ import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/models/region.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/region_provider.dart';
+import 'package:ecozyne_mobile/features/authentication/screens/otp_verify_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -309,11 +310,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (authProvider.success == false) {
                               showErrorTopSnackBar(context, message ?? "Registrasi gagal");
                             } else {
-                              showSuccessTopSnackBar(context, 'Pendaftaran berhasil! Silakan login.');
+                              showSuccessTopSnackBar(
+                                context,
+                                'Registrasi berhasil, silakan verifikasi OTP',
+                              );
 
                               if (!mounted) return;
-                              Navigator.pop(context);
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => OtpVerifyScreen(
+                                    email: _emailController.text.trim(),
+                                  ),
+                                ),
+                              );
                             }
+
                           }
                         },
                         child: authProvider.isLoading

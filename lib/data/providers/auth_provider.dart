@@ -9,6 +9,18 @@ class AuthProvider with ChangeNotifier {
   bool _success = false;
   String? _message;
 
+  bool _isOtpLoading = false;
+  bool get isOtpLoading => _isOtpLoading;
+  bool _isOtpRateLimited = false;
+  bool get isOtpRateLimited => _isOtpRateLimited;
+  bool _isResendOtpLoading = false;
+  bool _isResendOtpRateLimited = false;
+
+  bool get isResendOtpLoading => _isResendOtpLoading;
+  bool get isResendOtpRateLimited => _isResendOtpRateLimited;
+
+
+
   bool get isLoading => _isLoading;
   bool get success => _success;
   String? get message => _message;
@@ -89,4 +101,70 @@ class AuthProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  Future<void> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    _isOtpLoading = true;
+    _success = false;
+    _message = null;
+    notifyListeners();
+
+    final result = await _authService.verifyOtp(
+      email: email,
+      otp: otp,
+    );
+
+    if (result['success'] == true) {
+      _success = true;
+      _message = result['message'] ?? 'Verifikasi berhasil';
+
+      _isOtpRateLimited = false;
+    } else {
+      _success = false;
+      _message = result['message'] ?? 'Verifikasi gagal';
+
+      if ((_message ?? '').toLowerCase().contains('terlalu')) {
+        _isOtpRateLimited = true;
+      }
+    }
+
+    _isOtpLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> resendOtp({
+    required String email,
+  }) async {
+    _isResendOtpLoading = true;
+    _message = null;
+    notifyListeners();
+
+    final result = await _authService.resendOtp(email: email);
+
+    if (result['success'] == true) {
+      _message = result['message'] ?? 'OTP berhasil dikirim ulang';
+
+      _isOtpRateLimited = false;
+      _isResendOtpRateLimited = false;
+    } else {
+      _message = result['message'] ?? 'Gagal mengirim ulang OTP';
+
+      if (result['rate_limited'] == true ||
+          (_message ?? '').toLowerCase().contains('terlalu')) {
+        _isResendOtpRateLimited = true;
+      }
+    }
+
+    _isResendOtpLoading = false;
+    notifyListeners();
+  }
+
+
+  void resetOtpRateLimit() {
+    _isOtpRateLimited = false;
+    notifyListeners();
+  }
+
 }
