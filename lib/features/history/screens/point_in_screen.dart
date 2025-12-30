@@ -103,6 +103,7 @@ class _PointInScreenState extends State<PointInScreen>
                           description: "Ketuk untuk melihat detail",
                           trashImage: item.trashImage,
                           trashWeight: item.trashWeight.toString(),
+                          wasteBankName: item.wasteBankName,
                         );
                       }
                     },

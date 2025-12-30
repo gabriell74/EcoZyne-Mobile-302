@@ -3,6 +3,7 @@ import 'package:ecozyne_mobile/data/api_client.dart';
 import 'package:ecozyne_mobile/data/models/exchange_history.dart';
 import 'package:ecozyne_mobile/data/models/order.dart';
 import 'package:ecozyne_mobile/data/models/point_income_history.dart';
+import 'package:ecozyne_mobile/data/models/trash_submissions.dart';
 
 class HistoryService {
   final _dio = ApiClient.dio;
@@ -128,6 +129,51 @@ class HistoryService {
           "message": e.response?.data["message"] ?? "Gagal memuat riwayat pemesanan produk",
           "connected": true,
           "data": <Order>[],
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+        "data": <Order>[],
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchTrashSubmissionsHistory() async {
+    try {
+      final response = await _dio.get("/trash-transactions/submissions");
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        final List data = response.data["data"] ?? [];
+        final trashSubmissions = data
+            .map((item) => TrashSubmissions.fromJson(item as Map<String, dynamic>))
+            .toList();
+
+        return {
+          "success": true,
+          "message": response.data["message"],
+          "connected": true,
+          "data": trashSubmissions,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal memuat pengajuan setoran sampah",
+        "connected": true,
+        "data": <TrashSubmissions>[],
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal memuat pengajuan setoran sampah",
+          "connected": true,
+          "data": <TrashSubmissions>[],
         };
       }
 

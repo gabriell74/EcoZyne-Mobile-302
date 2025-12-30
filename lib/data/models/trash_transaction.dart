@@ -11,6 +11,7 @@ class TrashTransaction {
   final String? username;
   final String? communityName;
   final String? phoneNumber;
+  final String? wasteBankName;
 
   TrashTransaction({
     required this.id,
@@ -24,6 +25,7 @@ class TrashTransaction {
     required this.username,
     required this.communityName,
     required this.phoneNumber,
+    required this.wasteBankName,
   });
 
   factory TrashTransaction.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class TrashTransaction {
       username: json['username'],
       communityName: json['community_name'],
       phoneNumber: json['phone_number'],
+      wasteBankName: json['waste_bank_name']
     );
   }
 }

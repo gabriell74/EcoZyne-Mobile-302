@@ -1,40 +1,20 @@
 import 'package:ecozyne_mobile/core/utils/history_helper.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
+import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
+import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/data/models/trash_submissions.dart';
+import 'package:ecozyne_mobile/data/providers/trash_submissions_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class WasteBankExchangeHistoryScreen extends StatelessWidget {
+class WasteBankExchangeHistoryScreen extends StatefulWidget {
   const WasteBankExchangeHistoryScreen({super.key});
 
-  List<dynamic> get exchanges => [
-    {
-      "status": "pending",
-      "wasteBankName": "Bank Sampah Sejahtera",
-      "createdAt": DateTime.now().subtract(const Duration(days: 1)),
-    },
-    {
-      "status": "approved",
-      "wasteBankName": "Bank Sampah Hijau",
-      "createdAt": DateTime.now().subtract(const Duration(days: 3)),
-    },
-    {
-      "status": "cancelled",
-      "wasteBankName": "Bank Sampah Bersih",
-      "createdAt": DateTime.now().subtract(const Duration(days: 5)),
-    },
-  ];
+  @override
+  State<WasteBankExchangeHistoryScreen> createState() => _WasteBankExchangeHistoryScreenState();
+}
 
-  Color _statusColor(String status) {
-    switch (status) {
-      case "pending":
-        return Colors.orange;
-      case "approved":
-        return const Color(0xFF55C173);
-      case "cancelled":
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
+class _WasteBankExchangeHistoryScreenState extends State<WasteBankExchangeHistoryScreen> {
 
   String _statusText(String status) {
     switch (status) {
@@ -42,10 +22,27 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
         return "Menunggu";
       case "approved":
         return "Disetujui";
-      case "cancelled":
-        return "Dibatalkan";
+      case "rejected":
+        return "Ditolak";
+      case "completed":
+        return "Sampah Disetorkan";
       default:
         return "Unknown";
+    }
+  }
+
+  Color _statusColor(String status) {
+    switch (status) {
+      case "pending":
+        return Colors.orange;
+      case "approved":
+        return Colors.blue;
+      case "completed":
+        return const Color(0xFF55C173);
+      case "rejected":
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -55,11 +52,22 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
         return Icons.access_time_rounded;
       case "approved":
         return Icons.check_circle_rounded;
-      case "cancelled":
+      case "completed":
+        return Icons.task_alt_rounded;
+      case "rejected":
         return Icons.cancel_rounded;
       default:
         return Icons.help_outline_rounded;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TrashSubmissionsProvider>().getTrashSubmissionsHistory();
+    });
   }
 
   @override
@@ -76,23 +84,34 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white,
       ),
-      body: Column(
-        children: [
-          _buildInfoBanner(),
+      body: Consumer<TrashSubmissionsProvider>(
+        builder: (context, provider, _) {
+          final trashSubmissions = provider.trashSubmissions;
 
-          Expanded(
-            child: exchanges.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: exchanges.length,
-              itemBuilder: (context, index) {
-                final exchange = exchanges[index];
-                return _exchangeStatusCard(context, exchange);
-              },
-            ),
-          ),
-        ],
+          if (provider.isLoading) {
+            return const Center(child: LoadingWidget());
+          }
+
+          if (trashSubmissions.isEmpty) {
+            return Center(child: EmptyState(connected: provider.connected, message: provider.message));
+          }
+          return Column(
+            children: [
+              _buildInfoBanner(),
+
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: trashSubmissions.length,
+                  itemBuilder: (context, index) {
+                    final exchange = trashSubmissions[index];
+                    return _exchangeStatusCard(context, exchange);
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -137,7 +156,6 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
                 CustomText(
                   'Informasi Penting',
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
                   color: Color(0xFF55C173),
                 ),
                 SizedBox(height: 4),
@@ -155,50 +173,14 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.recycling_rounded,
-              size: 64,
-              color: Colors.grey.shade400,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const CustomText(
-            'Belum Ada Pengajuan',
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: Colors.black87,
-          ),
-          const SizedBox(height: 8),
-          CustomText(
-            'Pengajuan pengantaran sampah Anda\nakan muncul di sini',
-            fontSize: 14,
-            color: Colors.grey.shade600,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _exchangeStatusCard(BuildContext context, dynamic exchange) {
+  Widget _exchangeStatusCard(BuildContext context, TrashSubmissions exchange) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _statusColor(exchange["status"]).withValues(alpha: 0.2),
+          color: _statusColor(exchange.status).withValues(alpha: 0.2),
         ),
         boxShadow: [
           BoxShadow(
@@ -258,8 +240,7 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: CustomText(
-                              exchange["wasteBankName"],
-                              fontSize: 14,
+                              exchange.wasteBankName,
                               color: Colors.grey.shade700,
                             ),
                           ),
@@ -275,7 +256,7 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           CustomText(
-                            timeAgo(exchange["createdAt"]),
+                            timeAgo(exchange.createdAt),
                             color: Colors.grey.shade600,
                             fontSize: 13,
                           ),
@@ -311,11 +292,11 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: _statusColor(exchange["status"])
+                    color: _statusColor(exchange.status)
                         .withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: _statusColor(exchange["status"])
+                      color: _statusColor(exchange.status)
                           .withValues(alpha: 0.4),
                       width: 1.5,
                     ),
@@ -324,16 +305,16 @@ class WasteBankExchangeHistoryScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        _statusIcon(exchange["status"]),
+                        _statusIcon(exchange.status),
                         size: 16,
-                        color: _statusColor(exchange["status"]),
+                        color: _statusColor(exchange.status),
                       ),
                       const SizedBox(width: 6),
                       CustomText(
-                        _statusText(exchange["status"]),
+                        _statusText(exchange.status),
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: _statusColor(exchange["status"]),
+                        color: _statusColor(exchange.status),
                       ),
                     ],
                   ),

@@ -11,6 +11,7 @@ class HistoryItem extends StatelessWidget {
   final String? time;
   final String? trashImage;
   final String? trashWeight;
+  final String? wasteBankName;
 
   const HistoryItem({
     super.key,
@@ -23,6 +24,7 @@ class HistoryItem extends StatelessWidget {
     this.time,
     this.trashImage,
     this.trashWeight,
+    this.wasteBankName,
   });
 
   void _showCompletedDetail(BuildContext context) {
@@ -77,12 +79,22 @@ class HistoryItem extends StatelessWidget {
                   const Icon(Icons.scale_rounded),
                   const SizedBox(width: 8),
                   CustomText(
-                    "Berat Sampah: $trashWeight kg",
-                    fontSize: 14,
+                    "Berat Sampah: ${trashWeight ?? 0} kg",
+                    fontWeight: FontWeight.bold,
                   ),
                 ],
               ),
               const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Icon(Icons.recycling_outlined),
+                  const SizedBox(width: 8),
+                  CustomText(
+                    wasteBankName ?? "Bank Sampah Tidak Ditemukan",
+                    fontWeight: FontWeight.bold,
+                  ),
+                ],
+              ),
             ],
           ),
         );
@@ -136,7 +148,6 @@ class HistoryItem extends StatelessWidget {
                   CustomText(
                     subtitle,
                     color: subtitleColor.withValues(alpha: 0.6),
-                    fontSize: 14,
                   ),
                   if (description != null) ...[
                     const SizedBox(height: 4),

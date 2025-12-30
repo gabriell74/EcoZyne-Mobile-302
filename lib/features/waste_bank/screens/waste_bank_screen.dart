@@ -131,14 +131,14 @@ class _WasteBankScreenState extends State<WasteBankScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               CustomText(
-                                                "Riwayat Tukar Sampah",
+                                                "Pengajuan Pengantaran Sampah",
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15,
                                               ),
                                               const SizedBox(height: 2),
                                               CustomText(
-                                                "Lihat semua riwayat penukaran",
+                                                "Lihat semua riwayat pengantaran",
                                                 color: Colors.white,
                                                 fontSize: 12,
                                               ),
