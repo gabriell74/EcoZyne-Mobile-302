@@ -11,11 +11,12 @@ class WasteBankExchangeHistoryScreen extends StatefulWidget {
   const WasteBankExchangeHistoryScreen({super.key});
 
   @override
-  State<WasteBankExchangeHistoryScreen> createState() => _WasteBankExchangeHistoryScreenState();
+  State<WasteBankExchangeHistoryScreen> createState() =>
+      _WasteBankExchangeHistoryScreenState();
 }
 
-class _WasteBankExchangeHistoryScreenState extends State<WasteBankExchangeHistoryScreen> {
-
+class _WasteBankExchangeHistoryScreenState
+    extends State<WasteBankExchangeHistoryScreen> {
   String _statusText(String status) {
     switch (status) {
       case "pending":
@@ -82,7 +83,7 @@ class _WasteBankExchangeHistoryScreenState extends State<WasteBankExchangeHistor
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF55C173),
       ),
       body: Consumer<TrashSubmissionsProvider>(
         builder: (context, provider, _) {
@@ -93,7 +94,12 @@ class _WasteBankExchangeHistoryScreenState extends State<WasteBankExchangeHistor
           }
 
           if (trashSubmissions.isEmpty) {
-            return Center(child: EmptyState(connected: provider.connected, message: provider.message));
+            return Center(
+              child: EmptyState(
+                connected: provider.connected,
+                message: provider.message,
+              ),
+            );
           }
           return Column(
             children: [
@@ -270,10 +276,7 @@ class _WasteBankExchangeHistoryScreenState extends State<WasteBankExchangeHistor
 
             const SizedBox(height: 12),
 
-            Divider(
-              color: Colors.grey.shade200,
-              height: 1,
-            ),
+            Divider(color: Colors.grey.shade200, height: 1),
 
             const SizedBox(height: 12),
 
@@ -292,12 +295,14 @@ class _WasteBankExchangeHistoryScreenState extends State<WasteBankExchangeHistor
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: _statusColor(exchange.status)
-                        .withValues(alpha: 0.15),
+                    color: _statusColor(
+                      exchange.status,
+                    ).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: _statusColor(exchange.status)
-                          .withValues(alpha: 0.4),
+                      color: _statusColor(
+                        exchange.status,
+                      ).withValues(alpha: 0.4),
                       width: 1.5,
                     ),
                   ),

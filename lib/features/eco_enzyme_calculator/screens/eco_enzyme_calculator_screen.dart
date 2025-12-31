@@ -50,7 +50,11 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF55C173),
-        title: const CustomText("Forum Diskusi", fontWeight: FontWeight.bold, fontSize: 18),
+        title: const CustomText(
+          "Eco Kalkulator",
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
         centerTitle: true,
       ),
       body: AppBackground(
@@ -130,7 +134,10 @@ class _EcoEnzymeCalculatorScreenState extends State<EcoEnzymeCalculatorScreen> {
                         "Bahan Organik",
                         "${_bahanOrganik.toStringAsFixed(1)} gram",
                       ),
-                      _buildResultRow("Air", "${_air.toStringAsFixed(1)} Liter"),
+                      _buildResultRow(
+                        "Air",
+                        "${_air.toStringAsFixed(1)} Liter",
+                      ),
                     ],
                   ),
                 ),

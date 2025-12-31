@@ -54,8 +54,12 @@ class _WasteBankSubmissionHistoryScreenState
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFFFFF),
-        title: const CustomText("Riwayat Pengajuan", fontWeight: FontWeight.bold, fontSize: 18),
+        backgroundColor: const Color(0xFF55C173),
+        title: const CustomText(
+          "Riwayat Pengajuan",
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
         centerTitle: true,
       ),
       body: AppBackground(
@@ -63,42 +67,41 @@ class _WasteBankSubmissionHistoryScreenState
             ? const Center(child: LoadingWidget())
             : provider.submissions.isEmpty
             ? Center(
-          child: EmptyState(connected: provider.connected, message: provider.message)
-        )
+                child: EmptyState(
+                  connected: provider.connected,
+                  message: provider.message,
+                ),
+              )
             : ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: provider.submissions.length,
-          itemBuilder: (context, index) {
-            final item = provider.submissions[index];
-
-            return Card(
-              elevation: 3,
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
-                          imageUrl:
-                          item.photo,
-                          height: 160,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
+                itemCount: provider.submissions.length,
+                itemBuilder: (context, index) {
+                  final item = provider.submissions[index];
 
-                          placeholder: (context, url) => Container(
-                            height: 160,
-                            width: double.infinity,
-                            color: Colors.grey[300],
-                            child: const Center(
-                              child: LoadingWidget(),
-                            ),
-                          ),
+                  return Card(
+                    elevation: 3,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: CachedNetworkImage(
+                              imageUrl: item.photo,
+                              height: 160,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
 
-                          errorWidget: (context, url, error) =>
-                              Container(
+                              placeholder: (context, url) => Container(
+                                height: 160,
+                                width: double.infinity,
+                                color: Colors.grey[300],
+                                child: const Center(child: LoadingWidget()),
+                              ),
+
+                              errorWidget: (context, url, error) => Container(
                                 height: 160,
                                 width: double.infinity,
                                 color: Colors.grey[200],
@@ -108,78 +111,75 @@ class _WasteBankSubmissionHistoryScreenState
                                   color: Colors.grey,
                                 ),
                               ),
-                        ),
-                      ),
-
-                    const SizedBox(height: 12),
-
-                    Text(
-                      item.wasteBankName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    Text(
-                      item.wasteBankLocation,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Text(
-                      "Catatan: ${item.notes}",
-                      style: const TextStyle(fontSize: 14),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        const Text(
-                          "Status: ",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Chip(
-                          label: Text(
-                            _statusLabel(item.status),
-                            style:
-                            const TextStyle(color: Colors.white),
+                            ),
                           ),
-                          backgroundColor:
-                          _statusColor(item.status),
-                        ),
-                      ],
-                    ),
 
-                    const SizedBox(height: 12),
+                          const SizedBox(height: 12),
 
-                    Text(
-                      "Dibuat: ${DateFormatter.formatDate(item.createdAt)}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
+                          Text(
+                            item.wasteBankName,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          Text(
+                            item.wasteBankLocation,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Text(
+                            "Catatan: ${item.notes}",
+                            style: const TextStyle(fontSize: 14),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              const Text(
+                                "Status: ",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Chip(
+                                label: Text(
+                                  _statusLabel(item.status),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: _statusColor(item.status),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          Text(
+                            "Dibuat: ${DateFormatter.formatDate(item.createdAt)}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+
+                          Text(
+                            "Terakhir update: ${DateFormatter.formatDate(item.updatedAt)}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-
-                    Text(
-                      "Terakhir update: ${DateFormatter.formatDate(item.updatedAt)}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
     );
   }
