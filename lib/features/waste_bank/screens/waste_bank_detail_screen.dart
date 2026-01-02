@@ -59,63 +59,6 @@ class _WasteBankDetailScreenState extends State<WasteBankDetailScreen> {
     }
   }
 
-
-  void _showCoordinateDialog(String lat, String lng) {
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Gagal Membuka Peta'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Silakan salin koordinat di bawah dan buka secara manual:'),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: SelectableText(
-                '$lat, $lng',
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Cara manual:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            const Text('1. Buka Google Maps'),
-            const Text('2. Tempelkan koordinat di search box'),
-            const Text('3. Tekan "Rute" untuk navigasi'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-          TextButton(
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: '$lat, $lng'));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Koordinat disalin!')),
-              );
-              Navigator.pop(context);
-            },
-            child: const Text('Salin'),
-          ),
-        ],
-      ),
-    );
-  }
-
-
   Future<void> _showConfirmDialog(BuildContext context, int wasteBankId) async {
     final userProvider = context.read<UserProvider>();
     final bool isMyWasteBank = widget.wasteBank.id == userProvider.user?.wasteBank?.id;

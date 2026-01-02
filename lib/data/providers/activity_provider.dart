@@ -220,7 +220,7 @@ class ActivityProvider with ChangeNotifier {
     // Sort berdasarkan skor tertinggi
     activitiesCopy.sort((a, b) => scoreOf(b).compareTo(scoreOf(a)));
 
-    final topScore = scoreOf(activitiesCopy.first);
+    // final topScore = scoreOf(activitiesCopy.first);
 
     // Jika activity tertinggi FULL → cari pengganti
     if (activitiesCopy.first.currentQuota >= activitiesCopy.first.quota) {

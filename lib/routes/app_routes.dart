@@ -13,7 +13,6 @@ import 'package:ecozyne_mobile/features/get_started_screen.dart';
 import 'package:ecozyne_mobile/features/gift/screens/gift_screen.dart';
 import 'package:ecozyne_mobile/features/history/screens/history_screen.dart';
 import 'package:ecozyne_mobile/features/manage_product/screens/manage_product_screen.dart';
-import 'package:ecozyne_mobile/features/marketplace/screens/checkout_screen.dart';
 import 'package:ecozyne_mobile/features/marketplace/screens/marketplace_screen.dart';
 import 'package:ecozyne_mobile/features/order/screens/order_screen.dart';
 import 'package:ecozyne_mobile/features/splash_screen.dart';

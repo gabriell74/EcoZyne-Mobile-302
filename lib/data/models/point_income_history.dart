@@ -1,7 +1,6 @@
 
 import 'package:ecozyne_mobile/data/models/exchange_history.dart';
 import 'package:ecozyne_mobile/data/models/trash_transaction.dart';
-import 'package:ecozyne_mobile/data/models/waste_submission_history.dart';
 
 class PointIncomeHistory {
   final List<ExchangeHistory> rejectedReward;

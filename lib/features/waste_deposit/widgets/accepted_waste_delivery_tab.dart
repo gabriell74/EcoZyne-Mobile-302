@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
-import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
-import 'package:ecozyne_mobile/data/models/trash_transaction.dart';
 import 'package:ecozyne_mobile/data/providers/trash_transaction_provider.dart';
 import 'package:ecozyne_mobile/features/waste_deposit/widgets/store_trash_bottom_sheet.dart';
 import 'package:flutter/material.dart';
@@ -88,50 +86,6 @@ class _AcceptedWasteDeliveryTabState extends State<AcceptedWasteDeliveryTab> {
     } else {
       showErrorTopSnackBar(context, provider.messageCompleted);
     }
-  }
-
-  void _showTrashDetail(BuildContext context, TrashTransaction trx) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Center(child: Icon(Icons.remove)),
-              const SizedBox(height: 12),
-              const CustomText(
-                "Detail Pengantaran Sampah",
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              const SizedBox(height: 16),
-              if (trx.trashImage != null)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    trx.trashImage!,
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              const SizedBox(height: 16),
-              CustomText("Berat Sampah: ${trx.trashWeight} kg"),
-              const SizedBox(height: 8),
-              CustomText("Poin Didapat: ${trx.pointEarned}"),
-              const SizedBox(height: 24),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   @override

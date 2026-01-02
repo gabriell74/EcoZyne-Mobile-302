@@ -2,8 +2,6 @@ import 'package:ecozyne_mobile/core/widgets/app_background.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
-import 'package:ecozyne_mobile/core/widgets/slide_fade_in.dart';
-import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/data/providers/marketplace_provider.dart';
 import 'package:ecozyne_mobile/features/marketplace/widgets/marketplace_card.dart';
 import 'package:ecozyne_mobile/features/marketplace/widgets/marketplace_search_bar.dart';
