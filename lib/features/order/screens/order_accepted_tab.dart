@@ -17,7 +17,7 @@ class OrderAcceptedTab extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => ConfirmationDialog(
-        "Terima pesanan ini?",
+        "Tandai Selesai?",
         onTap: () => Navigator.pop(ctx, true),
       ),
     );

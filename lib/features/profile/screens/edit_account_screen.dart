@@ -41,53 +41,58 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         required int kelurahanId,
         required String postalCode,
       }) async {
+    if (!_formKey.currentState!.validate()) return;
 
-    if (_formKey.currentState!.validate()) {
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (confirmDialogContext) =>
-            ConfirmationDialog(
-              "Apakah anda yakin mengubah data profil?",
-              onTap: () => Navigator.pop(confirmDialogContext, true),
-            ),
+    // 🔒 Extra safety (double validation)
+    if (_selectedKecamatan == null) {
+      showErrorTopSnackBar(context, "Kecamatan wajib dipilih");
+      return;
+    }
+
+    if (_selectedKelurahan == null) {
+      showErrorTopSnackBar(context, "Kelurahan wajib dipilih");
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (confirmDialogContext) => ConfirmationDialog(
+        "Apakah anda yakin mengubah data profil?",
+        onTap: () => Navigator.pop(confirmDialogContext, true),
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const LoadingWidget(height: 100),
+    );
+
+    final userProvider = context.read<UserProvider>();
+
+    final success = await userProvider.updateUserProfile(
+      username: username,
+      name: name,
+      phoneNumber: phoneNumber,
+      email: email,
+      address: address,
+      kelurahanId: kelurahanId,
+      postalCode: postalCode,
+    );
+
+    if (context.mounted) Navigator.pop(context);
+
+    if (success) {
+      showSuccessTopSnackBar(
+        context,
+        "Profil berhasil diperbarui",
+        icon: const Icon(Icons.check_circle),
       );
-
-      if (confirmed != true) return;
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (loadingContext) => const LoadingWidget(height: 100),
-      );
-
-      final userProvider = context.read<UserProvider>();
-
-      final success = await userProvider.updateUserProfile(
-        username: username,
-        name: name,
-        phoneNumber: phoneNumber,
-        email: email,
-        address: address,
-        kelurahanId: kelurahanId,
-        postalCode: postalCode,
-      );
-
-      if (context.mounted) Navigator.pop(context);
-
-      if (success) {
-        showSuccessTopSnackBar(
-          context,
-          "Profil berhasil diperbarui",
-          icon: const Icon(Icons.check_circle),
-        );
-
-        Navigator.pop(context);
-      } else {
-        showErrorTopSnackBar(
-          context,
-          userProvider.message,
-        );
-      }
+      Navigator.pop(context);
+    } else {
+      showErrorTopSnackBar(context, userProvider.message);
     }
   }
 
@@ -95,14 +100,17 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   void initState() {
     super.initState();
 
-    User? user = context.read<UserProvider>().user;
+    final user = context.read<UserProvider>().user!;
 
-    _usernameController = TextEditingController(text: user!.username);
+    _usernameController = TextEditingController(text: user.username);
     _nameController = TextEditingController(text: user.communityName);
     _emailController = TextEditingController(text: user.email);
-    _whatsappNumController = TextEditingController(text: user.communityPhone);
-    _addressController = TextEditingController(text: user.communityAddress);
-    _postalCodeController = TextEditingController(text: user.communityPostalCode);
+    _whatsappNumController =
+        TextEditingController(text: user.communityPhone);
+    _addressController =
+        TextEditingController(text: user.communityAddress);
+    _postalCodeController =
+        TextEditingController(text: user.communityPostalCode);
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final regionProvider = context.read<RegionProvider>();
@@ -123,9 +131,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
 
       setState(() {});
     });
-
   }
-
 
   @override
   void dispose() {
@@ -135,20 +141,27 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     _whatsappNumController.dispose();
     _addressController.dispose();
     _postalCodeController.dispose();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RegionProvider>().reset();
     });
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final regionProvider = Provider.of<RegionProvider>(context);
-    final user = Provider.of<UserProvider>(context).user;
+    final regionProvider = context.watch<RegionProvider>();
+    final user = context.watch<UserProvider>().user!;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFFFFF),
-        title: const CustomText("Edit Akun", fontWeight: FontWeight.bold, fontSize: 18),
+        backgroundColor: Colors.white,
+        title: const CustomText(
+          "Edit Akun",
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
@@ -167,12 +180,15 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
             ),
             const SizedBox(height: 10),
             CustomText(
-              user!.username,
+              user.username,
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
             ),
-            CustomText("${user.communityPoint} Poin", fontSize: 14, color: Colors.grey),
+            CustomText(
+              "${user.communityPoint} Poin",
+              fontSize: 14,
+              color: Colors.grey,
+            ),
             const SizedBox(height: 25),
 
             Form(
@@ -217,7 +233,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                               .map(
                                 (k) => DropdownMenuItem(
                               value: k,
-                              child: CustomText(k.kecamatan, textOverflow: TextOverflow.ellipsis),
+                              child: CustomText(
+                                k.kecamatan,
+                                textOverflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                               .toList(),
@@ -228,7 +247,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                             });
                             regionProvider.selectKecamatan(k);
                           },
-                          validator: (v) => v == null ? "Pilih Kecamatan" : null,
+                          validator: (v) =>
+                          v == null ? "Pilih Kecamatan" : null,
                         ),
                       ),
                       const SizedBox(width: 15),
@@ -242,14 +262,19 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                               .map(
                                 (kel) => DropdownMenuItem(
                               value: kel,
-                              child: CustomText(kel.kelurahan, textOverflow: TextOverflow.ellipsis),
+                              child: CustomText(
+                                kel.kelurahan,
+                                textOverflow:
+                                TextOverflow.ellipsis,
+                              ),
                             ),
                           )
                               .toList(),
-                          onChanged: (kel) => setState(() => _selectedKelurahan = kel),
-                          validator: (v) => v == null ? "Pilih Kelurahan" : null,
+                          onChanged: (kel) =>
+                              setState(() => _selectedKelurahan = kel),
+                          validator: (v) =>
+                          v == null ? "Pilih Kelurahan" : null,
                         ),
-
                       ),
                     ],
                   ),
@@ -265,16 +290,35 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
+                          if (!_formKey.currentState!.validate()) return;
+
+                          if (_selectedKecamatan == null) {
+                            showErrorTopSnackBar(
+                                context, "Kecamatan wajib dipilih");
+                            return;
+                          }
+
+                          if (_selectedKelurahan == null) {
+                            showErrorTopSnackBar(
+                                context, "Kelurahan wajib dipilih");
+                            return;
+                          }
+
                           _saveProfile(
                             context,
                             user,
-                            username: _usernameController.text,
-                            name: _nameController.text,
-                            phoneNumber: _whatsappNumController.text,
-                            email: _emailController.text,
-                            address: _addressController.text,
-                            kelurahanId: _selectedKelurahan!.id,
-                            postalCode: _postalCodeController.text,
+                            username:
+                            _usernameController.text.trim(),
+                            name: _nameController.text.trim(),
+                            phoneNumber:
+                            _whatsappNumController.text.trim(),
+                            email: _emailController.text.trim(),
+                            address:
+                            _addressController.text.trim(),
+                            kelurahanId:
+                            _selectedKelurahan!.id,
+                            postalCode:
+                            _postalCodeController.text.trim(),
                           );
                         },
                         child: const CustomText(
@@ -294,12 +338,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   }
 
   Widget _buildTextField(
-    String label,
-    TextEditingController controller, {
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-    String? Function(String?)? validator,
-  }) {
+      String label,
+      TextEditingController controller, {
+        TextInputType keyboardType = TextInputType.text,
+        int maxLines = 1,
+        String? Function(String?)? validator,
+      }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Focus(
@@ -314,8 +358,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               decoration: InputDecoration(
                 labelText: label,
                 labelStyle: TextStyle(
-                  color: isFocused ? const Color(0xFF55C173) : Colors.grey,
-                  fontWeight: isFocused ? FontWeight.w600 : FontWeight.normal,
+                  color:
+                  isFocused ? const Color(0xFF55C173) : Colors.grey,
+                  fontWeight:
+                  isFocused ? FontWeight.w600 : FontWeight.normal,
                 ),
                 filled: true,
                 fillColor: const Color(0xFFF7F7F7),
@@ -323,7 +369,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
                     color: Color(0xFFE0E0E0),
-                    width: 1,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -362,33 +407,22 @@ Widget _buildDropdownField<T>({
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(
-          color: Colors.grey,
-        ),
         filled: true,
         fillColor: const Color(0xFFF7F7F7),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: Color(0xFFE0E0E0),
-            width: 1,
-          ),
+          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(
-            color: Color(0xFF55C173),
-            width: 1.8,
-          ),
+          borderSide:
+          const BorderSide(color: Color(0xFF55C173), width: 1.8),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       isExpanded: true,
       icon: const Icon(Icons.arrow_drop_down),
     ),
   );
 }
-

@@ -65,4 +65,28 @@ class EcoEnzymeTrackingProvider with ChangeNotifier {
     notifyListeners();
     return success;
   }
+
+  Future<bool> deleteBatch(int batchId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await _ecoEnzymeTrackingService.deleteBatch(batchId);
+
+    _connected = result["connected"] ?? false;
+
+    bool success = false;
+
+    if (result["success"] == true) {
+      _batchTracking.removeWhere((q) => q.id == batchId);
+      _message = result["message"] ?? "Batch berhasil dihapus";
+      success = true;
+    } else {
+      _message = result["message"] ?? "Gagal menghapus batch";
+    }
+
+    _isLoading = false;
+    notifyListeners();
+
+    return success;
+  }
 }

@@ -89,4 +89,40 @@ class EcoEnzymeTrackingService {
       };
     }
   }
+
+  Future<Map<String, dynamic>> deleteBatch(int batchId) async {
+    try {
+      final response = await _dio.delete("/eco-enzyme-tracking/delete-batch/$batchId");
+
+      final success = response.data["success"] == true;
+
+      if (response.statusCode == 200 && success) {
+        return {
+          "success": true,
+          "message": response.data["message"],
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": response.data["message"] ?? "Gagal menghapus batch",
+        "connected": true,
+      };
+    } on DioException catch (e) {
+      if (e.response != null) {
+        return {
+          "success": false,
+          "message": e.response?.data["message"] ?? "Gagal menghapus batch",
+          "connected": true,
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Tidak ada koneksi",
+        "connected": false,
+      };
+    }
+  }
 }

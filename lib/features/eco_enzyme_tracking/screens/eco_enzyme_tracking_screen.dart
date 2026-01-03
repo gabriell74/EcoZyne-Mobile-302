@@ -1,7 +1,9 @@
 import 'package:ecozyne_mobile/core/widgets/app_background.dart';
+import 'package:ecozyne_mobile/core/widgets/confirmation_dialog.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/empty_state.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
+import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 import 'package:ecozyne_mobile/features/eco_enzyme_tracking/widgets/tracking_card.dart';
 import 'package:ecozyne_mobile/data/models/eco_enzyme_tracking.dart';
 import 'package:ecozyne_mobile/data/providers/eco_enzyme_tracking_provider.dart';
@@ -20,6 +22,31 @@ class _EcoEnzymeTrackingScreenState extends State<EcoEnzymeTrackingScreen> {
     final total = end.difference(start).inDays;
     final elapsed = DateTime.now().difference(start).inDays;
     return (elapsed / total).clamp(0.0, 1.0);
+  }
+
+  Future<void> _showConfirmDeleteDialog(int batchId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => ConfirmationDialog(
+        "Apakah kamu yakin ingin menghapus batch eco-enzyme ini?",
+        onTap: () => Navigator.pop(ctx, true),
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final provider = context.read<EcoEnzymeTrackingProvider>();
+
+    final success = await provider.deleteBatch(batchId);
+
+    if (success) {
+      showSuccessTopSnackBar(
+        context,
+        "Berhasil Menghapus",
+      );
+    } else {
+      showErrorTopSnackBar(context, provider.message);
+    }
   }
 
   @override
@@ -65,13 +92,9 @@ class _EcoEnzymeTrackingScreenState extends State<EcoEnzymeTrackingScreen> {
                   final progress = _calculateProgress(batch.startDate, batch.dueDate);
 
                   return TrackingCard(
-                    enzyme: {
-                      "name": batch.batchName,
-                      "startDate": batch.startDate,
-                      "dueDate": batch.dueDate,
-                      "notes": batch.notes,
-                    },
+                    enzyme: batch,
                     progress: progress,
+                    onDelete: () => _showConfirmDeleteDialog(batch.id!),
                   );
                 },
               );
