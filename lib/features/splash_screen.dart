@@ -17,15 +17,19 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
 
+  static const Duration _minSplashDuration = Duration(seconds: 5);
+
   @override
   void initState() {
     super.initState();
 
+    // ================= ANIMATION =================
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
-    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _fadeAnimation =
+        CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -36,7 +40,16 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _startFlow() async {
     final userProvider = context.read<UserProvider>();
 
+    final startTime = DateTime.now();
+
+    // ================= FETCH USER =================
     await userProvider.fetchCurrentUser();
+
+    // ================= MIN SPLASH TIME =================
+    final elapsed = DateTime.now().difference(startTime);
+    if (elapsed < _minSplashDuration) {
+      await Future.delayed(_minSplashDuration - elapsed);
+    }
 
     if (!mounted) return;
 
