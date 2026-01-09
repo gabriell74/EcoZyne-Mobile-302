@@ -104,7 +104,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back_ios_rounded,
+            Icons.arrow_back,
             color: Colors.grey.shade800,
             size: 20,
           ),

@@ -1,25 +1,28 @@
 import 'dart:async';
+import 'package:ecozyne_mobile/features/authentication/screens/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
+import 'package:ecozyne_mobile/data/providers/forgot_password_provider.dart';
 import 'package:ecozyne_mobile/core/widgets/loading_widget.dart';
 import 'package:ecozyne_mobile/core/widgets/custom_text.dart';
 import 'package:ecozyne_mobile/core/widgets/top_snackbar.dart';
 
-class OtpVerifyScreen extends StatefulWidget {
+class ForgotPasswordOtpScreen extends StatefulWidget {
   final String email;
 
-  const OtpVerifyScreen({
+  const ForgotPasswordOtpScreen({
     super.key,
     required this.email,
   });
 
   @override
-  State<OtpVerifyScreen> createState() => _OtpVerifyScreenState();
+  State<ForgotPasswordOtpScreen> createState() =>
+      _ForgotPasswordOtpScreenState();
 }
 
-class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
+class _ForgotPasswordOtpScreenState
+    extends State<ForgotPasswordOtpScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final List<TextEditingController> _otpControllers =
@@ -35,7 +38,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AuthProvider>().resetOtpRateLimit();
+      context.read<ForgotPasswordProvider>().resetOtpRateLimit();
       _startResendTimer();
     });
   }
@@ -56,15 +59,15 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
     _resendTimer?.cancel();
     setState(() => _resendSeconds = 180);
 
-    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_resendSeconds == 0) {
-        timer.cancel();
-      } else {
-        setState(() => _resendSeconds--);
-      }
-    });
+    _resendTimer =
+        Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (_resendSeconds == 0) {
+            timer.cancel();
+          } else {
+            setState(() => _resendSeconds--);
+          }
+        });
   }
-
 
   String getOtpCode() {
     return _otpControllers.map((c) => c.text).join();
@@ -72,13 +75,13 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
+    final forgotProvider = context.watch<ForgotPasswordProvider>();
     final theme = Theme.of(context);
 
     final isResendDisabled =
         _resendSeconds > 0 ||
-            authProvider.isResendOtpLoading ||
-            authProvider.isResendOtpRateLimited;
+            forgotProvider.isResendOtpLoading ||
+            forgotProvider.isResendOtpRateLimited;
 
     return SafeArea(
       child: Scaffold(
@@ -87,8 +90,9 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back,
-                color: Color(0xFF55C173)),
+            icon: const Icon(
+              Icons.arrow_back,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -109,7 +113,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.email_outlined,
+                      Icons.lock_reset_outlined,
                       size: 50,
                       color: theme.primaryColor,
                     ),
@@ -126,7 +130,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                   const SizedBox(height: 12),
 
                   CustomText(
-                    'Kode OTP telah dikirim ke',
+                    'Kode OTP untuk reset password telah dikirim ke',
                     fontSize: 14,
                     color: Colors.grey[600],
                   ),
@@ -199,8 +203,8 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: authProvider.isOtpLoading ||
-                          authProvider.isOtpRateLimited
+                      onPressed: forgotProvider.isOtpLoading ||
+                          forgotProvider.isOtpRateLimited
                           ? null
                           : () async {
                         FocusScope.of(context).unfocus();
@@ -216,38 +220,33 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                           return;
                         }
 
-                        await authProvider.verifyOtp(
+                        await forgotProvider.verifyOtp(
                           email: widget.email,
                           otp: otp,
                         );
 
                         if (!mounted) return;
 
-                        if (authProvider.success == true) {
+                        if (forgotProvider.success == true) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResetPasswordScreen(email: widget.email),
+                              )
+                          );
                           showSuccessTopSnackBar(
                             context,
-                            authProvider.message ??
-                                'Verifikasi berhasil',
-                          );
-
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/login',
-                                (_) => false,
+                            forgotProvider.message ?? 'OTP valid',
                           );
                         } else {
                           showErrorTopSnackBar(
                             context,
-                            authProvider.message ??
-                                'Verifikasi gagal',
+                            forgotProvider.message ??
+                                'Verifikasi OTP gagal',
                           );
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        disabledBackgroundColor: Colors.grey[300],
-                        elevation: 0,
-                      ),
-                      child: authProvider.isOtpLoading
+                      child: forgotProvider.isOtpLoading
                           ? const LoadingWidget()
                           : const CustomText(
                         'Verifikasi',
@@ -263,25 +262,34 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                     onPressed: isResendDisabled
                         ? null
                         : () async {
-                      await authProvider.resendOtp(
+                      await forgotProvider.resendResetPasswordOtp(
                         email: widget.email,
                       );
 
                       if (!mounted) return;
 
+                      if (forgotProvider.isResendOtpRateLimited) {
+                        showErrorTopSnackBar(
+                          context,
+                          forgotProvider.message ??
+                              'Terlalu banyak percobaan',
+                        );
+                        return;
+                      }
+
                       showSuccessTopSnackBar(
                         context,
-                        authProvider.message ??
-                            'OTP berhasil dikirim ulang',
+                        forgotProvider.message ??
+                            'Kode OTP dikirim ulang',
                       );
 
                       _startResendTimer();
                     },
-                    child: authProvider.isResendOtpLoading
+                    child: forgotProvider.isResendOtpLoading
                         ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: LoadingWidget(height: 400, width: 400,),
                     )
                         : CustomText(
                       _resendSeconds > 0
@@ -293,33 +301,6 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-
-                  if (authProvider.isOtpRateLimited ||
-                      authProvider.isResendOtpRateLimited) ...[
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red[200]!),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.error_outline,
-                              color: Colors.red[700]),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: CustomText(
-                              'Terlalu banyak percobaan. Silakan coba lagi dalam 10 menit.',
-                              color: Colors.red[700],
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),

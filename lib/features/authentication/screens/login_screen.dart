@@ -143,13 +143,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     suffixIcon: IconButton(
                       onPressed: () => setState(() => _isObscure = !_isObscure),
                       icon: Icon(
-                        Icons.remove_red_eye_rounded,
-                        color: _isObscure ? Colors.grey : Color(0xFF649B71),
+                        _isObscure ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
                       ),
                     ),
                     hintText: "Kata Sandi",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.forgotPassword,
+                      );
+                    },
+                    child: const CustomText(
+                      "Lupa Password?",
+                      color: Color(0xFF55C173),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

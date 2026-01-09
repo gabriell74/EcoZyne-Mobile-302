@@ -125,7 +125,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           fontWeight: FontWeight.w700,
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_rounded,
+          icon: Icon(Icons.arrow_back,
               color: Colors.grey.shade800, size: 20),
           onPressed: () => Navigator.pop(context),
         ),

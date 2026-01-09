@@ -164,8 +164,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         errorText: Validators.validationError('password'),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            Icons.remove_red_eye_rounded,
-                            color: _isObscure ? Colors.grey : const Color(0xFF649B71),
+                            _isObscure ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.grey,
                           ),
                           onPressed: () => setState(() => _isObscure = !_isObscure),
                         ),

@@ -83,6 +83,8 @@ class QuestionProvider with ChangeNotifier {
 
     final result = await _questionService.updateQuestion(questionId, newQuestionText);
 
+    _connected = result["connected"] ?? false;
+
     if (!result["success"]) {
       _questions[index].question = oldQuestion;
       _message = result["message"];

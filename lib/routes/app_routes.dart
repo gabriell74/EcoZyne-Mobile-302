@@ -1,5 +1,6 @@
 import 'package:ecozyne_mobile/features/activity/screens/activity_screen.dart';
 import 'package:ecozyne_mobile/features/articles/screens/articles_screen.dart';
+import 'package:ecozyne_mobile/features/authentication/screens/forgot_password_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/register_screen.dart';
 import 'package:ecozyne_mobile/features/authentication/screens/login_screen.dart';
 import 'package:ecozyne_mobile/features/comic/screens/comic_screen.dart';
@@ -49,6 +50,7 @@ class AppRoutes {
   static const String checkout = '/checkout';
   static const String history = '/history';
   static const String wasteBankRegister = '/waste-bank-register';
+  static const String forgotPassword = '/forgot-password';
   // static const String discussionComen = '/discussion-comen';
 
   static Map<String, WidgetBuilder> routes = {
@@ -75,6 +77,7 @@ class AppRoutes {
     history: (context) => HistoryScreen(),
     splashScreen: (context) => SplashScreen(),
     wasteBankRegister: (context) => WasteBankRegisterScreen(),
+    forgotPassword: (context) => ForgotPasswordScreen(),
     // discussionComen: (context) => DiscussionComen(),
   };
 }

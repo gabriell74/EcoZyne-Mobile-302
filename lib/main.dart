@@ -3,6 +3,7 @@ import 'package:ecozyne_mobile/data/providers/answer_provider.dart';
 import 'package:ecozyne_mobile/data/providers/article_provider.dart';
 import 'package:ecozyne_mobile/data/providers/auth_provider.dart';
 import 'package:ecozyne_mobile/data/providers/comic_provider.dart';
+import 'package:ecozyne_mobile/data/providers/forgot_password_provider.dart';
 import 'package:ecozyne_mobile/data/providers/marketplace_provider.dart';
 import 'package:ecozyne_mobile/data/providers/point_income_history_provider.dart';
 import 'package:ecozyne_mobile/data/providers/point_out_history_provider.dart';
@@ -54,6 +55,7 @@ void main() async{
         ChangeNotifierProvider(create: (_) => TrashTransactionProvider()),
         ChangeNotifierProvider(create: (_) => WasteBankOrderProvider()),
         ChangeNotifierProvider(create: (_) => TrashSubmissionsProvider()),
+        ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
       ],
       child: EcoApp(),
     ),
